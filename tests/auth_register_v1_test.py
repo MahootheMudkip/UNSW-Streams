@@ -46,6 +46,16 @@ def test_register_lastname_invalid(clear):
     with pytest.raises(InputError):
         auth_register_v1("validemail@gmail.com", "password", "John", "V3WZTMoEqZHCo34AfMmuK87xvQb4a4XMu2gqNjR7pj0liUVzZG3")
 
+# users registered with different emails with same name
+def test_register_different_uid(clear):
+    register_return = auth_register_v1("validemail1@gmail.com", "password", "John", "Smith")
+    id1 = register_return["auth_user_id"]
+
+    register_return = auth_register_v1("validemail2@gmail.com", "password", "John", "Smith")
+    id2 = register_return["auth_user_id"]
+
+    assert id1 != id2
+
 # all parameters are valid:
 # id obtained from login is same as id registered 
 def test_register_can_login(clear):
