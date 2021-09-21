@@ -57,21 +57,21 @@ def test_channel_join_v1_except_AccessError_unauthorised_user(initial_setup):
         channel_join_v1(user3_id, 4)
 
 # testing user (owner) already in public channel
-def test_channel_join_v1_except_InputError_already_in_public_channel_owner(intital_setup):
+def test_channel_join_v1_except_InputError_already_in_public_channel_owner(initial_setup):
     user1_id = initial_setup["user1_id"]    
     channel_1_id = initial_setup["channel_1_id"]
     with pytest.raises(InputError):
         channel_join_v1(user1_id, channel_1_id)
 
 # testing user (owner) already in private channel
-def test_channel_join_v1_except_InputError_already_in_private_channel_owner(intital_setup):
+def test_channel_join_v1_except_InputError_already_in_private_channel_owner(initial_setup):
     user1_id = initial_setup["user1_id"]    
     channel_3_id = initial_setup["channel_3_id"]
     with pytest.raises(InputError):
         channel_join_v1(user1_id, channel_3_id)        
 
 # testing user already in public channel
-def test_channel_join_v1_except_InputError_already_in_channel(intital_setup):
+def test_channel_join_v1_except_InputError_already_in_channel(initial_setup):
     user3_id = initial_setup["user3_id"]    
     channel_1_id = initial_setup["channel_1_id"]
     channel_join_v1(user3_id, channel_1_id)
@@ -79,7 +79,7 @@ def test_channel_join_v1_except_InputError_already_in_channel(intital_setup):
         channel_join_v1(user3_id, channel_1_id)  
 
 # testing adding user to public channel
-def test_channel_join_v1_adding_user(intial_setup):
+def test_channel_join_v1_adding_user(initial_setup):
     user3_id = initial_setup["user3_id"]    
     channel_1_id = initial_setup["channel_1_id"]
     user2_id = initial_setup["user2_id"]    
