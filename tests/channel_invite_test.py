@@ -37,10 +37,10 @@ def test_invalid_channel(initial_data):
 
 # u_id does not refer to a valid user.
 def test_invalid_u_id(initial_data):
-    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user1_id"]
     public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(InputError):
-        channel_invite_v1(user1_id, public_channel_id, 5)    
+        channel_invite_v1(user2_id, public_channel_id, 5)    
 
 # user is already a member of the public channel.
 def test_member_duplicate(initial_data):
@@ -57,7 +57,7 @@ def test_invalid_invitee(initial_data):
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(AccessError):
-       channel_invite_v1(user1_id, public_channel_id, user1_id)
+       channel_invite_v1(user2_id, public_channel_id, user1_id)
 
 # Arguments are valid.
 # User is not a member of the channel.
