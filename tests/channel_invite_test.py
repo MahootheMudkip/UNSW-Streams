@@ -47,7 +47,6 @@ def test_member_duplicate(initial_data):
     user1_id = initial_data["user1_id"]
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
-    channel_join_v1(user1_id, public_channel_id)
     channel_join_v1(user2_id, public_channel_id)
     with pytest.raises(InputError):
         channel_invite_v1(user2_id, public_channel_id, user1_id)
@@ -70,7 +69,6 @@ def test_can_invite_public(initial_data):
     user2_id = initial_data["user2_id"]    
     public_channel_id = initial_data["public_channel_id"]
 
-    channel_join_v1(user1_id, public_channel_id)
     channel_invite_v1(user1_id, public_channel_id, user2_id)
 
     details = channel_details_v1(user2_id, public_channel_id)
