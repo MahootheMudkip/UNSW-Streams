@@ -9,59 +9,72 @@ from src.error import AccessError
 
 # fixture for registering and logging in user to avoid repetition.
 @pytest.fixture
-def clear_register_and_login():
+def initial_data():
+    # clear used data
     clear_v1()
-    auth_register_v1("juanca.puyo@gmail.com", "27012003", "Juan", "Puyo")
-    login_return = auth_login_v1("juanca.puyo@gmail.com", "27012003")
-    return login_return
+    # Register first user
+    user1 = auth_register_v1("daniel.ricciardo@gmail.com", "27012003", "Daniel", "Ricciardo")
+    user1_id = user1["auth_user_id"]
+    # Register second user 
+    user2 = auth_register_v1("lando.norris@gmail.com", "27012003", "Lando", "Norris")
+    user2_id = user2["auth_user_id"]
+    # Make public channel
+    public_channel = channels_create_v1(user1_id, "Rainbow Six Siege Community", True)
+    public_channel_id = public_channel["channel_id"]
+    values = {
+        "user1_id": user1_id,
+        "user2_id": user2_id,
+        "public_channel_id": public_channel_id,
+    }
+    return values
 
 # channel_id does not refer to a valid channel.
-def test_invalid_channel(clear_register_and_login):
-    login_return = clear_register_and_login()
-    auth_register_v1("tom.west@gmail.com", "27012003", "Tom", "West")
-    login_return2 = auth_login_v1("tom.west@gmail.com", "27012003")
-    create_return = channels_create_v1(login_return, "Minecraft", True)
-    channel_join_v1(login_return2, create_return)
+def test_invalid_channel(initial_data):
+    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user2_id"]
     with pytest.raises(InputError):
-        channel_invite_v1(login_return, 14, login_return2) 
+        channel_invite_v1(user1_id, 14, user2_id) 
 
 # u_id does not refer to a valid user.
-def test_invalid_u_id(clear_register_and_login):
-    register_return = clear_register_and_login()
-    create_return = channels_create_v1(register_return, "Minecraft", True)
+def test_invalid_u_id(initial_data):
+    user1_id = initial_data["user1_id"]
+    public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(InputError):
-        channel_invite_v1(register_return, create_return, 5)    
+        channel_invite_v1(user1_id, public_channel_id, 5)    
 
-# user is already a member of the channel.
-def test_member_duplicate(clear_register_and_login):
-    register_return = clear_register_and_login()
-    register_return2 = auth_register_v1("tom.west@gmail.com", 27012003, "Tom", "West") 
-    create_return = channels_create_v1(register_return, "Minecraft", True)
-    channel_join_v1(register_return2, create_return)
-    channel_invite_v1(register_return, create_return, register_return2)
+# user is already a member of the public channel.
+def test_member_duplicate(initial_data):
+    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user2_id"]
+    public_channel_id = initial_data["public_channel_id"]
+    channel_join_v1(user1_id, public_channel_id)
+    channel_join_v1(user2_id, public_channel_id)
     with pytest.raises(InputError):
-        channel_invite_v1(register_return, create_return, register_return2)
+        channel_invite_v1(user2_id, public_channel_id, user1_id)
 
-# auth_user (invitee) is not a member of the channel.
-def test_invalid_invitee(clear_register_and_login):
-    register_return = clear_register_and_login
-    register_return2 = auth_register_v1("tom.west@gmail.com", 27012003, "Tom", "West")
-    create_return = channels_create_v1(register_return, "Minecraft", True)
+# auth_user (invitee) is not a member of the public channel.
+def test_invalid_invitee(initial_data):
+    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user2_id"]
+    public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(AccessError):
-       channel_invite_v1(register_return, create_return, register_return2)
+       channel_invite_v1(user1_id, public_channel_id, user1_id)
 
 # Arguments are valid.
 # User is not a member of the channel.
 # Invitee is a member of the channel.
 
-def test_can_invite(clear_register_and_login):
-    login_return = clear_register_and_login
-    auth_register_v1("tom.west@gmail.com", "27012003", "Tom", "West")
-    invited = auth_login_v1("tom.west@gmail.com", "27012003")
-    
-    create_return = channels_create_v1(login_return, "Minecraft", True) 
-    channel_join_v1(login_return, create_return)
-    channel_invite_v1(login_return, create_return, invited)
+# test user invited to public channel
+def test_can_invite_public(initial_data):
+    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user2_id"]    
+    public_channel_id = initial_data["public_channel_id"]
 
-    name, owners, members = channel_details_v1(login_return, create_return)
-    assert invited in members 
+    channel_join_v1(user1_id, public_channel_id)
+    channel_invite_v1(user1_id, public_channel_id, user2_id)
+
+    details = channel_details_v1(user2_id, public_channel_id)
+    assert(details["is_public"] == True)
+    assert(details["name"] == "Rainbow Six Siege Community")
+    members_list = details["all_members"]
+    assert(len(members_list) == 2)
