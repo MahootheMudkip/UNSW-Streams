@@ -1,6 +1,6 @@
 import pytest
 
-from src.channel import channel_join_v1, channel_details_v1
+from src.channel import channel_join_v1, channel_details_v1, channel_invite_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
 from src.auth import auth_register_v1
@@ -43,9 +43,9 @@ def initial_setup():
 def test_channel_join_v1_except_InputError_invalid_channel(initial_setup):
     user1_id = initial_setup["user1_id"]
     with pytest.raises(InputError):
-        channel_join_v1(user1_id, 345)
+        channel_join_v1(user1_id, -345)
     with pytest.raises(InputError):
-        channel_join_v1(user1_id, 4242)
+        channel_join_v1(user1_id, -4242)
 
 # testing private channel and user not already in channel
 def test_channel_join_v1_except_AccessError_unauthorised_user(initial_setup):
@@ -71,12 +71,21 @@ def test_channel_join_v1_except_InputError_already_in_private_channel_owner(init
         channel_join_v1(user1_id, channel_3_id)        
 
 # testing user already in public channel
-def test_channel_join_v1_except_InputError_already_in_channel(initial_setup):
+def test_channel_join_v1_except_InputError_already_in_public_channel(initial_setup):
     user3_id = initial_setup["user3_id"]    
     channel_1_id = initial_setup["channel_1_id"]
     channel_join_v1(user3_id, channel_1_id)
     with pytest.raises(InputError):
         channel_join_v1(user3_id, channel_1_id)  
+
+# testing user already in private channel
+def test_channel_join_v1_except_InputError_already_in_private_channel(initial_setup):
+    user3_id = initial_setup["user3_id"]    
+    channel_3_id = initial_setup["channel_3_id"]
+    user1_id = initial_setup["user1_id"]
+    channel_invite_v1(user1_id, channel_3_id, user3_id)
+    with pytest.raises(AccessError):
+        channel_join_v1(user3_id, channel_3_id)  
 
 # testing adding user to public channel
 def test_channel_join_v1_adding_user(initial_setup):
@@ -94,3 +103,14 @@ def test_channel_join_v1_adding_user(initial_setup):
     details2 = channel_join_v1(user2_id, channel_1_id)
     members2 = details2["all_members"]
     assert(len(members2) == 3)
+
+# user does not exist, valid channel
+def test_channel_join_v1_user_does_not_exist(initial_setup):
+    channel_1_id = initial_setup["channel_1_id"]
+    with pytest.raises(AccessError):
+        channel_join_v1(99999999999342, channel_1_id)
+
+# user does not exist, invalid channel
+def test_channel_join_v1_user_and_channel_does_not_exist(initial_setup):
+    with pytest.raises(AccessError):
+        channel_join_v1(99999999999342, 9283492834)
