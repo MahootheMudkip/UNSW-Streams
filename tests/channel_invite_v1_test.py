@@ -21,10 +21,14 @@ def initial_data():
     # Make public channel
     public_channel = channels_create_v1(user1_id, "Rainbow Six Siege Community", True)
     public_channel_id = public_channel["channel_id"]
+    # Make private channel
+    private_channel = channels_create_v1(user1_id, "Minecraft", False)
+    private_channel_id = private_channel["channel_id"]
     values = {
         "user1_id": user1_id,
         "user2_id": user2_id,
         "public_channel_id": public_channel_id,
+        "private_channel_id": private_channel_id
     }
     return values
 
@@ -41,6 +45,46 @@ def test_invalid_u_id(initial_data):
     public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(InputError):
         channel_invite_v1(user1_id, public_channel_id, 5)    
+
+# auth_user_id does not refer to a valid user.
+def test_invalid_auth_user_id(initial_data):
+    user2_id = initial_data["user2_id"]
+    public_channel_id = initial_data["public_channel_id"]
+    with pytest.raises(InputError):
+        channel_invite_v1(3, public_channel_id, user2_id)
+    with pytest.raises(InputError):
+        channel_invite_v1(532, public_channel_id, user2_id)
+
+# channel_id and u_id are invalid
+def test_invalid_u_id_and_channel_id(initial_data):
+    user1_id = initial_data["user1_id"]
+    with pytest.raises(InputError):
+        channel_invite_v1(user1_id, 4, 5)
+    with pytest.raises(InputError):
+        channel_invite_v1(user1_id, 243, 763)   
+
+# auth_user_id and u_id are invalid
+def test_invalid_auth_user_id_and_u_id(initial_data):
+    public_channel_id = initial_data["public_channel_id"]
+    with pytest.raises(InputError):
+        channel_invite_v1(6, public_channel_id, 15)
+    with pytest.raises(InputError):
+        channel_invite_v1(432, public_channel_id, 352)
+
+# auth_user_id and channel_id are invalid
+def test_invalid_auth_user_id_and_channel_id(initial_data):
+    user2_id = initial_data["user2_id"]
+    with pytest.raises(InputError):
+        channel_invite_v1(7, 4, user2_id)
+    with pytest.raises(InputError):
+        channel_invite_v1(432, 243, user2_id)
+
+# All inputs are invalid
+def test_invalid_inputs(initial_data):
+    with pytest.raises(InputError):
+        channel_invite_v1(7, 4, 6)
+    with pytest.raises(InputError):
+        channel_invite_v1(432, 243, 324)     
 
 # user is already a member of the public channel.
 def test_member_duplicate(initial_data):
@@ -74,5 +118,19 @@ def test_can_invite_public(initial_data):
     details = channel_details_v1(user2_id, public_channel_id)
     assert(details["is_public"] == True)
     assert(details["name"] == "Rainbow Six Siege Community")
+    members_list = details["all_members"]
+    assert(len(members_list) == 2)
+
+# test user invited to private channel
+def test_can_invite_private(initial_data):
+    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user2_id"]    
+    public_channel_id = initial_data["public_channel_id"]
+
+    channel_invite_v1(user1_id, public_channel_id, user2_id)
+
+    details = channel_details_v1(user2_id, public_channel_id)
+    assert(details["is_public"] == False)
+    assert(details["name"] == "Minecraft")
     members_list = details["all_members"]
     assert(len(members_list) == 2)
