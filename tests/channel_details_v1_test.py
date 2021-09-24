@@ -1,4 +1,3 @@
-from _pytest.assertion import pytest_runtest_setup
 import pytest
 
 from src.other import clear_v1
@@ -81,3 +80,4 @@ def test_channel_details_v1_shows_details(initial_data):
     assert(len(members_list) == 2)
     owner_members_list = details["owner_members"]
     assert(len(owner_members_list) == 1)
+
