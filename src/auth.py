@@ -35,7 +35,7 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError("Password must be at least 6 characters")
 
     # - Length of name_first is not between 1 and 50 characters inclusive
-    if  not 1 <= len(name_first) <= 50:
+    if not 1 <= len(name_first) <= 50:
         raise InputError("First name must be between 1 and 50 characters long")
     
     # - Length of last_name is not between 1 and 50 characters inclusive
