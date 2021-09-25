@@ -12,6 +12,20 @@ from src.channel import channel_details_v1
 def clear():
     clear_v1()
 
+@pytest.fixture
+def setup():
+    clear_v1()
+    register_return = auth_register_v1("validemail1@gmail.com", "password", "John", "Smith")
+    id1 = register_return["auth_user_id"]
+
+    register_return = auth_register_v1("validemail2@gmail.com", "password", "John", "Smith")
+    id2 = register_return["auth_user_id"]
+
+    return {
+        "id1" : id1,
+        "id2" : id2
+    }
+
 # email does not match regex 
 def test_register_email_invalid(clear):
     with pytest.raises(InputError):
@@ -49,57 +63,42 @@ def test_register_lastname_invalid(clear):
         auth_register_v1("validemail@gmail.com", "password", "John", "V3WZTMoEqZHCo34AfMmuK87xvQb4a4XMu2gqNjR7pj0liUVzZG3")
 
 # users should have unique u_id's
-def test_register_different_uid(clear):
-    register_return = auth_register_v1("validemail1@gmail.com", "password", "John", "Smith")
-    id1 = register_return["auth_user_id"]
+def test_register_different_uid(setup):
 
-    register_return = auth_register_v1("validemail2@gmail.com", "password", "John", "Smith")
-    id2 = register_return["auth_user_id"]
+    assert setup["id1"] != setup["id2"]
 
-    assert id1 != id2
+# # users should have unique handles
+# def test_register_different_handle(setup):
+#     # register user 1 and 2
+#     id1 = setup["id1"]
+#     id2 = setup["id2"]
 
-# users should have unique handles
-def test_register_different_handle(clear):
-    # register user 1
-    register_return = auth_register_v1("validemail1@gmail.com", "password", "John", "Smith")
-    id1 = register_return["auth_user_id"]
+#     # create channels for users 1 and 2
+#     channel_id1 = channels_create_v1(id1, "channel1", True)
+#     channel_id2 = channels_create_v1(id2, "channel2", True)
 
-    # register user 2
-    register_return = auth_register_v1("validemail2@gmail.com", "password", "John", "Smith")
-    id2 = register_return["auth_user_id"]
+#     # request details for channels 1 and 2
+#     details1 = channel_details_v1(id1, channel_id1)
+#     details2 = channel_details_v1(id2, channel_id2)
 
-    # create channels for users 1 and 2
-    channel_id1 = channels_create_v1(id1, "channel1", True)
-    channel_id2 = channels_create_v1(id2, "channel2", True)
-
-    # request details for channels 1 and 2
-    details1 = channel_details_v1(id1, channel_id1)
-    details2 = channel_details_v1(id2, channel_id2)
-
-    # view list of owners 
-    owners1 = details1["owner_members"]
-    owners2 = details2["owner_members"]  
-
-    # view details of owners (users 1 and 2) to verify their handles are different
-    user1_details = owners1[0]
-    user2_details = owners2[0]
-    assert user1_details["handle_str"] != user2_details["handle_str"]
+#     # view details of owners (users 1 and 2) to verify their handles are different
+#     user1_details = details1["owner_members"][0]
+#     user2_details = details2["owner_members"][0]
+#     assert user1_details["handle_str"] != user2_details["handle_str"]
 
 # u_id returned is an integer
-def test_register_is_int(clear):
-    register_return = auth_register_v1("validemail@gmail.com", "password", "John", "Smith")
-    id = register_return["auth_user_id"]
+def test_register_is_int(setup):
+    id = setup["id1"]
 
     assert type(id) == int 
 
-# all parameters are valid:
-# id obtained from login is same as id registered 
-def test_register_can_login(clear):
-    register_return = auth_register_v1("validemail@gmail.com", "password", "John", "Smith")
-    registered_id = register_return["auth_user_id"]
+# # all parameters are valid:
+# # id obtained from login is same as id registered 
+# def test_register_can_login(setup):
+#     registered_id = setup["id1"]
 
-    login_return = auth_login_v1("validemail@gmail.com", "password")
-    returned_id = login_return["auth_user_id"]
+#     login_return = auth_login_v1("validemail1@gmail.com", "password")
+#     returned_id = login_return["auth_user_id"]
 
-    assert registered_id == returned_id
+#     assert registered_id == returned_id
  
