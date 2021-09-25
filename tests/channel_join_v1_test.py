@@ -114,3 +114,13 @@ def test_channel_join_v1_user_does_not_exist(initial_setup):
 def test_channel_join_v1_user_and_channel_does_not_exist(initial_setup):
     with pytest.raises(AccessError):
         channel_join_v1(99999999999342, 9283492834)
+
+# user is in a private channel, but is not an owner
+def test_channel_join_v1_user_in_private_channel_and_not_owner(initial_setup):
+    channel_4_id = initial_setup["channel_4_id"]
+    user1_id = initial_setup["user1_id"]
+    user2_id = initial_setup["user2_id"]
+    channel_invite_v1(user1_id, channel_4_id, user2_id)
+    # user1 invites user2 to channel 4 (which is private)
+    with pytest.raises(AccessError):
+        channel_join_v1(user2_id, channel_4_id) 
