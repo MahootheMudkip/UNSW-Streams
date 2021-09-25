@@ -87,7 +87,7 @@ def channel_join_v1(auth_user_id, channel_id):
         #     raise InputError("authorised user is an owner and already a member of channel")
     else:
         # public channel
-        if auth_user_id in channel_members:
+        if auth_user_id in channel_members or auth_user_id in channel_owners:
             raise InputError("authorised user already a member of channel")
 
     # if it reaches this point, auth_user_id and channel_id are both valid
