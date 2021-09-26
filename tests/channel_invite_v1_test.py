@@ -32,27 +32,27 @@ def initial_data():
     }
     return values
 
-# channel_id does not refer to a valid channel.
-def test_invalid_channel(initial_data):
+# channel_id does not refer to a valid channel. auth_user_id and u_id are both valid.
+def test_invalid_channel_only(initial_data):
     user1_id = initial_data["user1_id"]
     user2_id = initial_data["user2_id"]
     with pytest.raises(InputError):
         channel_invite_v1(user1_id, 14, user2_id) 
 
-# u_id does not refer to a valid user.
-def test_invalid_u_id(initial_data):
+# u_id does not refer to a valid user. auth_user_id and channel_id are both valid.
+def test_invalid_u_id_only(initial_data):
     user1_id = initial_data["user1_id"]
     public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(InputError):
         channel_invite_v1(user1_id, public_channel_id, 5)    
 
-# auth_user_id does not refer to a valid user.
-def test_invalid_auth_user_id(initial_data):
+# auth_user_id does not refer to a valid user. channel_id and u_id are both valid
+def test_invalid_auth_user_id_only(initial_data):
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(3, public_channel_id, user2_id)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(532, public_channel_id, user2_id)
 
 # channel_id and u_id are invalid
@@ -66,24 +66,24 @@ def test_invalid_u_id_and_channel_id(initial_data):
 # auth_user_id and u_id are invalid
 def test_invalid_auth_user_id_and_u_id(initial_data):
     public_channel_id = initial_data["public_channel_id"]
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(6, public_channel_id, 15)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(432, public_channel_id, 352)
 
 # auth_user_id and channel_id are invalid
 def test_invalid_auth_user_id_and_channel_id(initial_data):
     user2_id = initial_data["user2_id"]
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(7, 4, user2_id)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(432, 243, user2_id)
 
 # All inputs are invalid
 def test_invalid_inputs(initial_data):
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(7, 4, 6)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_invite_v1(432, 243, 324)     
 
 # user is already a member of the public channel.
