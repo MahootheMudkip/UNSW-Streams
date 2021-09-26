@@ -3,9 +3,19 @@ from src.data_store import data_store
 from src.error import InputError
 
 def auth_login_v1(email, password):
-    return {
-        'auth_user_id': 1,
-    }
+    # Get data of users dict from data_store
+    store = data_store.get()
+    users = store["users"]
+
+    # Check if email and password combination is registered in users dict
+    for u_id, user in users.items():
+        if user["email"] == email and user["password"] == password:
+            return {
+                'auth_user_id': u_id,
+            }
+
+    # Raise input error if user cannot be logged in
+    raise InputError("Email or Password is invalid")
 
 # Check if handle is already taken by another user
 def is_taken(users, handle):
