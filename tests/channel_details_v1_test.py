@@ -46,8 +46,8 @@ def test_invalid_channel(initial_data):
     with pytest.raises(InputError):
         channel_details_v1(user2_id, 5234)
 
-# the authorised user is not a member of the channel
-def test_auth_user_not_in_channel(initial_data):
+# the authorised user is not a member of the public channel
+def test_auth_user_not_in_public_channel(initial_data):
     user2_id = initial_data["user2_id"]
     user3_id = initial_data["user3_id"]
     public_channel_id = initial_data["public_channel_id"]
@@ -56,13 +56,31 @@ def test_auth_user_not_in_channel(initial_data):
     with pytest.raises(AccessError):
         channel_details_v1(user3_id, public_channel_id)
 
-# test user is invalid and channel is valid
+# the authorised user is not a member of the private channel
+def test_auth_user_not_in_private_channel(initial_data):
+    user2_id = initial_data["user2_id"]
+    user3_id = initial_data["user3_id"]
+    private_channel_id = initial_data["private_channel_id"]
+    with pytest.raises(AccessError):
+        channel_details_v1(user2_id, private_channel_id)
+    with pytest.raises(AccessError):
+        channel_details_v1(user3_id, private_channel_id)
+
+# test user is invalid and public channel is valid
 def test_user_invalid_and_channel_valid(initial_data):
     public_channel_id = initial_data["public_channel_id"]
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_details_v1(4345, public_channel_id)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_details_v1(15, public_channel_id)
+
+# test user is invalid and private channel is valid
+def test_user_invalid_and_channel_valid(initial_data):
+    private_channel_id = initial_data["private_channel_id"]
+    with pytest.raises(AccessError):
+        channel_details_v1(4345, private_channel_id)
+    with pytest.raises(AccessError):
+        channel_details_v1(15, private_channel_id)
 
 # the authorised user is not a member of the channel and channel_id is invalid
 def test_user_not_in_channel_and_invalid_channel_id(initial_data):
@@ -75,9 +93,9 @@ def test_user_not_in_channel_and_invalid_channel_id(initial_data):
 
 # the authorised user is invalid and channel_id is invalid
 def test_invalid_user_and_channel_id(initial_data):
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_details_v1(4, 15)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_details_v1(1543, 555)
 
 # testing showing details of public channel
@@ -109,6 +127,3 @@ def test_channel_details_v1_shows_private_channel_details(initial_data):
     assert(len(members_list) == 2)
     owner_members_list = details["owner_members"]
     assert(len(owner_members_list) == 1)
-
-
-
