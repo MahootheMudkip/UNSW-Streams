@@ -86,7 +86,7 @@ def test_channel_join_v1_except_InputError_already_in_private_channel(initial_se
     channel_3_id = initial_setup["channel_3_id"]
     user1_id = initial_setup["user1_id"]
     channel_invite_v1(user1_id, channel_3_id, user3_id)
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
         channel_join_v1(user3_id, channel_3_id)  
 
 # testing adding user to public channel
