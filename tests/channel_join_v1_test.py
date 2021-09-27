@@ -51,10 +51,12 @@ def test_channel_join_v1_except_InputError_invalid_channel(initial_setup):
 def test_channel_join_v1_except_AccessError_unauthorised_user(initial_setup):
     user2_id = initial_setup["user2_id"]
     user3_id = initial_setup["user3_id"]   
+    channel_3_id = initial_setup["channel_3_id"]
+    channel_4_id = initial_setup["channel_4_id"]
     with pytest.raises(AccessError):
-        channel_join_v1(user2_id, 3)
+        channel_join_v1(user2_id, channel_3_id)
     with pytest.raises(AccessError):
-        channel_join_v1(user3_id, 4)
+        channel_join_v1(user3_id, channel_4_id)
 
 # testing user (owner) already in public channel
 def test_channel_join_v1_except_InputError_already_in_public_channel_owner(initial_setup):
