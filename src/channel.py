@@ -64,31 +64,29 @@ Return Value:
 def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
     users = store["users"]
+    channels = store["channels"]
 
     if auth_user_id not in users.keys():
         # check whether auth_user_id exists
-        raise AccessError("invalid auth_user_id")
+        raise AccessError("Invalid auth_user_id")
     
-    channels = store["channels"]
     if channel_id not in channels.keys():
-        raise InputError("invalid channel_id")
+        # check whether channel_id exists
+        raise InputError("Invalid channel_id")
     
     channel_info = channels[channel_id]
-    channel_members = channel_info["all_members"]
-    channel_owners = channel_info["owner_members"]
     channel_is_public = channel_info["is_public"]
+    channel_members = channel_info["all_members"]
+    # channel owners are also included in the "all_members list"
+    
+    if channel_is_public == False and auth_user_id not in channel_members:
+        # channel is private and auth_user_id does not refer to 
+        # a channel owner or member
+        raise AccessError("Channel is private and authorised user is not an owner/channel member")
 
-    if channel_is_public == False:
-        # private channel
-        if auth_user_id not in channel_owners:
-            # auth_user_id does not refer to a channel owner
-            raise AccessError("channel is private and authorised user is not an owner")
-        # else:
-        #     raise InputError("authorised user is an owner and already a member of channel")
-    else:
-        # public channel
-        if auth_user_id in channel_members or auth_user_id in channel_owners:
-            raise InputError("authorised user already a member of channel")
+    if auth_user_id in channel_members:
+        # this checks if the auth_user_id is already a member
+        raise InputError("Authorised user already a member of channel")
 
     # if it reaches this point, auth_user_id and channel_id are both valid
     channel_members.append(auth_user_id)
