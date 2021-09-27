@@ -11,13 +11,13 @@ def initial_setup():
     # clear stored data
     clear_v1() 
     # make new user1
-    user1 = auth_register_v1("lmao@gmail.com", "123", "Jeremy", "Clarkson")
+    user1 = auth_register_v1("lmao@gmail.com", "123789", "Jeremy", "Clarkson")
     user1_id = user1["auth_user_id"]
     # make new user2
-    user2 = auth_register_v1("wtf@gmail.com", "234", "James", "May")
+    user2 = auth_register_v1("wtf@gmail.com", "234789", "James", "May")
     user2_id = user2["auth_user_id"]
     # make new user3
-    user3 = auth_register_v1("pwd@gmail.com", "456", "Richard", "Hammond")
+    user3 = auth_register_v1("pwd@gmail.com", "456789", "Richard", "Hammond")
     user3_id = user3["auth_user_id"]
     # make 4 new channels
     channel_1 = channels_create_v1(user1_id, "channel_1", True)
