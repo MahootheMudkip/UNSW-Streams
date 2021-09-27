@@ -57,12 +57,12 @@ Return Value:
 def channel_messages_v1(auth_user_id, channel_id, start):
     store = data_store.get()
     users = store["users"]
+    channels = store["channels"]
 
     if auth_user_id not in users.keys():
         # check whether auth_user_id exists
         raise AccessError("invalid auth_user_id")
 
-    channels = store["channels"]
     if channel_id not in channels.keys():
         # specified channel doesn't exist
         raise InputError("invalid channel_id")
@@ -70,14 +70,13 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # if it reaches this point, the channel_id must be valid
     channel_info = channels[channel_id]
     channel_members = channel_info["all_members"]
-    channel_owners = channel_info["owner_members"]
 
-    if auth_user_id not in channel_members and auth_user_id not in channel_owners:
-        raise AccessError("channel_id valid and authorised user not member of channel")
+    if auth_user_id not in channel_members:
+        raise AccessError("Valid channel_id and authorised user not a member")
 
     return {
         'messages': [],
-        'start': start,
+        'start': 0,
         'end': 50,
     }
 
