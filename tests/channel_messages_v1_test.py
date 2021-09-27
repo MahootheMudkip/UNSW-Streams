@@ -67,9 +67,9 @@ def test_channel_messages_v1_except_AccessError_non_existent_user_and_channel(in
         channel_messages_v1(-3423434, -2342343434, 0)
 
 # channel id is invalid and user exists, but not part of channel
-def test_channel_messages_v1_except_AccessError_non_existent_channel_and_unauthorised_user(initial_setup):
+def test_channel_messages_v1_except_InputError_non_existent_channel_and_unauthorised_user(initial_setup):
     user1_id = initial_setup["user1_id"]
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
         channel_messages_v1(user1_id, -2342584587, 0)
 
 
