@@ -86,9 +86,9 @@ def test_user_invalid_and_channel_valid(initial_data):
 def test_user_not_in_channel_and_invalid_channel_id(initial_data):
     user1_id = initial_data["user1_id"]
     user2_id = initial_data["user2_id"]
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_details_v1(user1_id, 5647)
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         channel_details_v1(user2_id, 3231)
 
 # the authorised user is invalid and channel_id is invalid
