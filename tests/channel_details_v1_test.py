@@ -40,11 +40,8 @@ def initial_data():
 # channel_id does not refer to a valid channel
 def test_invalid_channel(initial_data):
     user1_id = initial_data["user1_id"]
-    user2_id = initial_data["user2_id"]
     with pytest.raises(InputError):
         channel_details_v1(user1_id, 3332)
-    with pytest.raises(InputError):
-        channel_details_v1(user2_id, 5234)
 
 # the authorised user is not a member of the public channel
 def test_auth_user_not_in_public_channel(initial_data):
