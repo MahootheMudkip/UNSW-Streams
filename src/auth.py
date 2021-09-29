@@ -8,14 +8,20 @@ def auth_login_v1(email, password):
     users = store["users"]
 
     # Check if email and password combination is registered in users dict
+    # return_id set to -1 by default (indicating user cannot login)
+    # return_id changed to u_id in database if user + password combo is found
+    return_id = -1
     for u_id, user in users.items():
         if user["email"] == email and user["password"] == password:
-            return {
-                'auth_user_id': u_id,
-            }
+            return_id = u_id
 
     # Raise input error if user cannot be logged in
-    raise InputError("Email or Password is invalid")
+    if return_id == -1:
+        raise InputError("Email or Password is invalid")
+
+    return {
+        'auth_user_id': return_id,
+    }
 
 # Check if handle is already taken by another user
 def is_taken(users, handle):
