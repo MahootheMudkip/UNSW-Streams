@@ -458,7 +458,7 @@ These interface specifications come from Andrea and Andrew, who are building the
       </ul>
       <b>AccessError</b> when:
       <ul>
-        <li>channel_id refers to a channel that is private and the authorised user is not a global owner</li>
+        <li>channel_id refers to a channel that is private and the authorised user is not already a channel member and is not a global owner</li>
       </ul>
     </td>
   </tr>
