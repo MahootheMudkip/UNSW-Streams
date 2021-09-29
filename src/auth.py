@@ -10,13 +10,13 @@ def auth_login_v1(email, password):
     # Check if email and password combination is registered in users dict
     # return_id set to -1 by default (indicating user cannot login)
     # return_id changed to u_id in database if user + password combo is found
-    return_id = -1
+    return_id = None
     for u_id, user in users.items():
         if user["email"] == email and user["password"] == password:
             return_id = u_id
 
     # Raise input error if user cannot be logged in
-    if return_id == -1:
+    if return_id == None:
         raise InputError("Email or Password is invalid")
 
     return {
