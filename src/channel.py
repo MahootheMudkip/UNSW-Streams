@@ -31,7 +31,6 @@ def channel_details_v1(auth_user_id, channel_id):
     store = data_store.get()
     users = store["users"]
     channels = store["channels"]
-
     
     # checks if auth_user_id exists.
     if auth_user_id not in users.keys():
@@ -42,21 +41,21 @@ def channel_details_v1(auth_user_id, channel_id):
         raise InputError("Invalid Channel id. Channel doesn't exists")
     
     # Obtain channel information.
-    channel_details = channels[channel_id]
-    channel_name = channel_details["name"]
-    channel_is_public = channel_details["is_public"]
-    channel_all_members = channel_details["all_members"]
-    channel_owners = channel_details["owner_members"]
+    channel_info = channels[channel_id]
+    channel_name = channel_info["name"]
+    channel_is_public = channel_info["is_public"]
+    channel_all_members = channel_info["all_members"]
+    channel_owners = channel_info["owner_members"]
 
-    # test if user is a memver of the channel
+    # test if user is a member of the channel
     if auth_user_id not in channel_all_members:
         raise AccessError("User is not a member of the channel.")
     
     return {
-        channel_name,
-        channel_is_public,
-        channel_owners,
-        channel_all_members,
+        "name": channel_name,
+        "is_public": channel_is_public,
+        "owner_members": channel_owners,
+        "all_members": channel_all_members,
     }
 
 def channel_messages_v1(auth_user_id, channel_id, start):
