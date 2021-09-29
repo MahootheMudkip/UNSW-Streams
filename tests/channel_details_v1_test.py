@@ -15,7 +15,7 @@ def initial_data():
     # Register first user
     user1 = auth_register_v1("daniel.ricciardo@gmail.com", "27012003", "Daniel", "Ricciardo")
     user1_id = user1["auth_user_id"]
-    # Register second user 
+    # Register second user
     user2 = auth_register_v1("lando.norris@gmail.com", "27012003", "Lando", "Norris")
     user2_id = user2["auth_user_id"]
     # Register third user
