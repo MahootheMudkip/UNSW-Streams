@@ -80,6 +80,54 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'end': 50,
     }
 
+'''
+Adds the specified auth_user_id to the given channel_id
+
+Arguments:
+    auth_user_id (int): the given authorised user id
+    channel_id   (int): the given channel id
+
+Exceptions:
+    InputError:
+        - channel_id invalid (doesn't exist)
+        - auth_user_id already member of channel
+    AccessError:
+        - auth_user_id is invalid (doesn't exist)
+        - channel_id refers to private channel 
+          and auth_user_id is not the owner of the channel
+
+Return Value:
+    no values returned
+'''
 def channel_join_v1(auth_user_id, channel_id):
-    return {
-    }
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+
+    if auth_user_id not in users.keys():
+        # check whether auth_user_id exists
+        raise AccessError("Invalid auth_user_id")
+    
+    if channel_id not in channels.keys():
+        # check whether channel_id exists
+        raise InputError("Invalid channel_id")
+    
+    channel_info = channels[channel_id]
+    channel_is_public = channel_info["is_public"]
+    channel_members = channel_info["all_members"]
+    # channel owners are also included in the "all_members list"
+    
+    if channel_is_public == False and auth_user_id not in channel_members:
+        # channel is private and auth_user_id does not refer to 
+        # a channel owner or member
+        raise AccessError("Channel is private and authorised user is not an owner/channel member")
+
+    if auth_user_id in channel_members:
+        # this checks if the auth_user_id is already a member
+        raise InputError("Authorised user already a member of channel")
+
+    # if it reaches this point, auth_user_id and channel_id are both valid
+    channel_members.append(auth_user_id)
+    data_store.set(store)
+
+    return {}
