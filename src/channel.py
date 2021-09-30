@@ -75,7 +75,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         raise InputError("Invalid channel_id")
 
     # start is greater than the total number of messages in channel
-    if start > total_message_num:
+    if start > total_message_num or start < 0:
         raise InputError("start is greater than total_message_num")
 
     # this is when you return the least recent message in the channel
