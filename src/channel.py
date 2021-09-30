@@ -38,7 +38,7 @@ Arguments:
     auth_user_id (int): the given authorised user id
     channel_id   (int): the given channel id
     start        (int): index to start returning messages from
-
+                        (start is assumed to be >= 0)
 Exceptions:
     InputError:
         - channel_id invalid (doesn't exist)
@@ -46,7 +46,7 @@ Exceptions:
     AccessError:
         - auth_user_id is invalid (doesn't exist)
         - channel_id is valid and the auth_user_id refers to a user
-          who is not a member (or owner?) of the channel
+          who is not a member/owner of the channel
 
 Return Value:
     messages: List of dictionaries, where each dictionary 
@@ -62,7 +62,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # total_message_num is assumed to be 0 for iteration 1, 
     # as messages has no framework  or implementation
     total_message_num = 0
-    least_recent_message_index = 0
+    least_recent_message_index = -1
     messages = []
     end = start + 50
 
@@ -75,12 +75,12 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         raise InputError("Invalid channel_id")
 
     # start is greater than the total number of messages in channel
-    if start > total_message_num or start < 0:
+    if start > total_message_num:
         raise InputError("start is an invalid value")
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 
-    if start + 50 >= least_recent_message_index:
+    if (start + 50) >= least_recent_message_index:
         end = -1
 
     # if it reaches this point, the channel_id must be valid
