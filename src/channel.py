@@ -80,7 +80,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 
-    if (start + 50) >= least_recent_message_index:
+    if (start + 50) > least_recent_message_index:
         end = -1
 
     # if it reaches this point, the channel_id must be valid
