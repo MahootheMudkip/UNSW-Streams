@@ -79,7 +79,7 @@ def test_channel_messages_v1_except_InputError_invalid_start(initial_setup):
     with pytest.raises(InputError):
         channel_messages_v1(user1_id, channel_1_id, 4)
     with pytest.raises(InputError):
-        channel_messages_v1(user1_id, channel_1_id, -23434)
+        channel_messages_v1(user1_id, channel_1_id, 567)
 
 # test return values, all valid parameters
 def test_channel_messages_v1_all_valid(initial_setup):
