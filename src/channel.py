@@ -52,7 +52,7 @@ def channel_details_v1(auth_user_id, channel_id):
 
     # list of member u_ids
     channel_owners_u_ids = channel_info["owner_members"]
-    # Creates a list of dictionaries, where each dictionary contains types of user 
+    # Creates a list of dictionaries, where each dictionary contains types of user
     channel_owners = [dict(zip(x, users[x])) for x in channel_owners_u_ids]
 
     # test if user is a member of the channel
