@@ -76,7 +76,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
     # start is greater than the total number of messages in channel
     if start > total_message_num or start < 0:
-        raise InputError("start is greater than total_message_num")
+        raise InputError("start is an invalid value")
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 
