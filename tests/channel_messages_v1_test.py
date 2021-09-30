@@ -72,5 +72,21 @@ def test_channel_messages_v1_except_InputError_non_existent_channel_and_unauthor
     with pytest.raises(InputError):
         channel_messages_v1(user1_id, -2342584587, 0)
 
+# test all valid except start
+def test_channel_messages_v1_except_InputError_invalid_start(initial_setup):
+    user1_id = initial_setup["user1_id"]
+    channel_1_id = initial_setup["channel_1_id"]
+    with pytest.raises(InputError):
+        channel_messages_v1(user1_id, channel_1_id, 4)
+    with pytest.raises(InputError):
+        channel_messages_v1(user1_id, channel_1_id, -23434)
 
+# test return values, all valid parameters
+def test_channel_messages_v1_all_valid(initial_setup):
+    user1_id = initial_setup["user1_id"]
+    channel_1_id = initial_setup["channel_1_id"]
+    message_values = channel_messages_v1(user1_id, channel_1_id, 0)
+    assert (len(message_values["messages"]) == 0)
+    assert (message_values["start"] == 0)
+    assert (message_values["end"] == -1) 
 
