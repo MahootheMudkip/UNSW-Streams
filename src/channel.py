@@ -59,13 +59,29 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     users = store["users"]
     channels = store["channels"]
 
-    if auth_user_id not in users.keys():
-        # check whether auth_user_id exists
-        raise AccessError("invalid auth_user_id")
+    # total_message_num is assumed to be 0 for iteration 1, 
+    # as messages has no framework  or implementation
+    total_message_num = 0
+    least_recent_message_index = 0
+    messages = []
+    end = start + 50
 
-    if channel_id not in channels.keys():
-        # specified channel doesn't exist
-        raise InputError("invalid channel_id")
+    # check whether auth_user_id exists
+    if auth_user_id not in users.keys():  
+        raise AccessError("Invalid auth_user_id")
+
+    # specified channel doesn't exist
+    if channel_id not in channels.keys(): 
+        raise InputError("Invalid channel_id")
+
+    # start is greater than the total number of messages in channel
+    if start > total_message_num:
+        raise InputError("start is greater than total_message_num")
+
+    # this is when you return the least recent message in the channel
+    # since "start" starts from 0, we use >= rather than > 
+    if start + 50 >= least_recent_message_index:
+        end = -1
 
     # if it reaches this point, the channel_id must be valid
     channel_info = channels[channel_id]
@@ -75,9 +91,9 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         raise AccessError("Valid channel_id and authorised user not a member")
 
     return {
-        'messages': [],
-        'start': 0,
-        'end': 50,
+        'messages': messages,
+        'start': start,
+        'end': end,
     }
 
 '''
