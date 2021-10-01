@@ -36,10 +36,6 @@ def channel_details_v1(auth_user_id, channel_id):
     if auth_user_id not in users.keys():
         raise AccessError("Invalid Authorised User ID. User doesn't exist")
 
-    # checks if channel_id exists.
-    if channel_id not in channels.keys():
-        raise InputError("Invalid Channel id. Channel doesn't exists")
-    
     # Obtain channel information.
     channel_info = channels[channel_id]
     channel_name = channel_info["name"]
@@ -47,6 +43,17 @@ def channel_details_v1(auth_user_id, channel_id):
 
     # list of u_ids
     channel_all_members = channel_info["all_members"]
+    
+    # test if user is a member of the channel
+    if auth_user_id not in channel_all_members:
+        raise AccessError("User is not a member of the channel.")
+    
+    # checks if channel_id exists.
+    if channel_id not in channels.keys():
+        raise InputError("Invalid Channel id. Channel doesn't exists")
+    
+
+    
     # Creates a list of dictionaries, where each dictionary contains types of user.
     channel_new_all_members = []
     for u_id in channel_all_members:
@@ -66,10 +73,6 @@ def channel_details_v1(auth_user_id, channel_id):
             if key != "password":
                 new_user[key] = value
         channel_new_owners_members.append(new_user)
-
-    # test if user is a member of the channel
-    if auth_user_id not in channel_all_members.items():
-        raise AccessError("User is not a member of the channel.")
     
     return {
         "name": channel_name,
