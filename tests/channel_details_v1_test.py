@@ -22,7 +22,7 @@ def initial_data():
     user3 = auth_register_v1("mick.fanning@gmail.com", "27012003", "Mick", "Fanning")
     user3_id = user3["auth_user_id"]
     # Make public channel
-    public_channel = channels_create_v1(user1_id, "Rainbow Six Siege Community", True)
+    public_channel = channels_create_v1(user1_id, "Rainbow Six Siege", True)
     public_channel_id = public_channel["channel_id"]
     # Make private channel
     private_channel = channels_create_v1(user1_id, "Minecraft", False)
@@ -81,11 +81,10 @@ def test_user_invalid_and_channel_valid(initial_data):
 
 # the authorised user is not a member of the channel and channel_id is invalid
 def test_user_not_in_channel_and_invalid_channel_id(initial_data):
-    user1_id = initial_data["user1_id"]
     user2_id = initial_data["user2_id"]
-    with pytest.raises(AccessError):
-        channel_details_v1(user1_id, 5647)
-    with pytest.raises(AccessError):
+    with pytest.raises(InputError):
+        channel_details_v1(user2_id, 5647)
+    with pytest.raises(InputError):
         channel_details_v1(user2_id, 3231)
 
 # the authorised user is invalid and channel_id is invalid
@@ -96,31 +95,31 @@ def test_invalid_user_and_channel_id(initial_data):
         channel_details_v1(1543, 5551)
 
 # testing showing details of public channel
-# def test_channel_details_v1_shows_public_channel_details(initial_data):
-#    user1_id = initial_data["user1_id"]
-#    user2_id = initial_data["user2_id"]
-#    public_channel_id = initial_data["public_channel_id"]
-#    channel_join_v1(user2_id, public_channel_id)
-#    
-#    details = channel_details_v1(user1_id, public_channel_id)
-#    assert(details["is_public"] == True)
-#    assert(details["name"] == "Rainbow Six Siege Community")
-#    members_list = details["all_members"] 
-#    assert(len(members_list) == 2)
-#    owner_members_list = details["owner_members"]
-#    assert(len(owner_members_list) == 1)
+def test_channel_details_v1_shows_public_channel_details(initial_data):
+    user1_id = initial_data["user1_id"]
+    user2_id = initial_data["user2_id"]
+    public_channel_id = initial_data["public_channel_id"]
+    channel_join_v1(user2_id, public_channel_id)
+   
+    details = channel_details_v1(user1_id, public_channel_id)
+    assert(details["is_public"] == True)
+    assert(details["name"] == "Rainbow Six Siege")
+    members_list = details["all_members"] 
+    assert(len(members_list) == 2)
+    owner_members_list = details["owner_members"]
+    assert(len(owner_members_list) == 1)
 
 # testing showing details of private channel
 # def test_channel_details_v1_shows_private_channel_details(initial_data):
-#    user1_id = initial_data["user1_id"]
-#    user2_id = initial_data["user2_id"]
-#    private_channel_id = initial_data["private_channel_id"]
-#    channel_invite_v1(user1_id, private_channel_id, user2_id)
-#    
-#    details = channel_details_v1(user1_id, private_channel_id)
-#    assert(details["is_public"] == False)
-#    assert(details["name"] == "Minecraft")
-#    members_list = details["all_members"] 
-#    assert(len(members_list) == 2)
-#    owner_members_list = details["owner_members"]
-#    assert(len(owner_members_list) == 1)
+#     user1_id = initial_data["user1_id"]
+#     user2_id = initial_data["user2_id"]
+#     private_channel_id = initial_data["private_channel_id"]
+#     channel_invite_v1(user1_id, private_channel_id, user2_id)
+#     
+#     details = channel_details_v1(user1_id, private_channel_id)
+#     assert(details["is_public"] == False)
+#     assert(details["name"] == "Minecraft")
+#     members_list = details["all_members"] 
+#     assert(len(members_list) == 2)
+#     owner_members_list = details["owner_members"]
+#     assert(len(owner_members_list) == 1)

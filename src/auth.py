@@ -3,8 +3,24 @@ from src.data_store import data_store
 from src.error import InputError
 
 def auth_login_v1(email, password):
+    # Get data of users dict from data_store
+    store = data_store.get()
+    users = store["users"]
+
+    # Check if email and password combination is registered in users dict
+    # return_id set to -1 by default (indicating user cannot login)
+    # return_id changed to u_id in database if user + password combo is found
+    return_id = None
+    for u_id, user in users.items():
+        if user["email"] == email and user["password"] == password:
+            return_id = u_id
+
+    # Raise input error if user cannot be logged in
+    if return_id == None:
+        raise InputError("Email or Password is invalid")
+
     return {
-        'auth_user_id': 1,
+        'auth_user_id': return_id,
     }
 
 # Check if handle is already taken by another user
