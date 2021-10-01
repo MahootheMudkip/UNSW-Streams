@@ -46,25 +46,29 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_is_public = channel_info["is_public"]
 
     # list of u_ids
-    channel_all_u_ids = channel_info["all_members"]
+    channel_all_members = channel_info["all_members"]
     # Creates a list of dictionaries, where each dictionary contains types of user.
-    channel_all_members = []
-    for u_id in channel_all_u_ids:
-        for key, value in users[u_ids]:
+    channel_new_all_members = []
+    for u_id in channel_all_members:
+        new_user = {}
+        for key, value in users[u_id].items():
             if key != "password":
-                channel_all_members.append(key[value])
+                new_user = key[value]
+        channel_new_all_members.append(new_user)
     
     # list of member u_ids
-    channel_owners_u_ids = channel_info["owner_members"]
+    channel_owners_members = channel_info["owner_members"]
     # Creates a list of dictionaries, where each dictionary contains types of user.
-    channel_owner_members = []
-    for u_id in channel_all_u_ids:
-        for key, value in users[u_ids]:
+    channel_new_owner_members = []
+    for u_id in channel_owners:
+        new_user = {}
+        for key, value in users[u_id].items():
             if key != "password":
-                channel_owner_members.append(key[value])
+                new_user = key[value]
+        channel_new_owner_members.append(new_user)
 
     # test if user is a member of the channel
-    if auth_user_id not in channel_all_members:
+    if auth_user_id not in channel_all_members.items():
         raise AccessError("User is not a member of the channel.")
     
     return {
