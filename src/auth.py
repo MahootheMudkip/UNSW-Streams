@@ -126,7 +126,6 @@ def auth_register_v1(email, password, name_first, name_last):
     }
 
     # Set data containing user information
-    store["users"] = users
     data_store.set(store)
 
     return {
