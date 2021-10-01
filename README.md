@@ -18,6 +18,7 @@
 ## 0. Change Log
 
 * 24/09: Edited channel membership `AccessError`s to require a valid `channel_id`, clarified handle generation instructions, removed references to DMs in permissions section
+* 25/09: Clarified `channel_join_v1`'s `AccessError`
 
 ## 1. Aims:
 
