@@ -60,27 +60,83 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
 
+'''
+Provides basic details about the channel_id that the auth_user_id is a member of.
+
+Parameters:
+    auth_user_id (int): the given authorised user id.
+    channel_id   (int): the given channel id
+
+Exceptions:
+    InputError:
+        - Invalid channel_id (doesn't exist) and auth_user_id is valid and a member of the channel.
+    AccessError:
+        - Authorised user is not member of the channel.
+        - Authorised user id is invalid (doesn't exist).
+
+Return Type:
+    name           (str): channel name.
+    is_public     (bool): True if channel is public, false otherwise.
+    owner_members (list): List of members who own the channel.
+    all_members   (list): List of all members including owners.
+'''
+
 def channel_details_v1(auth_user_id, channel_id):
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+    
+    # checks if auth_user_id exists.
+    if auth_user_id not in users.keys():
+        raise AccessError("Invalid Authorised User ID. User doesn't exist")
+
+    # checks if channel_id exists.
+    if channel_id not in channels.keys():
+        raise InputError("Invalid Channel id. Channel doesn't exists")
+
+    # Obtain channel information.
+    channel_info = channels[channel_id]
+    channel_name = channel_info["channel_name"]
+    channel_is_public = channel_info["is_public"]
+
+    # list of u_ids
+    channel_all_members = channel_info["all_members"]
+    
+    # test if user is a member of the channel
+    if auth_user_id not in channel_all_members:
+        raise AccessError("User is not a member of the channel.")
+    
+    # Creates a list of dictionaries, where each dictionary contains types of user.
+    channel_new_all_members = []
+    for u_id in channel_all_members:
+        new_user = {}
+        # users[u_id] is a dictionary of one user.
+        # e.g key = "name", value = "Juan"
+        for key, value in users[u_id].items():
+            if key != "password":
+                new_user[key] = value
+        channel_new_all_members.append(new_user)
+        # appending new_user dictionary
+    
+    # list of member u_ids
+    channel_owner_members = channel_info["owner_members"]
+    # Creates a list of dictionaries, where each dictionary contains types of user.
+    channel_new_owner_members = []
+    for u_id in channel_owner_members:
+        new_user = {}
+        # users[u_id] is a dictionary of one user.
+        # e.g key = "name", value = "Juan"
+        for key, value in users[u_id].items():
+            if key != "password":
+                new_user[key] = value
+        channel_new_owner_members.append(new_user)
+        # appending new_user dictionary
+
     return {
-        'name': 'Hayden',
-        'owner_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-        'all_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
+        "name": channel_name,
+        "is_public": channel_is_public,
+        "owner_members": channel_new_owner_members,
+        "all_members": channel_new_all_members,
     }
 
 '''
