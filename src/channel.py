@@ -47,13 +47,21 @@ def channel_details_v1(auth_user_id, channel_id):
 
     # list of u_ids
     channel_all_u_ids = channel_info["all_members"]
-    # Creates a list of dictionaries, where each dictionary contains types of user 
-    channel_all_members = [dict(zip(x, users[x])) for x in channel_all_u_ids]
-
+    # Creates a list of dictionaries, where each dictionary contains types of user.
+    channel_all_members = []
+    for u_id in channel_all_u_ids:
+        for key, value in users[u_ids]:
+            if key != "password":
+                channel_all_members.append(key[value])
+    
     # list of member u_ids
     channel_owners_u_ids = channel_info["owner_members"]
-    # Creates a list of dictionaries, where each dictionary contains types of user
-    channel_owners = [dict(zip(x, users[x])) for x in channel_owners_u_ids]
+    # Creates a list of dictionaries, where each dictionary contains types of user.
+    channel_owner_members = []
+    for u_id in channel_all_u_ids:
+        for key, value in users[u_ids]:
+            if key != "password":
+                channel_owner_members.append(key[value])
 
     # test if user is a member of the channel
     if auth_user_id not in channel_all_members:
