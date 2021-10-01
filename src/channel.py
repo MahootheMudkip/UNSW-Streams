@@ -53,19 +53,19 @@ def channel_details_v1(auth_user_id, channel_id):
         new_user = {}
         for key, value in users[u_id].items():
             if key != "password":
-                new_user = key[value]
+                new_user[key] = value
         channel_new_all_members.append(new_user)
     
     # list of member u_ids
     channel_owners_members = channel_info["owner_members"]
     # Creates a list of dictionaries, where each dictionary contains types of user.
-    channel_new_owner_members = []
-    for u_id in channel_owners:
+    channel_new_owners_members = []
+    for u_id in channel_owners_members:
         new_user = {}
         for key, value in users[u_id].items():
             if key != "password":
-                new_user = key[value]
-        channel_new_owner_members.append(new_user)
+                new_user[key] = value
+        channel_new_owners_members.append(new_user)
 
     # test if user is a member of the channel
     if auth_user_id not in channel_all_members.items():
@@ -74,8 +74,8 @@ def channel_details_v1(auth_user_id, channel_id):
     return {
         "name": channel_name,
         "is_public": channel_is_public,
-        "owner_members": channel_owners,
-        "all_members": channel_all_members,
+        "owner_members": channel_new_owners_members,
+        "all_members": channel_new_all_members,
     }
 
 def channel_messages_v1(auth_user_id, channel_id, start):
