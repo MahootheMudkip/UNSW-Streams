@@ -10,6 +10,9 @@ from src.channels import channels_create_v1
 def initial_setup():
     # clear stored data
     clear_v1() 
+    # make new user 0, who is also the global owner
+    user0 = auth_register_v1("theboss@gmail.com", "999999", "Big", "Boss")
+    user0_id = user0["auth_user_id"]
     # make new user1
     user1 = auth_register_v1("lmao@gmail.com", "123789", "Jeremy", "Clarkson")
     user1_id = user1["auth_user_id"]
@@ -29,6 +32,7 @@ def initial_setup():
     channel_4 = channels_create_v1(user1_id, "channel_4", False)
     channel_4_id = channel_4["channel_id"]
     values = {
+        "user0_id": user0_id,
         "user1_id": user1_id,
         "user2_id": user2_id,
         "user3_id": user3_id,
@@ -129,3 +133,24 @@ def test_channel_join_v1_user_in_private_channel_and_not_owner(initial_setup):
     # user1 invites user2 to channel 4 (which is private)
     with pytest.raises(InputError):
         channel_join_v1(user2_id, channel_4_id) 
+
+# testing when user is a global user and is trying to join 
+# public and private channel
+# this shouldn't have any errors
+def test_channel_join_v1_global_user(initial_setup):
+    user0_id = initial_setup["user0_id"]
+    assert user0_id == 0
+    user1_id = initial_setup["user1_id"]
+    channel_2_id = initial_setup["channel_2_id"]
+    channel_4_id = initial_setup["channel_4_id"]
+
+    channel_join_v1(user0_id, channel_2_id)
+    channel_join_v1(user0_id, channel_4_id)
+
+    details1 = channel_details_v1(user1_id, channel_2_id)
+    assert details1["is_public"] == True
+    assert len(details1["all_members"]) == 2
+
+    details2 = channel_details_v1(user1_id, channel_4_id)
+    assert details2["is_public"] == False
+    assert len(details2["all_members"]) == 2
