@@ -13,7 +13,7 @@ def initial_data():
     # clear used data
     clear_v1()
     # Register first user
-    user1 = auth_register_v1("daniel.ricciardo@gmail.com", "27012003", "Daniel", "Ricciardo")
+    user1 = auth_register_v1("daniel.ricc@gmail.com", "27012003", "Daniel", "Ricciardo")
     user1_id = user1["auth_user_id"]
     # Register second user
     user2 = auth_register_v1("lando.norris@gmail.com", "27012003", "Lando", "Norris")
@@ -111,15 +111,15 @@ def test_channel_details_v1_shows_public_channel_details(initial_data):
 
 # testing showing details of private channel
 # def test_channel_details_v1_shows_private_channel_details(initial_data):
-#     user1_id = initial_data["user1_id"]
-#     user2_id = initial_data["user2_id"]
-#     private_channel_id = initial_data["private_channel_id"]
-#     channel_invite_v1(user1_id, private_channel_id, user2_id)
-#     
-#     details = channel_details_v1(user1_id, private_channel_id)
-#     assert(details["is_public"] == False)
-#     assert(details["name"] == "Minecraft")
-#     members_list = details["all_members"] 
-#     assert(len(members_list) == 2)
-#     owner_members_list = details["owner_members"]
-#     assert(len(owner_members_list) == 1)
+#      user1_id = initial_data["user1_id"]
+#      user2_id = initial_data["user2_id"]
+#      private_channel_id = initial_data["private_channel_id"]
+#      channel_invite_v1(user1_id, private_channel_id, user2_id)
+#      
+#      details = channel_details_v1(user1_id, private_channel_id)
+#      assert(details["is_public"] == False)
+#      assert(details["name"] == "Minecraft")
+#      members_list = details["all_members"] 
+#      assert(len(members_list) == 2)
+#      owner_members_list = details["owner_members"]
+#      assert(len(owner_members_list) == 1)

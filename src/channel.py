@@ -55,6 +55,7 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_new_all_members = []
     for u_id in channel_all_members:
         new_user = {}
+        new_user["u_id"] = u_id
         # users[u_id] is a dictionary of one user.
         # e.g key = "name", value = "Juan"
         for key, value in users[u_id].items():
@@ -69,6 +70,7 @@ def channel_details_v1(auth_user_id, channel_id):
     channel_new_owner_members = []
     for u_id in channel_owner_members:
         new_user = {}
+        new_user["u_id"] = u_id
         # users[u_id] is a dictionary of one user.
         # e.g key = "name", value = "Juan"
         for key, value in users[u_id].items():
