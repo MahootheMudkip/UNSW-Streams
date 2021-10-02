@@ -1,14 +1,45 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
+"""
+Provides a list of all channels a user is part of.
+Parameters:
+   auth_user_id (int): The user id of the person whose public channels are to be displayed
+
+Exceptions:
+   AccessError:
+       - When auth_user_id is invalid
+
+Return Type:
+   A list of dictionaries each of which contains the channel_id and name of that channel
+"""
 def channels_list_v1(auth_user_id):
+    # get data from data_store
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+
+    # Checks if auth_user_id is invalid.
+    if auth_user_id not in users.keys():
+        raise AccessError("Invalid user")
+
+    # List of channels to be returned
+    return_list = []
+
+    # go through each channel's dict
+    for channel_id, channel in channels.items():
+        # go through all members of every channel dict
+        for member_id in channel["all_members"]:
+            #if auth user id present in current channel
+            if member_id == auth_user_id:
+                channel_details = {
+                    "channel_id" : channel_id,
+                    "name" : channel["channel_name"]
+                }
+                return_list.append(channel_details)
+
     return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
+        "channels" : return_list
     }
 
 def channels_listall_v1(auth_user_id):
@@ -38,7 +69,7 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     # Create new channel and initialise fields
     new_channel = {
-        "channel_name": name, 
+        "channel_name": name,
         "is_public": is_public,
         "owner_members": [auth_user_id],
         "all_members": [auth_user_id],
