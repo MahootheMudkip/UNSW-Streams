@@ -25,15 +25,14 @@ def channels_list_v1(auth_user_id):
  
    return_channels = {"channels" : []}
  
-   for each_channel in channels:                                                   #go through each channel's dict
-       for all_members_each_channel in channels[each_channel]["all_members"]:    #go through all members of every channel dict
-           if all_members_each_channel == auth_user_id:                            #if auth user id present, check if the channel is public
-               if channels[each_channel]["is_public"] == True:
-                   channel_details = {
-                       "channel_id" : each_channel,
-                       "name" : channels[each_channel]["channel_name"]
-                   }
-                   return_channels["channels"].append(channel_details)
+    for each_channel in channels:                                                   #go through each channel's dict
+        for all_members_each_channel in channels[each_channel]["all_members"]:    #go through all members of every channel dict
+            if all_members_each_channel == auth_user_id:                            #if auth user id present
+                channel_details = {
+                    "channel_id" : each_channel,
+                    "name" : channels[each_channel]["channel_name"]
+                }
+                return_channels["channels"].append(channel_details)
                   
    return return_channels
  
