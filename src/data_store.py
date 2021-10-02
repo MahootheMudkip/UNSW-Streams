@@ -49,13 +49,16 @@ channel_id = {
     "channel_name": string, 
     "is_public": boolean,
     "owner_members": list of ints(user_ids),
-    "all_members": list of ints(user_ids),
-    "handle_str": string
+    "all_members": list of ints(user_ids)
 }
+
+global_owner (int) is the id of the global owner.
+It will be initialised to -1
 '''
 initial_object = {
     "users": {},
-    "channels": {}
+    "channels": {},
+    "global_owner": -1
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
