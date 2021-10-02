@@ -72,6 +72,12 @@ def test_channel_messages_v1_except_InputError_non_existent_channel_and_unauthor
     with pytest.raises(InputError):
         channel_messages_v1(user1_id, -2342584587, 0)
 
+def test_channel_messages_v1_except_AccessError_valid_user_and_channel_but_not_member(initial_setup):
+    user2_id = initial_setup["user2_id"]
+    channel_1_id = initial_setup["channel_1_id"]
+    with pytest.raises(AccessError):
+        channel_messages_v1(user2_id, channel_1_id, 0)
+
 # test all valid except start
 def test_channel_messages_v1_except_InputError_invalid_start(initial_setup):
     user1_id = initial_setup["user1_id"]
