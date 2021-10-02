@@ -118,7 +118,7 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # If user is first user to register, they are the global owner
     if u_id == 0:
-        store["global_owner"] == u_id
+        store["global_owner"] = u_id
 
     # Append dict for new user containing user info
     users[u_id] = {
