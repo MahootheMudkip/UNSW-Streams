@@ -186,6 +186,13 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     if channel_id not in channels.keys(): 
         raise InputError("Invalid channel_id")
 
+    # if it reaches this point, the channel_id must be valid
+    channel_info = channels[channel_id]
+    channel_members = channel_info["all_members"]
+
+    if auth_user_id not in channel_members:
+        raise AccessError("Valid channel_id and authorised user not a member")
+
     # start is greater than the total number of messages in channel
     if start > total_message_num:
         raise InputError("start is an invalid value")
@@ -194,13 +201,6 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # since "start" starts from 0, we use >= rather than > 
     if (start + 50) >= total_message_num:
         end = -1
-
-    # if it reaches this point, the channel_id must be valid
-    channel_info = channels[channel_id]
-    channel_members = channel_info["all_members"]
-
-    if auth_user_id not in channel_members:
-        raise AccessError("Valid channel_id and authorised user not a member")
 
     return {
         'messages': messages,
