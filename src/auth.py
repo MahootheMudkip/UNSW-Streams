@@ -2,6 +2,23 @@ import re
 from src.data_store import data_store
 from src.error import InputError
 
+
+'''
+Given a registered user's email and password, 
+returns their `auth_user_id` value
+
+Arguments:
+    email (str)     - email of user requesting login
+    password (str)  - password of user requesting login
+
+Exceptions:
+    InputError:
+        - email entered does not belong to a user
+        - password is not correct
+
+Return Value:
+    Returns auth_user_id (int) of user on successful login
+'''
 def auth_login_v1(email, password):
     # Get data of users dict from data_store
     store = data_store.get()
@@ -23,13 +40,35 @@ def auth_login_v1(email, password):
         'auth_user_id': return_id,
     }
 
+'''
+Given a user's first and last name, email address, and password, 
+create a new account for them and return a new `auth_user_id`
+
+Arguments:
+    email (str)         - email of user requesting registration
+    password (str)      - password of user requesting registration
+    name_first (str)    - first name of user requesting registration
+    name_last (str)     - last name of user requesting registration
+
+Exceptions:
+    InputError:
+        - email entered is not a valid email 
+        - email address is already being used by another user
+        - length of password is less than 6 characters
+        - length of name_first is not between 1 and 50 characters inclusive
+        - length of name_last is not between 1 and 50 characters inclusive
+
+Return Value:
+    Returns auth_user_id (int) of user on successful registration
+'''
+
 # Check if handle is already taken by another user
 def is_taken(users, handle):
     for user in users.values():
         if user["handle_str"] == handle:
             return True
     return False
-
+    
 def auth_register_v1(email, password, name_first, name_last):
     
     # Get data of users dict from data_store
@@ -87,7 +126,6 @@ def auth_register_v1(email, password, name_first, name_last):
     }
 
     # Set data containing user information
-    store["users"] = users
     data_store.set(store)
 
     return {

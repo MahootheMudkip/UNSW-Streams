@@ -67,24 +67,25 @@ def test_register_different_uid(setup):
 
     assert setup["id1"] != setup["id2"]
 
-# # users should have unique handles
-# def test_register_different_handle(setup):
-#     # register user 1 and 2
-#     id1 = setup["id1"]
-#     id2 = setup["id2"]
+# users should have unique and valid handles according to handle generation rules
+def test_register_handle_generation(setup):
+    # register user 1 and 2
+    id1 = setup["id1"]
+    id2 = setup["id2"]
 
-#     # create channels for users 1 and 2
-#     channel_id1 = channels_create_v1(id1, "channel1", True)
-#     channel_id2 = channels_create_v1(id2, "channel2", True)
+    # create channels for users 1 and 2
+    channel_id1 = channels_create_v1(id1, "channel1", True)["channel_id"]
+    channel_id2 = channels_create_v1(id2, "channel2", True)["channel_id"]
 
-#     # request details for channels 1 and 2
-#     details1 = channel_details_v1(id1, channel_id1)
-#     details2 = channel_details_v1(id2, channel_id2)
+    # request details for channels 1 and 2
+    details1 = channel_details_v1(id1, channel_id1)
+    details2 = channel_details_v1(id2, channel_id2)
 
-#     # view details of owners (users 1 and 2) to verify their handles are different
-#     user1_details = details1["owner_members"][0]
-#     user2_details = details2["owner_members"][0]
-#     assert user1_details["handle_str"] != user2_details["handle_str"]
+    # view details of owners (users 1 and 2) to verify their handles are different
+    user1_details = details1["owner_members"][0]
+    user2_details = details2["owner_members"][0]
+    assert user1_details["handle_str"] == "johnsmith"
+    assert user2_details["handle_str"] == "johnsmith0"
 
 # u_id returned is an integer
 def test_register_is_int(setup):
@@ -92,13 +93,13 @@ def test_register_is_int(setup):
 
     assert type(id) == int 
 
-# # all parameters are valid:
-# # id obtained from login is same as id registered 
-# def test_register_can_login(setup):
-#     registered_id = setup["id1"]
+# all parameters are valid:
+# id obtained from login is same as id registered 
+def test_register_can_login(setup):
+    registered_id = setup["id1"]
 
-#     login_return = auth_login_v1("validemail1@gmail.com", "password")
-#     returned_id = login_return["auth_user_id"]
+    login_return = auth_login_v1("validemail1@gmail.com", "password")
+    returned_id = login_return["auth_user_id"]
 
-#     assert registered_id == returned_id
+    assert registered_id == returned_id
  
