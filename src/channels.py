@@ -42,15 +42,43 @@ def channels_list_v1(auth_user_id):
         "channels" : return_list
     }
 
+"""
+Provides a list of all channels ever created
+Parameters:
+   auth_user_id (int)
+
+Exceptions:
+   AccessError:
+       - When auth_user_id is invalid
+
+Return Type:
+    A list of dictionaries each of which contains the channel_id and name of that channel
+"""
+
 def channels_listall_v1(auth_user_id):
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+
+    # Checks if auth_user_id is invalid.
+    if auth_user_id not in users.keys():
+        raise AccessError("Invalid user")
+
+    # List of channels to be returned
+    return_list = []
+
+    # go through each channel's dict
+    for channel_id, channel in channels.items():
+        channel_details = {
+            "channel_id" : channel_id,
+            "name" : channel["channel_name"]
+        }
+        return_list.append(channel_details)
+
     return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
+        "channels" : return_list
     }
+
 
 def channels_create_v1(auth_user_id, name, is_public):
 
