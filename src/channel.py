@@ -244,11 +244,16 @@ def channel_join_v1(auth_user_id, channel_id):
     channel_is_public = channel_info["is_public"]
     channel_members = channel_info["all_members"]
     # channel owners are also included in the "all_members list"
+
+    global_owner = store["global_owner"]
+    # getting the global owner
     
-    if channel_is_public == False and auth_user_id not in channel_members:
-        # channel is private and auth_user_id does not refer to 
-        # a channel owner or member
-        raise AccessError("Channel is private and authorised user is not an owner/channel member")
+    if channel_is_public == False:
+        # private channel
+        if auth_user_id not in channel_members and auth_user_id != global_owner:
+            # auth_user_id does not refer to a channel member and is 
+            # not a global owner
+            raise AccessError("Channel is private and authorised user is not an owner/channel member")
 
     if auth_user_id in channel_members:
         # this checks if the auth_user_id is already a member
