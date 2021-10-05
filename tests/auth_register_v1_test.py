@@ -53,12 +53,12 @@ def test_register_firstname_invalid2(clear):
         auth_register_v1("validemail@gmail.com", "password", "V3WZTMoEqZHCo34AfMmuK87xvQb4a4XMu2gqNjR7pj0liUVzZG3", "Smith")
 
 # last name < 1 character
-def test_register_lastname_invalid(clear):
+def test_register_lastname_invalid1(clear):
     with pytest.raises(InputError):
         auth_register_v1("validemail@gmail.com", "password", "John", "")
 
 # last name > 50 characters
-def test_register_lastname_invalid(clear):
+def test_register_lastname_invalid2(clear):
     with pytest.raises(InputError):
         auth_register_v1("validemail@gmail.com", "password", "John", "V3WZTMoEqZHCo34AfMmuK87xvQb4a4XMu2gqNjR7pj0liUVzZG3")
 

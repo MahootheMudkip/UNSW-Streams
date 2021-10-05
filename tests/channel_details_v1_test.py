@@ -64,7 +64,7 @@ def test_auth_user_not_in_private_channel(initial_data):
         channel_details_v1(user3_id, private_channel_id)
 
 # test user is invalid and public channel is valid
-def test_user_invalid_and_channel_valid(initial_data):
+def test_user_invalid_and_public_channel_valid(initial_data):
     public_channel_id = initial_data["public_channel_id"]
     with pytest.raises(AccessError):
         channel_details_v1(4345, public_channel_id)
@@ -72,7 +72,7 @@ def test_user_invalid_and_channel_valid(initial_data):
         channel_details_v1(1521, public_channel_id)
 
 # test user is invalid and private channel is valid
-def test_user_invalid_and_channel_valid(initial_data):
+def test_user_invalid_and_private_channel_valid(initial_data):
     private_channel_id = initial_data["private_channel_id"]
     with pytest.raises(AccessError):
         channel_details_v1(4345, private_channel_id)
