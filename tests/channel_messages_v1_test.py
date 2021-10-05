@@ -43,13 +43,13 @@ def test_channel_messages_v1_except_InputError_invalid_channel(initial_setup):
         channel_messages_v1(user1_id, -2343847837, 0)
 
 # testing non-existent user, but valid public channel
-def test_channel_messages_v1_except_AccessError_non_existent_user(initial_setup):
+def test_channel_messages_v1_except_AccessError_non_existent_user1(initial_setup):
     channel_1_id = initial_setup["channel_1_id"]
     with pytest.raises(AccessError):
         channel_messages_v1(-23423, channel_1_id, 0)
 
 # testing non-existent user, but valid private channel
-def test_channel_messages_v1_except_AccessError_non_existent_user(initial_setup):
+def test_channel_messages_v1_except_AccessError_non_existent_user2(initial_setup):
     channel_3_id = initial_setup["channel_3_id"]
     with pytest.raises(AccessError):
         channel_messages_v1(-23423, channel_3_id, 0)
