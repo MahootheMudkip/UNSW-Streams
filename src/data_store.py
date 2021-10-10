@@ -24,9 +24,41 @@ Example usage:
     data_store.set(store)
 '''
 
-## YOU SHOULD MODIFY THIS OBJECT BELOW
+'''
+- "users" is a dictionary containing dictionaries of "user"s
+- "user_id"s are used as keys for the "users" dictionary
+- each "user" dictionary contains values such as "email", "name_first", "name_last"
+eg.
+
+*user_id is an integer
+user_id = {
+    "email": string, 
+    "name_first": string,
+    "name_last": string,
+    "password": string,
+    "handle_str": string
+}
+
+- "channels" is a dictionary containing dictionaries of "channel"s
+- "channel_id"s are used as keys for the users dictionary
+- each "channel" dictionary contains values such as "is_public", "owner", "members" 
+eg.
+
+*channel_id is an integer
+channel_id = {
+    "channel_name": string, 
+    "is_public": boolean,
+    "owner_members": list of ints(user_ids),
+    "all_members": list of ints(user_ids)
+}
+
+global_owner (int) is the id of the global owner.
+It will be initialised to -1
+'''
 initial_object = {
-    'users': [],
+    "users": {},
+    "channels": {},
+    "global_owner": -1
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
