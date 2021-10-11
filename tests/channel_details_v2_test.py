@@ -17,8 +17,10 @@ def initial_data():
     # Register second user
     user2 = auth_register_v1("lando.norris@gmail.com", "27012003", "Lando", "Norris")
     user2_token = user2["token"]
+    user2_id = user2["auth_user_id"]
     # Register third user
     user3 = auth_register_v1("mick.fanning@gmail.com", "27012003", "Mick", "Fanning")
+    user3_id = user3["auth_user_id"]
     user3_token = user3["token"]
     # Make public channel
     public_channel = channels_create_v1(user1_token, "Rainbow Six Siege", True)
@@ -30,7 +32,9 @@ def initial_data():
     values = {
         "user1_token": user1_token,
         "user2_token": user2_token,
+        "user2_id": user2_id,
         "user3_token": user3_token,
+        "user3_id": user3_id,
         "public_channel_id": public_channel_id,
         "private_channel_id": private_channel_id
     }
@@ -99,7 +103,7 @@ def test_channel_details_v1_shows_public_channel_details(initial_data):
     user3_token = initial_data["user3_token"]
     public_channel_id = initial_data["public_channel_id"]
     requests.post(config.url + 'channel/join/v2', params={"token": user2_token, "channel_id": public_channel_id})
-    requests.post(config.url + 'channel/join/v2', params={"token": user2_token, "channel_id": public_channel_id})
+    requests.post(config.url + 'channel/join/v2', params={"token": user3_token, "channel_id": public_channel_id})
    
     details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": public_channel_id})
     details = json.loads(details_response.text)
@@ -115,11 +119,12 @@ def test_channel_details_v1_shows_public_channel_details(initial_data):
 def test_channel_details_v1_shows_private_channel_details(initial_data):
     user1_token = initial_data["user1_token"]
     user2_token = initial_data["user2_token"]
-    user3_token = initial_data["user3_token"]
+    user2_id = initial_data["user2_id"]
+    user3_id = initial_data["user3_id"]
     private_channel_id = initial_data["private_channel_id"]
 
-    requests.post(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": private_channel_id, "token": user2_token})
-    requests.post(config.url + 'channel/invite/v2', params={"token": user2_token, "channel_id": private_channel_id, "token": user3_token})    
+    requests.post(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": private_channel_id, "token": user2_id})
+    requests.post(config.url + 'channel/invite/v2', params={"token": user2_token, "channel_id": private_channel_id, "token": user3_id})    
     
     details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": private_channel_id})
     details = json.loads(details_response.text)
