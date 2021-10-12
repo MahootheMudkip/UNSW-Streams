@@ -14,7 +14,7 @@ def initial_data():
     # clear used data
     clear_v1()
     # Register first user
-    user1_response = requests.post(config.url + 'auth/register/v2', data={
+    user1_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "daniel.ricc@gmail.com", 
         "password": "27012003", 
         "name_first": "Daniel", 
@@ -23,7 +23,7 @@ def initial_data():
     user1 = json.loads(user1_response.text)
     user1_token = user1["token"]
     # Register second user
-    user2_response = requests.post(config.url + 'auth/register/v2', data={
+    user2_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "lando.norris@gmail.com", 
         "password": "27012003", 
         "name_first": "Lando", 
@@ -33,7 +33,7 @@ def initial_data():
     user2_token = user2["token"]
     user2_id = user2["auth_user_id"]
     # Register third user
-    user3_response = requests.post(config.url + 'auth/register/v2', data={
+    user3_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "mick.fanning@gmail.com", 
         "password": "27012003", 
         "name_first": "Mick", 
@@ -42,7 +42,7 @@ def initial_data():
     user3 = json.loads(user3_response.text)
     user3_id = user3["auth_user_id"]
     # Make public channel
-    public_channel_response = requests.post(config.url + 'channels/create/v2', data={
+    public_channel_response = requests.post(config.url + 'channels/create/v2', json={
         "token": user1_token,
         "name": "Rainbow Six Siege",
         "is_public": True
@@ -50,7 +50,7 @@ def initial_data():
     public_channel = json.loads(public_channel_response.text)
     public_channel_id = public_channel["channel_id"]
     # Make private channel
-    private_channel_response = requests.post(config.url + 'channels/create/v2', data={
+    private_channel_response = requests.post(config.url + 'channels/create/v2', json={
         "token": user1_token,
         "name": "Minecraft",
         "is_public": False
