@@ -9,7 +9,7 @@ def initial_data():
     # clear used data
     clear_v1()
     # Register first user
-    user1_response = requests.post(config.url + 'auth/register/v2', data={
+    user1_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "daniel.ricc@gmail.com", 
         "password": "27012003", 
         "name_first": "Daniel", 
@@ -18,7 +18,7 @@ def initial_data():
     user1 = json.loads(user1_response.text)
     user1_token = user1["token"]
     # Register second user
-    user2_response = requests.post(config.url + 'auth/register/v2', data={
+    user2_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "lando.norris@gmail.com", 
         "password": "27012003", 
         "name_first": "Lando", 
@@ -28,7 +28,7 @@ def initial_data():
     user2_token = user2["token"]
     user2_id = user2["auth_user_id"]
     # Register third user
-    user3_response = requests.post(config.url + 'auth/register/v2', data={
+    user3_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "mick.fanning@gmail.com", 
         "password": "27012003", 
         "name_first": "Mick", 
@@ -38,7 +38,7 @@ def initial_data():
     user3_id = user3["auth_user_id"]
     user3_token = user3["token"]
     # Make public channel
-    public_channel_response = requests.post(config.url + 'channels/create/v2', data={
+    public_channel_response = requests.post(config.url + 'channels/create/v2', json={
         "token": user1_token,
         "name": "Rainbow Six Siege",
         "is_public": True
@@ -46,7 +46,7 @@ def initial_data():
     public_channel = json.loads(public_channel_response.text)
     public_channel_id = public_channel["channel_id"]
     # Make private channel
-    private_channel_response = requests.post(config.url + 'channels/create/v2', data={
+    private_channel_response = requests.post(config.url + 'channels/create/v2', json={
         "token": user1_token,
         "name": "Minecraft",
         "is_public": False
@@ -127,8 +127,8 @@ def test_channel_details_v1_shows_public_channel_details(initial_data):
     user2_token = initial_data["user2_token"]
     user3_token = initial_data["user3_token"]
     public_channel_id = initial_data["public_channel_id"]
-    requests.post(config.url + 'channel/join/v2', data={"token": user2_token, "channel_id": public_channel_id})
-    requests.post(config.url + 'channel/join/v2', data={"token": user3_token, "channel_id": public_channel_id})
+    requests.post(config.url + 'channel/join/v2', json={"token": user2_token, "channel_id": public_channel_id})
+    requests.post(config.url + 'channel/join/v2', json={"token": user3_token, "channel_id": public_channel_id})
    
     details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": public_channel_id})
     details = json.loads(details_response.text)
@@ -148,8 +148,8 @@ def test_channel_details_v1_shows_private_channel_details(initial_data):
     user3_id = initial_data["user3_id"]
     private_channel_id = initial_data["private_channel_id"]
 
-    requests.post(config.url + 'channel/invite/v2', data={"token": user1_token, "channel_id": private_channel_id, "token": user2_id})
-    requests.post(config.url + 'channel/invite/v2', data={"token": user2_token, "channel_id": private_channel_id, "token": user3_id})    
+    requests.post(config.url + 'channel/invite/v2', json={"token": user1_token, "channel_id": private_channel_id, "token": user2_id})
+    requests.post(config.url + 'channel/invite/v2', json={"token": user2_token, "channel_id": private_channel_id, "token": user3_id})    
     
     details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": private_channel_id})
     details = json.loads(details_response.text)
