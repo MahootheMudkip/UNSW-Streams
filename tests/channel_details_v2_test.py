@@ -7,7 +7,7 @@ from src.other import clear_v1
 @pytest.fixture
 def initial_data():
     # clear used data
-    clear_v1()
+    requests.delete(config.url + 'clear/v1')
     # Register first user
     user1_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "daniel.ricc@gmail.com", 
@@ -65,10 +65,13 @@ def initial_data():
     }
     return values
 
+INPUT_ERROR = 400
+ACCESS_ERROR = 403
+
 def test_invalid_channel(initial_data):
     user1_token = initial_data["user1_token"]
     resp = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": 3332})
-    assert(resp.status_code == 400)
+    assert(resp.status_code == INPUT_ERROR)
 
 # the authorised user is not a member of the public channel
 def test_auth_user_not_in_public_channel(initial_data):
@@ -76,9 +79,9 @@ def test_auth_user_not_in_public_channel(initial_data):
     user3_token = initial_data["user3_token"]
     public_channel_id = initial_data["public_channel_id"]
     resp = requests.get(config.url + 'channel/details/v2', params={"token": user2_token, "channel_id": public_channel_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/details/v2', params={"token": user3_token, "channel_id": public_channel_id})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # the authorised user is not a member of the private channel
 def test_auth_user_not_in_private_channel(initial_data):
@@ -86,40 +89,40 @@ def test_auth_user_not_in_private_channel(initial_data):
     user3_token = initial_data["user3_token"]
     private_channel_id = initial_data["private_channel_id"]
     resp = requests.get(config.url + 'channel/details/v2', params={"token": user2_token, "channel_id": private_channel_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/details/v2', params={"token": user3_token, "channel_id": private_channel_id})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # test user is invalid and public channel is valid
 def test_user_invalid_and_public_channel_valid(initial_data):
     public_channel_id = initial_data["public_channel_id"]
     resp = requests.get(config.url + 'channel/details/v2', params={"token": 4345, "channel_id": public_channel_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/details/v2', params={"token": 1521, "channel_id": public_channel_id})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # test user is invalid and private channel is valid
 def test_user_invalid_and_private_channel_valid(initial_data):
     private_channel_id = initial_data["private_channel_id"]
     resp = requests.get(config.url + 'channel/details/v2', params={"token": 4345, "channel_id": private_channel_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/details/v2', params={"token": 1531, "channel_id": private_channel_id})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # the authorised user is not a member of the channel and channel_id is invalid
 def test_user_not_in_channel_and_invalid_channel_id(initial_data):
     user2_token = initial_data["user2_token"]
     resp = requests.get(config.url + 'channel/details/v2', params={"token": user2_token, "channel_id": 5647})
-    assert(resp.status_code == 400)
+    assert(resp.status_code == INPUT_ERROR)
     resp2 = requests.get(config.url + 'channel/details/v2', params={"token": user2_token, "channel_id": 3231})
-    assert(resp2.status_code == 400)
+    assert(resp2.status_code == INPUT_ERROR)
 
 # the authorised user is invalid and channel_id is invalid
 def test_invalid_user_and_channel_id(initial_data):
     resp = requests.get(config.url + 'channel/details/v2', params={"token": 4332, "channel_id": 1521})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/details/v2', params={"token": 1542, "channel_id": 5551})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # testing showing details of public channel
 def test_channel_details_v1_shows_public_channel_details(initial_data):
