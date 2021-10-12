@@ -1,10 +1,11 @@
 import sys
 import signal
-from json import dumps
+from json import dumps, loads
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.channel import channel_details_v1
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -38,6 +39,15 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def channel_details():
+    data = request.get_json()
+
+    token = data["token"]
+    channel_id = data["channel_id"]
+
+    return (dumps(channel_details_v1(token, channel_id)))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
