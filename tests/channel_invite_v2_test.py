@@ -3,16 +3,13 @@ import pytest
 import requests
 import json
 
-from src import config, data_store
-from src.other import clear_v1
-from src.auth import auth_register_v1
-from src.channels import channels_create_v1
+from src import config
 
 # fixture for registering and logging in user to avoid repetition.
 @pytest.fixture
 def initial_data():
     # clear used data
-    clear_v1()
+    requests.delete(config.url + 'clear/v1')
     # Register first user
     user1_response = requests.post(config.url + 'auth/register/v2', json={
         "email": "daniel.ricc@gmail.com", 
@@ -68,59 +65,62 @@ def initial_data():
     }
     return values
 
+INPUT_ERROR = 400
+ACCESS_ERROR = 403
+
 # channel_id does not refer to a valid channel. token and u_id are both valid.
 def test_invalid_channel_only(initial_data):
     user1_token = initial_data["user1_token"]
     user2_id = initial_data["user2_id"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": 1747, "u_id": user2_id})
-    assert(resp.status_code == 400)
+    assert(resp.status_code == INPUT_ERROR)
 
 # u_id does not refer to a valid user. token and channel_id are both valid.
 def test_invalid_u_id_only(initial_data):
     user1_token = initial_data["user1_token"]
     public_channel_id = initial_data["public_channel_id"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": public_channel_id, "u_id": 7775})
-    assert(resp.status_code == 400)  
+    assert(resp.status_code == INPUT_ERROR)  
 
 # token does not refer to a valid user. channel_id and u_id are both valid
 def test_invalid_token_only(initial_data):
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": 7773, "channel_id": public_channel_id, "u_id": user2_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/invite/v2', params={"token": 532, "channel_id": public_channel_id, "u_id": user2_id})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # channel_id and u_id are invalid
 def test_invalid_u_id_and_channel_id(initial_data):
     user1_token = initial_data["user1_token"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": 7774, "u_id": 775})
-    assert(resp.status_code == 400)
+    assert(resp.status_code == INPUT_ERROR)
     resp2 = requests.get(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": 243, "u_id": 763})
-    assert(resp2.status_code == 400)  
+    assert(resp2.status_code == INPUT_ERROR)  
 
 # token and u_id are invalid
 def test_invalid_token_and_u_id(initial_data):
     public_channel_id = initial_data["public_channel_id"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": 776, "channel_id": public_channel_id, "u_id": 715})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/invite/v2', params={"token": 432, "channel_id": public_channel_id, "u_id": 352})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # token and channel_id are invalid
 def test_invalid_token_and_channel_id(initial_data):
     user2_id = initial_data["user2_id"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": 7767, "channel_id": 5444, "u_id": user2_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/invite/v2', params={"token": 432, "channel_id": 243, "u_id": user2_id})
-    assert(resp2.status_code == 403)
+    assert(resp2.status_code == ACCESS_ERROR)
 
 # All inputs are invalid
 def test_invalid_inputs(initial_data):
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": 7767, "channel_id": 5444, "u_id": 6111})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
     resp2 = requests.get(config.url + 'channel/invite/v2', params={"token": 4321, "channel_id": 2431, "u_id": 3214})
-    assert(resp2.status_code == 403)    
+    assert(resp2.status_code == ACCESS_ERROR)    
 
 # user is already a member of the public channel.
 def test_member_duplicate(initial_data):
@@ -131,7 +131,7 @@ def test_member_duplicate(initial_data):
 
     requests.post(config.url + 'channel/join/v2', json={"token": user2_token, "channel_id": public_channel_id})
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": user1_token, "channel_id": public_channel_id, "u_id": user2_id})
-    assert(resp.status_code == 400)
+    assert(resp.status_code == INPUT_ERROR)
 
 # auth_user (invitee) is not a member of the public channel.
 def test_invalid_invitee(initial_data):
@@ -139,7 +139,7 @@ def test_invalid_invitee(initial_data):
     user2_token = initial_data["user2_token"]
     public_channel_id = initial_data["public_channel_id"]
     resp = requests.get(config.url + 'channel/invite/v2', params={"token": user2_token, "channel_id": public_channel_id, "u_id": user3_id})
-    assert(resp.status_code == 403)
+    assert(resp.status_code == ACCESS_ERROR)
 
 # Arguments are valid.
 # User is not a member of the channel.
