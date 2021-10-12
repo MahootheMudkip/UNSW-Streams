@@ -5,6 +5,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.channel import channel_invite_v1
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -38,6 +39,15 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channel_invite():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+    u_id = data["u_id"]
+
+    return dumps(channel_invite_v1(token, channel_id, u_id))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
