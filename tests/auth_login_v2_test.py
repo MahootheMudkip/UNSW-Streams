@@ -11,7 +11,7 @@ def register():
 
     user1_info = {
         "email" : "email1@gmail.com", 
-        "password" : "password",
+        "password" : "password1",
         "name_first" : "John",
         "name_last" : "Smith" 
     }
@@ -58,13 +58,13 @@ def test_login_invalid_password(register):
 # as given during registration
 def test_login_can_login(register):
     response = requests.post(url + "auth/login/v2", json={"email":"email1@gmail.com", "password":"password1"})
-    assert response.json()["auth_user_id"] == register["user1"]
+    assert response.json()["auth_user_id"] == register["id1"]
 
     response = requests.post(url + "auth/login/v2", json={"email":"email2@gmail.com", "password":"password2"})
-    assert response.json()["auth_user_id"] == register["user2"]
+    assert response.json()["auth_user_id"] == register["id2"]
 
     response = requests.post(url + "auth/login/v2", json={"email":"email3@gmail.com", "password":"password3"})
-    assert response.json()["auth_user_id"] == register["user3"]
+    assert response.json()["auth_user_id"] == register["id3"]
 
 # logging in multiple times result in different sessions which have differnt tokens
 def test_different_token(register):
