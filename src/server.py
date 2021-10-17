@@ -65,9 +65,10 @@ def auth_register():
 def auth_login():
     data = request.get_json()
 
-    token = data["token"]
+    email = data["email"]
+    password = data["password"]
 
-    return dumps(auth_login_v1(token))
+    return dumps(auth_login_v1(email, password))
 
 # @APP.route("/auth/logout/v1", methods=['POST'])
 # def auth_logout():
