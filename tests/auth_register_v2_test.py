@@ -30,13 +30,13 @@ def setup():
         "name_last" : "Smith" 
     }
     response1 = requests.post(url + "auth/register/v2", json=user1_info)
-    id1 = response1.json()["auth_user_id"]
+    id1 = response1.json()["token"]
 
     response2 = requests.post(url + "auth/register/v2", json=user2_info)
-    id2 = response2.json()["auth_user_id"]
+    id2 = response2.json()["token"]
 
     response3 = requests.post(url + "auth/register/v2", json=user3_info)
-    id3 = response3.json()["auth_user_id"]
+    id3 = response3.json()["token"]
 
     return {
         "id1" : id1,
