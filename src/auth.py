@@ -69,12 +69,9 @@ def generate_handle(name_first, name_last, users):
         name_first (str)    - user's first name
         name_last (str)     - user's last name
         users (list)        - list of users in data_store
-<<<<<<< HEAD
 
     Return Values:
         handle (str)
-=======
->>>>>>> Michael/auth/register/v2
     ''' 
     # - initial handle generated from concatenation of lowercase-only alphanumeric first name and last name
     # - cut down to 20 characters
