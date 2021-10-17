@@ -29,6 +29,7 @@ def register():
     }
     response1 = requests.post(url + "auth/register/v2", json=user1_info)
     id1 = response1.json()["auth_user_id"]
+    tok1 = response1.json()["token"]
 
     response2 = requests.post(url + "auth/register/v2", json=user2_info)
     id2 = response2.json()["auth_user_id"]
@@ -39,7 +40,8 @@ def register():
     return {
         "id1" : id1,
         "id2" : id2,
-        "id3" : id3
+        "id3" : id3,
+        "tok1": tok1
     }
 
 # login with an unregistered email
@@ -63,3 +65,13 @@ def test_login_can_login(register):
 
     response = requests.post(url + "auth/login/v2", json={"email":"email3@gmail.com", "password":"password3"})
     assert response.json()["auth_user_id"] == register["user3"]
+
+# logging in multiple times result in different sessions which have differnt tokens
+def test_different_token(register):
+    response = requests.post(url + "auth/login/v2", json={"email":"email1@gmail.com", "password":"password1"})
+    login_token = response.json()["token"]
+    assert register["tok1"] != login_token
+
+    response2 = requests.post(url + "auth/login/v2", json={"email":"email1@gmail.com", "password":"password1"})
+    login_token2 = response2.json()["token"]
+    assert login_token2 != login_token
