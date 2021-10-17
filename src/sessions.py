@@ -73,8 +73,8 @@ def decode_jwt(encoded_jwt):
             u_id = jwt_user["auth_user_id"]
             if jwt_user["session_id"] in users["u_id"]["sessions"]:
                 return u_id
-    except:
-        raise AccessError("Token is invalid")
+    except Exception as e:
+        raise AccessError("Token is invalid") from e
     finally:
         raise AccessError("Token is invalid")
 
