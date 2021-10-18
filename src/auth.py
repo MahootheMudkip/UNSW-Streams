@@ -3,35 +3,37 @@ from src.data_store import data_store
 from src.error import InputError
 from src.sessions import get_hash, get_token, generate_new_session_id
 
-
-'''
-Given a registered user's email and password, 
-returns their `auth_user_id` value
-
-Arguments:
-    email (str)     - email of user requesting login
-    password (str)  - password of user requesting login
-
-Exceptions:
-    InputError:
-        - email entered does not belong to a user
-        - password is not correct
-
-Return Value:
-    Returns auth_user_id (int) of user on successful login
-'''
 def auth_login_v1(email, password):
+    '''
+    Generates a token associated with a new session on 
+    valid email + password combo
+
+    Arguments:
+        email (str)     - email of user requesting login
+        password (str)  - password of user requesting login
+
+    Exceptions:
+        InputError:
+            - email entered does not belong to a user
+            - password is not correct
+
+    Return Value:
+        auth_user_id (int)
+        token (str)
+    '''
     # Get data of users dict from data_store
     store = data_store.get()
     users = store["users"]
 
     # Check if email and password combination is registered in users dict
-    # return_id set to -1 by default (indicating user cannot login)
-    # return_id changed to u_id in database if user + password combo is found
     return_id = None
     for u_id, user in users.items():
-        if user["email"] == email and user["password"] == password:
+        if user["email"] == email and user["password"] == get_hash(password):
+            # generate a new token for the user indicating a new session
             return_id = u_id
+            session_id = generate_new_session_id()
+            token = get_token(u_id, session_id)
+            user["sessions"].append(session_id)
 
     # Raise input error if user cannot be logged in
     if return_id == None:
@@ -39,8 +41,8 @@ def auth_login_v1(email, password):
 
     return {
         'auth_user_id': return_id,
+        'token': token
     }
-
 
 def is_taken(users, handle):
     '''
@@ -67,6 +69,9 @@ def generate_handle(name_first, name_last, users):
         name_first (str)    - user's first name
         name_last (str)     - user's last name
         users (list)        - list of users in data_store
+
+    Return Values:
+        handle (str)
     ''' 
     # - initial handle generated from concatenation of lowercase-only alphanumeric first name and last name
     # - cut down to 20 characters
