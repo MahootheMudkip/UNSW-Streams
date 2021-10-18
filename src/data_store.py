@@ -32,33 +32,60 @@ eg.
 
 *user_id is an integer
 user_id = {
-    "email": string, 
-    "name_first": string,
-    "name_last": string,
-    "password": string,
-    "handle_str": string
+    "email":        string, 
+    "name_first":   string,
+    "name_last":    string,
+    "password":     string,
+    "handle_str":   string
 }
 
 - "channels" is a dictionary containing dictionaries of "channel"s
-- "channel_id"s are used as keys for the users dictionary
+- "channel_id"s are used as keys for the "channels" dictionary
 - each "channel" dictionary contains values such as "is_public", "owner", "members" 
 eg.
 
 *channel_id is an integer
 channel_id = {
-    "channel_name": string, 
-    "is_public": boolean,
-    "owner_members": list of ints(user_ids),
-    "all_members": list of ints(user_ids)
+    "channel_name":     string, 
+    "is_public":        boolean,
+    "owner_members":    list of ints(user_ids),
+    "all_members":      list of ints(user_ids)
+    "messages:          list of ints(message_ids)
 }
 
-global_owner (int) is the id of the global owner.
-It will be initialised to -1
+- "dms" is a dictionary containing dictionaries of "dm"s
+- "dm_id"s are used as keys for the "dms" dictionary
+- each "dm" dictionary contains values such as "name", "owner", "members" 
+eg.
+
+*dm_id is an integer
+dm_id = {
+    "name":     string, 
+    "owner":    int,
+    "members":  list of ints(user_ids),
+    "messages:  list of ints(message_ids)
+}
+
+- "messages" is a dictionary containing dictionaries of "message"s
+- "message_id"s are used as keys for the "messages" dictionary
+- each "message" dictionary contains values such as "u_id", "time_created", "message" 
+eg.
+
+*message_id is an integer
+message_id = {
+    "u_id":         int, 
+    "time_created": int,
+    "message":      string
+}
 '''
 initial_object = {
-    "users": {},
+    "users":    {},
     "channels": {},
-    "global_owner": -1
+    "dms":      {},
+    "messages": {},
+    "session_id_tracker": 0,
+    "dm_id_tracker": 0,
+    "message_id_tracker": 0
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
