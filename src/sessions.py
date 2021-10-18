@@ -19,7 +19,6 @@ def generate_new_session_id():
     SESSION_TRACKER += 1
     return SESSION_TRACKER
 
-
 def get_hash(input_string):
     """
     Hashes the input string with sha256
@@ -31,7 +30,6 @@ def get_hash(input_string):
         Encoded string (str)
     """
     return hashlib.sha256(input_string.encode()).hexdigest()
-
 
 def get_token(auth_user_id, session_id=None):
     """
@@ -48,8 +46,7 @@ def get_token(auth_user_id, session_id=None):
 
     return jwt.encode({'auth_user_id': auth_user_id, 'session_id': session_id}, SECRET, algorithm='HS256')
 
-
-def decode_jwt(encoded_jwt):
+def get_auth_user_id(encoded_jwt):
     """
     Decodes a JWT string and return auth_user_id if token is valid
     Args:
@@ -71,10 +68,11 @@ def decode_jwt(encoded_jwt):
         # return auth_user_id if the user_id and session_id matches data_store
         if jwt_user["auth_user_id"] in users:
             u_id = jwt_user["auth_user_id"]
-            if jwt_user["session_id"] in users["u_id"]["sessions"]:
+            if jwt_user["session_id"] in users[u_id]["sessions"]:
                 return u_id
+    # token is not in valid format
     except Exception as e:
         raise AccessError("Token is invalid") from e
-    finally:
-        raise AccessError("Token is invalid")
+    # session_id does not exist
+    raise AccessError("Session is inactive")
 
