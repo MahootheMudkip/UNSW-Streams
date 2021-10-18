@@ -126,18 +126,18 @@ def test_channel_messages_v2_global_user_not_member(initial_setup):
 
 # testing normal user (not a member) trying to access valid channel
 def test_channel_messages_v2_unauthorised_user(initial_setup):
-    user1_token = initial_setup["user1_token"]
+    user2_token = initial_setup["user2_token"]
     public_channel = initial_setup["public_channel_id"]
     private_channel = initial_setup["private_channel_id"]
 
     response1 = requests.get(URL, params={
-        "token":        user1_token,
+        "token":        user2_token,
         "channel_id":   public_channel,
         "start":        0
     })
 
     response2 = requests.get(URL, params={
-        "token":        user1_token,
+        "token":        user2_token,
         "channel_id":   private_channel,
         "start":        0
     })
