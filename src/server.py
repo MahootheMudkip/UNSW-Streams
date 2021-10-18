@@ -128,7 +128,7 @@ def channel_invite():
     return dumps(channel_invite_v1(token, channel_id, u_id))
 
 @APP.route("/channel/messages/v2", methods=['GET'])
-def channel_invite():
+def channel_messages():
     data = request.get_json()
     token = data["token"]
     channel_id = data["channel_id"]
