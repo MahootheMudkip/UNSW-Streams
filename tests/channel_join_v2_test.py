@@ -172,7 +172,7 @@ def test_channel_join_v2_adding_users(initial_setup):
         "channel_id":   public_channel
     })
     assert join_response1.status_code == NO_ERROR
-    details_response1 = requests.post(url + "channel/details/v2", json={
+    details_response1 = requests.get(url + "channel/details/v2", params={
         "token":        user3_token,
         "channel_id":   public_channel
     })
@@ -189,7 +189,7 @@ def test_channel_join_v2_adding_users(initial_setup):
         "channel_id":   public_channel
     })
     assert join_response2.status_code == NO_ERROR
-    details_response2 = requests.post(url + "channel/details/v2", json={
+    details_response2 = requests.get(url + "channel/details/v2", params={
         "token":        user2_token,
         "channel_id":   public_channel
     })
@@ -256,7 +256,7 @@ def test_channel_join_v2_global_user(initial_setup):
     })
     assert join_response1.status_code == NO_ERROR
 
-    details_response1 = requests.post(url + "channel/details/v2", json={
+    details_response1 = requests.get(url + "channel/details/v2", params={
         "token":        user1_token,
         "channel_id":   public_channel
     })
@@ -275,7 +275,7 @@ def test_channel_join_v2_global_user(initial_setup):
     })
     assert join_response2.status_code == NO_ERROR
 
-    details_response2 = requests.post(url + "channel/details/v2", json={
+    details_response2 = requests.get(url + "channel/details/v2", params={
         "token":        user1_token,
         "channel_id":   private_channel
     })
