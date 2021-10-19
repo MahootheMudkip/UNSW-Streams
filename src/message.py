@@ -159,3 +159,28 @@ def message_edit_v1(token, message_id, message):
 
     data_store.set(store)
     return {} 
+
+'''
+Given a message, remove it from the channel/dm
+
+Arguments:
+    token       (str): the given token
+    message_id  (int): the given channel id
+
+Exceptions:
+    InputError:
+        - message_id does not refer to a valid message within a 
+          channel/DM that the authorised user has joined
+    AccessError:
+        - auth_user_id is invalid (doesn't exist)
+        AccessError is thrown if none of the following are true:
+            - authorised user has owner permissions
+            - message was made by the authorised user
+
+Return Value:
+    n/a
+'''
+def message_remove_v1(token, message_id):
+    message_edit_v1(token, message_id, "")
+    # this does the same thing
+    return {}
