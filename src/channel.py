@@ -28,6 +28,7 @@ def channel_invite_v1(token, channel_id, u_id):
     '''
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
+    users = store["users"]
     channels = store["channels"]
     
     # checks for invalid channel_id.
