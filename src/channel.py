@@ -1,5 +1,6 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
+from src.sessions import get_auth_user_id
 
 '''
 Invites user and inmmediatly adds them to the channel. 
@@ -60,35 +61,32 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
 
-'''
-Provides basic details about the channel_id that the auth_user_id is a member of.
 
-Parameters:
-    auth_user_id (int): the given authorised user id.
-    channel_id   (int): the given channel id
+def channel_details_v1(token, channel_id):
+    '''
+    Provides basic details about the channel_id that the auth_user_id is a member of.
 
-Exceptions:
-    InputError:
-        - Invalid channel_id (doesn't exist) and auth_user_id is valid and a member of the channel.
-    AccessError:
-        - Authorised user is not member of the channel.
-        - Authorised user id is invalid (doesn't exist).
+    Parameters:
+        auth_user_id (int): the given authorised user id.
+        channel_id   (int): the given channel id
 
-Return Type:
-    name           (str): channel name.
-    is_public     (bool): True if channel is public, false otherwise.
-    owner_members (list): List of members who own the channel.
-    all_members   (list): List of all members including owners.
-'''
+    Exceptions:
+        InputError:
+            - Invalid channel_id (doesn't exist) and auth_user_id is valid and a member of the channel.
+        AccessError:
+            - Authorised user is not member of the channel.
+            - Authorised user id is invalid (doesn't exist).
 
-def channel_details_v1(auth_user_id, channel_id):
+    Return Type:
+        name           (str): channel name.
+        is_public     (bool): True if channel is public, false otherwise.
+        owner_members (list): List of members who own the channel.
+        all_members   (list): List of all members including owners.
+    '''
+    auth_user_id = get_auth_user_id(token)
     store = data_store.get()
     users = store["users"]
     channels = store["channels"]
-    
-    # checks if auth_user_id exists.
-    if auth_user_id not in users.keys():
-        raise AccessError("Invalid Authorised User ID. User doesn't exist")
 
     # checks if channel_id exists.
     if channel_id not in channels.keys():
@@ -244,13 +242,10 @@ def channel_join_v1(auth_user_id, channel_id):
     channel_is_public = channel_info["is_public"]
     channel_members = channel_info["all_members"]
     # channel owners are also included in the "all_members list"
-
-    global_owner = store["global_owner"]
-    # getting the global owner
     
     if channel_is_public == False:
         # private channel
-        if auth_user_id not in channel_members and auth_user_id != global_owner:
+        if auth_user_id not in channel_members and users[auth_user_id]["is_owner"] == False:
             # auth_user_id does not refer to a channel member and is 
             # not a global owner
             raise AccessError("Channel is private and authorised user is not an owner/channel member")

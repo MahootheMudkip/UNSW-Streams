@@ -51,7 +51,7 @@ def initial_data():
         "name": "Minecraft",
         "is_public": False
     })
-    private_channel = json.loads(private_channel_response)
+    private_channel = json.loads(private_channel_response.text)
     private_channel_id = private_channel["channel_id"]
     
     values = {
