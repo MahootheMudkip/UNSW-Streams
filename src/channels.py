@@ -1,3 +1,4 @@
+from src.sessions import get_auth_user_id
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
@@ -80,34 +81,30 @@ def channels_listall_v1(auth_user_id):
         "channels" : return_list
     }
 
-'''
-Creates a new channel with the given name that is either a public 
-or private channel. 
+def channels_create_v1(token, name, is_public):
+    '''
+    Creates a new channel with the given name that is either a public 
+    or private channel. 
 
-Parameters:
-    auth_user_id (int): the user_id of the channel creator
-    name         (str): name of channel to be created
-    is_public    (bool): if the channel will be public or private 
+    Parameters:
+        token       (int): the user_id of the channel creator
+        name        (str): name of channel to be created
+        is_public   (bool): if the channel will be public or private 
 
-Exceptions:
-    InputError:
-        - length of name is less than 1 or more than 20 characters
-    AccessError:
-        - auth_user_id is invalid (doesn't exist)
+    Exceptions:
+        InputError:
+            - length of name is less than 1 or more than 20 characters
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
 
-Return Type:
-    channel_id: id of channel that has been created
-'''
-def channels_create_v1(auth_user_id, name, is_public):
+    Return Type:
+        channel_id: id of channel that has been created
+    '''
 
     # Get user and channel data
+    auth_user_id = get_auth_user_id(token)
     store = data_store.get()
-    users = store["users"]
     channels = store["channels"]
-
-    # check whether auth_user_id exists
-    if auth_user_id not in users.keys():
-        raise AccessError("Invalid auth_user_id")
 
     # check length of channel name is valid
     if not 1 <= len(name) <= 20:
@@ -119,6 +116,7 @@ def channels_create_v1(auth_user_id, name, is_public):
         "is_public": is_public,
         "owner_members": [auth_user_id],
         "all_members": [auth_user_id],
+        "messages": []
     }
 
     # Generate new channel_id
