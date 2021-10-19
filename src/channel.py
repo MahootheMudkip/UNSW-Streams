@@ -9,7 +9,7 @@ def channel_invite_v1(token, channel_id, u_id):
     Any user inside a channel can invite (owners or members).
     
     Parameters:
-        auth_user_id (int): the user_id of the invitee.
+        token (str): the hashed user_id of the invitee.
         channel_id   (int): the given channel id
         u_id         (int): the user_id of the person being invited.
     
@@ -24,7 +24,7 @@ def channel_invite_v1(token, channel_id, u_id):
     
     
     Return Type:
-    This function doesn't return anything.
+    Empty dictionary.
     '''
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
