@@ -16,8 +16,8 @@ Return Value:
     users  (list of dicts): list of dict `users`
 '''
 def users_all_v1(token):
-    # get auth_user_id from token (this function handles all exceptions)
-    auth_user_id = get_auth_user_id(token)
+    # this functions will handle all exceptions for tokens
+    get_auth_user_id(token)
     
     store = data_store.get()
     users = store["users"]
