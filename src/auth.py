@@ -175,7 +175,7 @@ def auth_logout_v1(token):
             - token entered is invalid
 
     Return Values:
-        no returns
+        Empty dict
     ''' 
     store = data_store.get()
     users = store["users"]
@@ -190,6 +190,4 @@ def auth_logout_v1(token):
 
     data_store.set(store)
 
-    return {
-        
-    }
+    return {}
