@@ -184,13 +184,14 @@ def message_edit():
 
     return dumps(message_edit_v1(token, message_id, message))
 
-# @APP.route("/message/remove/v1", methods=['DELETE'])
-# def message_remove():
-#     data = request.get_json
-#     token = data["token"]
-#     message_id = data["message_id"]
-# 
-#     return dumps(message_remove_v1(token, message_id))
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def message_remove():
+    data = request.get_json()
+    
+    token = data["token"]
+    message_id = data["message_id"]
+
+    return dumps(message_remove_v1(token, message_id))
 
 # @APP.route("/dm/create/v1", methods=['POST'])
 # def dm_create():
