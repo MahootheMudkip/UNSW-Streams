@@ -248,7 +248,7 @@ def test_message_edit_v1_global_user_messages(initial_setup):
     public_channel_id = initial_setup["public_channel_id"]
     private_channel_id = initial_setup["private_channel_id"]
 
-    user2_token = initial_setup["user2_token"]
+    user0_token = initial_setup["user0_token"]
     message_id1 = initial_setup["message_id_public"][2]
     message_id2 = initial_setup["message_id_private"][1]
 
@@ -267,14 +267,14 @@ def test_message_edit_v1_global_user_messages(initial_setup):
     assert response2.status_code == NO_ERROR
 
     response3 = requests.put(URL, json={
-        "token":        user2_token,
+        "token":        user0_token,
         "message_id":   message_id1,
         "message":      "valid message"
     })
     assert response3.status_code == NO_ERROR
 
     response4 = requests.put(URL, json={
-        "token":        user2_token,
+        "token":        user0_token,
         "message_id":   message_id2,
         "message":      "valid message"
     })
