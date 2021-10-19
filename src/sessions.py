@@ -1,6 +1,5 @@
 import hashlib
 
-from flask.globals import session
 from src.error import AccessError
 import jwt
 from src.data_store import data_store
@@ -70,6 +69,36 @@ def get_auth_user_id(encoded_jwt):
             u_id = jwt_user["auth_user_id"]
             if jwt_user["session_id"] in users[u_id]["sessions"]:
                 return u_id
+    # token is not in valid format
+    except Exception as e:
+        raise AccessError("Token is invalid") from e
+    # session_id does not exist
+    raise AccessError("Session is inactive")
+
+def get_session_id(encoded_jwt):
+    """
+    Decodes a JWT string and return session_id if token is valid
+    Args:
+        encoded_jwt (str)  
+
+    Exceptions:
+        AccessError:
+            - token is invalid/doesn't match expected format
+            - auth_user_id in token is invalid
+            - session_id in token is invalid
+
+    Returns:
+        session_id (int)
+    """
+    users = data_store.get()["users"]
+    try:
+        # decode jwt token
+        jwt_user = jwt.decode(encoded_jwt, SECRET, algorithms=['HS256'])
+        # return auth_user_id if the user_id and session_id matches data_store
+        if jwt_user["auth_user_id"] in users:
+            u_id = jwt_user["auth_user_id"]
+            if jwt_user["session_id"] in users[u_id]["sessions"]:
+                return jwt_user["session_id"]
     # token is not in valid format
     except Exception as e:
         raise AccessError("Token is invalid") from e
