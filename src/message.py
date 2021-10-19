@@ -52,7 +52,7 @@ def message_send_v1(token, channel_id, message):
         "message_id": message_id_tracker
     }
 
-def message_send_v1(token, message_id, message):
+def message_edit_v1(token, message_id, message):
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
