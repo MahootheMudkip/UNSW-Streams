@@ -11,7 +11,7 @@ from src.other import clear_v1
 from src.auth import *
 from src.channels import *
 from src.channel import *
-#from src.message import *
+from src.message import *
 #from src.dm import *
 
 
@@ -165,15 +165,15 @@ def channel_messages():
 # 
 #     return dumps(channel_removeowner_v1(token, channel_id, # u_id))
 
-# @APP.route("/message/send/v1", methods=['POST'])
-# def message_send():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     channel_id = data["Channel_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_send_v1(token, channel_id, message))
+@APP.route("/message/send/v1", methods=['POST'])
+def message_send():
+    data = request.get_json()
+
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+
+    return dumps(message_send_v1(token, channel_id, message))
 
 # @APP.route("/message/edit/v1", methods=['PUT'])
 # def message_edit():
