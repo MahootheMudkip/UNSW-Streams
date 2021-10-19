@@ -107,6 +107,6 @@ def test_users_all_v1_correct_details(initial_setup):
         "u_id":         user1_id,
         "email":        "lmao@gmail.com", 
         "name_first":   "Jeremy", 
-        "name_last":    "Clarkson"
+        "name_last":    "Clarkson",
         "handle_str":   "jeremyclarkson"
     }
