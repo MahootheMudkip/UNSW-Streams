@@ -1,7 +1,7 @@
 import re
 from src.data_store import data_store
 from src.error import InputError
-from src.sessions import get_hash, get_token, generate_new_session_id
+from src.sessions import get_auth_user_id, get_hash, get_token, generate_new_session_id, get_session_id
 
 def auth_login_v1(email, password):
     '''
@@ -161,4 +161,35 @@ def auth_register_v1(email, password, name_first, name_last):
     return {
         'auth_user_id': u_id,
         'token': token,
+    }
+
+def auth_logout_v1(token):
+    '''
+    Logout of session associated with given token
+
+    Arguments:
+        token (str)         - token to be invalidated
+
+    Exceptions:
+        AccessError:
+            - token entered is invalid
+
+    Return Values:
+        no returns
+    ''' 
+    store = data_store.get()
+    users = store["users"]
+
+    # get auth_user_id and session_id from token
+    auth_user_id = get_auth_user_id(token)
+    session_id = get_session_id(token)
+
+    # remove session_id from sessions list
+    sessions = users[auth_user_id]["sessions"]
+    sessions.remove(session_id)
+
+    data_store.set(store)
+
+    return {
+        
     }
