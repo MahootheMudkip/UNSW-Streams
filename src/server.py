@@ -174,15 +174,15 @@ def message_send():
 
     return dumps(message_send_v1(token, channel_id, message))
 
-# @APP.route("/message/edit/v1", methods=['PUT'])
-# def message_edit():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     message_id = data["message_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_edit_v1(token, message_id, message))
+@APP.route("/message/edit/v1", methods=['PUT'])
+def message_edit():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+    message = data["message"]
+
+    return dumps(message_edit_v1(token, message_id, message))
 
 # @APP.route("/message/remove/v1", methods=['DELETE'])
 # def message_remove():
