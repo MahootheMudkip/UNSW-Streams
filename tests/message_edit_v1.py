@@ -156,7 +156,7 @@ def test_message_edit_v1_invalid_message_id(initial_setup):
     user1_token = initial_setup["user1_token"]
     response = requests.put(URL, json={
         "token":        user1_token,
-        "channel_id":   -34587678,
+        "message_id":   -34587678,
         "message":      "a new message"
     })
     assert response.status_code == INPUT_ERROR
