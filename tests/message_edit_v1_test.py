@@ -81,7 +81,7 @@ def initial_setup():
     message_id_private = []
 
     for i in range(3):
-        response = requests.post(URL, json={
+        response = requests.post(f"{url}message/send/v1", json={
             "token":        user1_token,
             "channel_id":   public_channel_id,
             "message":      f"Hello there! I am message {i}!"
@@ -91,7 +91,7 @@ def initial_setup():
         message_id_public.append(data["message_id"])
     
     for j in range(3):
-        response = requests.post(URL, json={
+        response = requests.post(f"{url}message/send/v1", json={
             "token":        user1_token,
             "channel_id":   private_channel_id,
             "message":      f"Bye! I am message {j}!"
