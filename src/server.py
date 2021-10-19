@@ -5,7 +5,6 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
-from src.channel import channel_invite_v1
 
 from src.other import clear_v1
 from src.auth import *
@@ -107,7 +106,7 @@ def channel_details():
     token = request.args.get("token")
     channel_id = request.args.get("channel_id")
 
-    return (dumps(channel_details_v1(token, channel_id)))
+    return (dumps(channel_details_v1(token, int(channel_id))))
 
 @APP.route("/channel/join/v2", methods=['POST'])
 def channel_join():
@@ -175,15 +174,15 @@ def message_send():
 
     return dumps(message_send_v1(token, channel_id, message))
 
-# @APP.route("/message/edit/v1", methods=['PUT'])
-# def message_edit():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     message_id = data["message_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_edit_v1(token, message_id, message))
+@APP.route("/message/edit/v1", methods=['PUT'])
+def message_edit():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+    message = data["message"]
+
+    return dumps(message_edit_v1(token, message_id, message))
 
 # @APP.route("/message/remove/v1", methods=['DELETE'])
 # def message_remove():
