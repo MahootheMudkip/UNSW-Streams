@@ -84,7 +84,7 @@ def test_channel_messages_v2_invalid_channel_id(initial_setup):
     assert response.status_code == INPUT_ERROR
 
 # testing invalid token, valid public channel_id
-def test_channel_messages_v2_invalid_token(initial_setup):
+def test_channel_messages_v2_invalid_token_public(initial_setup):
     public_channel = initial_setup["public_channel_id"]
     response = requests.get(URL, params={
         "token":        "kjkjd",
@@ -94,7 +94,7 @@ def test_channel_messages_v2_invalid_token(initial_setup):
     assert response.status_code == ACCESS_ERROR
 
 # testing invalid token, valid private channel_id
-def test_channel_messages_v2_invalid_token(initial_setup):
+def test_channel_messages_v2_invalid_token_private(initial_setup):
     private_channel = initial_setup["private_channel_id"]
     response = requests.get(URL, params={
         "token":        "kjkjd",
@@ -155,7 +155,7 @@ def test_channel_messages_v2_invalid_token_and_channel_id(initial_setup):
     assert response.status_code == ACCESS_ERROR
 
 # invalid start value only
-def test_channel_messages_v2_invalid_token_and_channel_id(initial_setup):
+def test_channel_messages_v2_invalid_start(initial_setup):
     user1_token = initial_setup["user1_token"]
     public_channel = initial_setup["public_channel_id"]
     private_channel = initial_setup["private_channel_id"]

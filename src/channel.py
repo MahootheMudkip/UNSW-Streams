@@ -1,5 +1,6 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
+from src.sessions import get_auth_user_id
 
 '''
 Invites user and inmmediatly adds them to the channel. 
@@ -167,24 +168,21 @@ Return Value:
     start:    same as argument "start"
     end:      "start + 50" or -1, if there are no more messages remaining
 '''
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(token, channel_id, start):
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
     store = data_store.get()
-    users = store["users"]
     channels = store["channels"]
-
-    # total_message_num is assumed to be 0 for iteration 1, 
-    # as messages has no framework  or implementation
-    total_message_num = 0
-    messages = []
-    end = start + 50
-
-    # check whether auth_user_id exists
-    if auth_user_id not in users.keys():  
-        raise AccessError("Invalid auth_user_id")
 
     # specified channel doesn't exist
     if channel_id not in channels.keys(): 
         raise InputError("Invalid channel_id")
+
+    # declaring default values for return variables
+    total_message_num = 0
+    messages = []
+    end = start + 50
 
     # if it reaches this point, the channel_id must be valid
     channel_info = channels[channel_id]
@@ -199,6 +197,8 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # start is greater than the total number of messages in channel
     if start > total_message_num:
         raise InputError("start is an invalid value")
+
+    messages = channel_messages[:end]
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 
