@@ -125,23 +125,23 @@ def test_invalid_user_and_channel_id(initial_data):
     assert(resp2.status_code == ACCESS_ERROR)
 
 # testing showing details of public channel
-def test_channel_details_v1_shows_public_channel_details(initial_data):
-    user1_token = initial_data["user1_token"]
-    user2_token = initial_data["user2_token"]
-    user3_token = initial_data["user3_token"]
-    public_channel_id = initial_data["public_channel_id"]
-    requests.post(config.url + 'channel/join/v2', json={"token": user2_token, "channel_id": public_channel_id})
-    requests.post(config.url + 'channel/join/v2', json={"token": user3_token, "channel_id": public_channel_id})
-   
-    details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": public_channel_id})
-    details = json.loads(details_response.text)
-    
-    assert(details["is_public"] == True)
-    assert(details["name"] == "Rainbow Six Siege")
-    members_list = details["all_members"] 
-    assert(len(members_list) == 3)
-    owner_members_list = details["owner_members"]
-    assert(len(owner_members_list) == 1)
+# def test_channel_details_v1_shows_public_channel_details(initial_data):
+#     user1_token = initial_data["user1_token"]
+#     user2_token = initial_data["user2_token"]
+#     user3_token = initial_data["user3_token"]
+#     public_channel_id = initial_data["public_channel_id"]
+#     requests.post(config.url + 'channel/join/v2', json={"token": user2_token, "channel_id": public_channel_id})
+#     requests.post(config.url + 'channel/join/v2', json={"token": user3_token, "channel_id": public_channel_id})
+#    
+#     details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": public_channel_id})
+#     details = json.loads(details_response.text)
+#     
+#     assert(details["is_public"] == True)
+#     assert(details["name"] == "Rainbow Six Siege")
+#     members_list = details["all_members"] 
+#     assert(len(members_list) == 3)
+#     owner_members_list = details["owner_members"]
+#     assert(len(owner_members_list) == 1)
 
 # testing showing details of private channel
 def test_channel_details_v1_shows_private_channel_details(initial_data):
@@ -151,8 +151,8 @@ def test_channel_details_v1_shows_private_channel_details(initial_data):
     user3_id = initial_data["user3_id"]
     private_channel_id = initial_data["private_channel_id"]
 
-    requests.post(config.url + 'channel/invite/v2', json={"token": user1_token, "channel_id": private_channel_id, "token": user2_id})
-    requests.post(config.url + 'channel/invite/v2', json={"token": user2_token, "channel_id": private_channel_id, "token": user3_id})    
+    requests.post(config.url + 'channel/invite/v2', json={"token": user1_token, "channel_id": private_channel_id, "u_id": user2_id})
+    requests.post(config.url + 'channel/invite/v2', json={"token": user2_token, "channel_id": private_channel_id, "u_id": user3_id})    
     
     details_response = requests.get(config.url + 'channel/details/v2', params={"token": user1_token, "channel_id": private_channel_id})
     details = json.loads(details_response.text)
