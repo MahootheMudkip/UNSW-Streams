@@ -1,3 +1,4 @@
+import json
 import pytest
 import requests
 from src.config import url
@@ -35,6 +36,7 @@ def initial_setup():
     })
     user0 = user0_response.json()
     user0_token = user0["token"]
+    user0_id = user0["auth_user_id"]
 
     # create new user 1 and extract token
     user1_response = requests.post(auth_register_url, json={      
@@ -100,6 +102,7 @@ def initial_setup():
 
     return {
         "user0_token":          user0_token,
+        "user0_id":             user0_id,
         "user1_token":          user1_token,
         "user2_token":          user2_token,
         "user2_id":             user2_id,
@@ -200,7 +203,7 @@ def test_message_edit_v1_unauthorised_user(initial_setup):
 
 # testing member of channel (not owner), all else valid
 def test_message_edit_v1_user_not_owner(initial_setup):
-    user0_token = initial_setup["user0_token"]
+    user1_token = initial_setup["user1_token"]
     user2_id = initial_setup["user2_id"]
     public_channel_id = initial_setup["public_channel_id"]
     private_channel_id = initial_setup["private_channel_id"]
@@ -209,15 +212,15 @@ def test_message_edit_v1_user_not_owner(initial_setup):
     message_id1 = initial_setup["message_id_public"][2]
     message_id2 = initial_setup["message_id_private"][1]
 
-    response1 = requests.post(f"{url}/channel/invite/v2", json={
-        "token":        user0_token,
+    response1 = requests.post(f"{url}channel/invite/v2", json={
+        "token":        user1_token,
         "channel_id":   public_channel_id,
         "u_id":         user2_id
     })
     assert response1.status_code == NO_ERROR
 
-    response2 = requests.post(f"{url}/channel/invite/v2", json={
-        "token":        user0_token,
+    response2 = requests.post(f"{url}channel/invite/v2", json={
+        "token":        user1_token,
         "channel_id":   private_channel_id,
         "u_id":         user2_id
     })
@@ -237,4 +240,96 @@ def test_message_edit_v1_user_not_owner(initial_setup):
     })
     assert response4.status_code == ACCESS_ERROR
 
+# testing global owner (member of channel) editing non own messages
+def test_message_edit_v1_global_user_messages(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    user0_id = initial_setup["user0_id"]
+    public_channel_id = initial_setup["public_channel_id"]
+    private_channel_id = initial_setup["private_channel_id"]
 
+    user2_token = initial_setup["user2_token"]
+    message_id1 = initial_setup["message_id_public"][2]
+    message_id2 = initial_setup["message_id_private"][1]
+
+    response1 = requests.post(f"{url}channel/invite/v2", json={
+        "token":        user1_token,
+        "channel_id":   public_channel_id,
+        "u_id":         user0_id
+    })
+    assert response1.status_code == NO_ERROR
+
+    response2 = requests.post(f"{url}channel/invite/v2", json={
+        "token":        user1_token,
+        "channel_id":   private_channel_id,
+        "u_id":         user0_id
+    })
+    assert response2.status_code == NO_ERROR
+
+    response3 = requests.put(URL, json={
+        "token":        user2_token,
+        "message_id":   message_id1,
+        "message":      "valid message"
+    })
+    assert response3.status_code == NO_ERROR
+
+    response4 = requests.put(URL, json={
+        "token":        user2_token,
+        "message_id":   message_id2,
+        "message":      "valid message"
+    })
+    assert response4.status_code == NO_ERROR
+
+# testing normal user (member of channel) editing own messages
+def test_message_edit_v1_normal_user_messages(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    user2_id = initial_setup["user2_id"]
+    public_channel_id = initial_setup["public_channel_id"]
+    private_channel_id = initial_setup["private_channel_id"]
+    user2_token = initial_setup["user2_token"]
+
+    response1 = requests.post(f"{url}channel/invite/v2", json={
+        "token":        user1_token,
+        "channel_id":   public_channel_id,
+        "u_id":         user2_id
+    })
+    assert response1.status_code == NO_ERROR
+
+    response2 = requests.post(f"{url}channel/invite/v2", json={
+        "token":        user1_token,
+        "channel_id":   private_channel_id,
+        "u_id":         user2_id
+    })
+    assert response2.status_code == NO_ERROR
+
+    message1_id = -1
+    message2_id = -2
+
+    response3 = requests.post(f"{url}message/send/v1", json={
+        "token":        user2_token,
+        "channel_id":   public_channel_id,
+        "message":      "what did the fox say?"
+    })
+    data3 = response3.json()
+    message1_id = data3["message_id"]
+
+    response4 = requests.post(f"{url}message/send/v1", json={
+        "token":        user2_token,
+        "channel_id":   private_channel_id,
+        "message":      "Vocalise"
+    })
+    data4 = response4.json()
+    message2_id = data4["message_id"]
+
+    response5 = requests.put(URL, json={
+        "token":        user2_token,
+        "message_id":   message1_id,
+        "message":      "why did the chicken cross the street?"
+    })
+    assert response5.status_code == NO_ERROR
+
+    response6 = requests.put(URL, json={
+        "token":        user2_token,
+        "message_id":   message2_id,
+        "message":      "Rachmaninoff"
+    })
+    assert response6.status_code == NO_ERROR
