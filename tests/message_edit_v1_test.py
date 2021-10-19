@@ -45,6 +45,7 @@ def initial_setup():
         "name_first":   "Jeremy", 
         "name_last":    "Clarkson"
     })
+    assert user1_response.status_code == NO_ERROR
     user1 = user1_response.json()
     user1_token = user1["token"]
 
@@ -136,7 +137,7 @@ def test_message_edit_v1_all_invalid(initial_setup):
     response = requests.put(URL, json={
         "token":        "lalala",
         "message_id":   -89,
-        "message":      "lmao" * 1000
+        "message":      "lmao" * 1001
     })
     assert response.status_code == ACCESS_ERROR
 

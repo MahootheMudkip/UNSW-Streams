@@ -66,7 +66,7 @@ def message_edit_v1(token, message_id, message):
     # check message_id is within a channel/dm that the user has joined
 
     # find location of message_id
-    for channel in channels:
+    for channel in channels.values():
         if auth_user_id in channel["all_members"]:
             if message_id in channel["messages"]:
                 location_found = True
@@ -75,7 +75,7 @@ def message_edit_v1(token, message_id, message):
                 break
     
     if location_found == False:
-        for dm in dms:
+        for dm in dms.values():
             if auth_user_id in dm["members"]:
                 if message_id in dm["messages"]:
                     location_found = True
@@ -114,4 +114,4 @@ def message_edit_v1(token, message_id, message):
         message_info["message"] = message
 
     data_store.set(store)
-    return {}
+    return {} 
