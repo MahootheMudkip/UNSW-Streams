@@ -1,68 +1,88 @@
 import pytest 
+import requests
+from src.config import url
+from json import loads
 
-from src.auth import auth_register_v1
-from src.other import clear_v1
-from src.channels import channels_create_v1
-from src.error import InputError, AccessError
-from src.channel import channel_details_v1
+INPUT_ERROR = 400
+ACCESS_ERROR = 403
 
 @pytest.fixture
 def data(): 
-    clear_v1()
+    requests.delete(url + "clear/v1")
     #create a User
-    user1 =  auth_register_v1("dead@inside.com", "5343q46", "Pablo", "Escobar")
-    id1 = user1["auth_user_id"]
-    #create a User
-    user2 =  auth_register_v1("Ineed@sleep.com", "4zxcv43", "sponge", "bob")
-    id2 = user2["auth_user_id"]
+    user1_info = {
+        "email": "dead@inside.com",
+        "password": "5343q46",
+        "name_first": "Pablo",
+        "name_last": "Escobar"
+    }
+    user2_info = {
+        "email": "Ineed@sleep.com",
+        "password": "4zxcv43",
+        "name_first": "sponge",
+        "name_last": "bob"
+    }
+    user1 = requests.post(url + "auth/register/v2", json=user1_info )
+    token1 = user1.json()["token"]
+
+    user2 = requests.post(url + "auth/register/v2", json=user2_info )
+    token2 = user2.json()["token"]
 
     values = {
-        "id2" : id2,
-        "id1" : id1
+        "token1" : token1,
+        "token2" : token2
     }
     return values
 
 #testing when the user is invalid and a valid name
-def test_channels_create_v1_invalid_user_and_valid_name(data):
-    with pytest.raises(AccessError):
-        channels_create_v1(-2543, "Mr. Krabs", True)
-    with pytest.raises(AccessError):
-        channels_create_v1(-1, "Channel1", False)
+def test_channels_create_v1_invalid_token(data):
+    # token in wrong format
+    response1 = requests.post(url + "channels/create/v2", json={"token":"invalid.token", "name":"Mr. Krabs", "is_public":True})
+    assert response1.status_code == ACCESS_ERROR
+
+    # session that token refers to does not exist
+    response2 = requests.post(url + "channels/create/v2", json={"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoX3VzZXJfaWQiOjAsInNlc3Npb25faWQiOjJ9.5z6iOer-E9r8C_gxBLusZJlUi5cVbl6YAyZFT8-a42o", "name":"Channel1", "is_public":False})
+    assert response2.status_code == ACCESS_ERROR
 
 #testing when the user is invalid and invalid name 
-def test_channels_create_v1_invalid_user_and_invalid_name(data):
+def test_channels_create_v1_both_invalid(data):
     #less than one character
-    with pytest.raises(AccessError):
-        channels_create_v1(-2543, "", True)
+    response1 = requests.post(url + "channels/create/v2", json={"token":"invalid.token", "name":"", "is_public":True})
+    assert response1.status_code == ACCESS_ERROR
     #greater than 20 character
-    with pytest.raises(AccessError):
-        channels_create_v1(-2543, "abcdefghijklmnopqrstuvwxyz", False)
+    response2 = requests.post(url + "channels/create/v2", json={"token":"invalid.token", "name":"abcdefghijklmnopqrstuvwxyz", "is_public":True})
+    assert response2.status_code == ACCESS_ERROR
 
 #testing when the user is valid with a invalid name 
-def test_channels_create_v1_valid_user_and_invalid_name(data):
+def test_channels_create_v1_invalid_name(data):
+    token1 = data["token1"]
+    token2 = data["token2"]
+
     #less than one character
-    id1 = data["id1"]
-    id2 = data["id2"]
-    with pytest.raises(InputError):
-        channels_create_v1(id2, "", False)
+    response1 = requests.post(url + "channels/create/v2", json={"token":token1, "name":"", "is_public":True})
+    assert response1.status_code == INPUT_ERROR
     #greater than 20 character
-    with pytest.raises(InputError):
-        channels_create_v1(id1, "abcdefghijklmnopqrstuvwxyz", True)
+    response2 = requests.post(url + "channels/create/v2", json={"token":token2, "name":"abcdefghijklmnopqrstuvwxyz", "is_public":False})
+    assert response2.status_code == INPUT_ERROR
+
 
 # #testing when the user is valid with a valid name 
 # def test_channels_create_v1_valid_parameters(data):
-#     id1 = data["id1"]
-#     id2 = data["id2"]
-
-#     channel1_id = channels_create_v1(id1, "Channel1", True)
-#     channel_info1 = channel_details_v1(id1, channel1_id)
+#     token1 = data["token1"]
+#     response1 = requests.post(url + "channels/create/v2", json={"token":token1, "name":"Channel1", "is_public":True})
+#     channel1_id = response1.json()["channel_id"]
+#     response1 = requests.get(url + "channel/details/v2", params={"token":token1, "channel_id":channel1_id})
+#     channel_info1 = loads(response1.json())
 #     assert (channel_info1["name"] == "Channel1")
 #     assert (channel_info1["is_public"] == True)
 #     assert (len(channel_info1["owner_members"]) == 1)
 #     assert (len(channel_info1["all_members"]) == 1)
 
-#     channel2_id = channels_create_v1(id2, "Channel2", False)
-#     channel_info2 = channel_details_v1(id2, channel2_id)
+#     token2 = data["token2"]
+#     response2 = requests.post(url + "channels/create/v2", json={"token":token2, "name":"Channel2", "is_public":False})
+#     channel2_id = response2.json()["channel_id"]
+#     response2 = requests.get(url + "channel/details/v2", params={"token":token2, "channel_id":channel2_id})
+#     channel_info2 = loads(response2.json())
 #     assert (channel_info2["name"] == "Channel2")
 #     assert (channel_info2["is_public"] == False)
 #     assert (len(channel_info2["owner_members"]) == 1)
