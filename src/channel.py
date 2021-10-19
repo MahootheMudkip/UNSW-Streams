@@ -255,3 +255,48 @@ def channel_join_v1(auth_user_id, channel_id):
     data_store.set(store)
 
     return {}
+
+def channel_leave_v1(token, channel_id):
+    '''
+    Removes the specified auth_user_id from the given channel_id.
+
+    Arguments:
+        token        (str): the hashed authorised user id
+        channel_id   (int): the given channel id
+
+    Exceptions:
+        InputError:
+            - channel_id invalid (doesn't exist)
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - channel_id is valid but the authorised user 
+                is not a member of the channel.
+
+    Return Value:
+        no values returned
+    '''
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+    
+    # checks for invalid channel_id.
+    if channel_id not in channels.keys():
+        raise InputError("Invalid Channel. Doesn't exist.")
+    
+    # Obtain required channel information.
+    channel_info = channels[channel_id]
+    channel_all_members = channel_info["all_members"]
+    channel_owners = channel_info["owner_members"]
+
+    # checks if auth_user is not a member of the channel.
+    if auth_user_id not in channel_all_members:
+        raise AccessError("Authorised User is not a member of the channel.")
+    
+    if users[auth_user_id]["is_owner"] == True:
+        channel_owners.remove(auth_user_id)
+
+    channel_all_members.remove(auth_user_id)
+    data_store.set(store)
+
+    return {}
