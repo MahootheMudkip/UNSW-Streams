@@ -11,6 +11,7 @@ from src.auth import *
 from src.channels import *
 from src.channel import *
 from src.message import *
+from src.user import *
 #from src.dm import *
 
 
@@ -251,11 +252,11 @@ def message_remove():
 # 
 #     return dumps(message_senddm_v1(tokem, dm_id, message))
 
-# @APP.route("/users/all/v1", methods=['GET'])
-# def users_all():
-#     token = request.args.get("token")
-# 
-#     return dumps(users_all_v1(token))
+@APP.route("/users/all/v1", methods=['GET'])
+def users_all():
+    token = request.args.get("token")
+
+    return dumps(users_all_v1(token))
 
 # @APP.route("/user/profile/v1", methods=['GET'])
 # def user_profile():
