@@ -77,6 +77,7 @@ def initial_data():
 
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
+NO_ERROR = 200
 
 # channel_id does not refer to a valid channel. token and u_id are both valid.
 def test_invalid_channel_only(initial_data):
