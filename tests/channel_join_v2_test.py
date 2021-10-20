@@ -46,7 +46,7 @@ def initial_setup():
     })
     user2 = user2_response.json()
     user2_token = user2["token"]
-    user2_id = user2["id"]
+    user2_id = user2["auth_user_id"]
 
     # create new user 3 and extract token
     user3_response = requests.post(auth_register_url, json={      
