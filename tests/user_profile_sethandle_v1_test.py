@@ -1,0 +1,68 @@
+import json
+from src.error import InputError
+import pytest
+import requests
+from src.config import url
+
+INPUT_ERROR = 400
+ACCESS_ERROR = 403
+NO_ERROR = 200
+
+URL = url + "user/profile/setname/v1"
+
+@pytest.fixture
+def setup():
+    requests.delete(url + "clear/v1")
+
+    user1_info = {
+        "email" : "email1@gmail.com", 
+        "password" : "password1",
+        "name_first" : "John",
+        "name_last" : "Smith" 
+    }
+
+    response1 = requests.post(url + "auth/register/v2", json=user1_info)
+    tok = response1.json()["token"]
+    u_id = response1.json()["auth_user_id"]
+
+    return {
+        "tok": tok,
+        "u_id": u_id
+    }
+
+def test_invalid_token():
+    response = requests.put(URL, json={"token":1557, "handle_str": "juancaca1"})
+    assert response.status_code == ACCESS_ERROR
+
+# test length of handle_str is not between 3 and 20 characters inclusive
+def test_handle_str_length(setup):
+    token = setup["tok"]
+    # handle is too short
+    response1 = requests.put(URL, json={"token":token, "handle_str": "ju"})
+    assert(response1.status_code == INPUT_ERROR)
+    # handle is too long
+    response2 = requests.put(URL, json={"token":token, "handle_str": "juancarlospuyovelarde"})
+    assert(response2.status_code == INPUT_ERROR)
+
+
+# test handle_str  contains characters that are not alphanumeric
+def test_handle_str_alphanumeric(setup):
+    token = setup["tok"]
+    response1 = requests.put(URL, json={"token":token, "handle_str": "$$$$$$"})
+    assert(response1.status_code == INPUT_ERROR)
+    response2 = requests.put(URL, json={"token":token, "handle_str": "juanca!!*"})
+    assert(response2.status_code == INPUT_ERROR)
+
+# test handle is already used by another user
+def test_handle_str_alphanumeric(setup):
+    token = setup["tok"]
+    response1 = requests.put(URL, json={"token":token, "handle_str": "$$$$$$"})
+    assert(response1.status_code == INPUT_ERROR)
+    response2 = requests.put(URL, json={"token":token, "handle_str": "juanca!!*"})
+    assert(response2.status_code == INPUT_ERROR)
+
+# test given handle is valid
+def test_valid_handle(setup):
+    token = setup["tok"]
+    response1 = requests.put(URL, json={"token":token, "handle_str": "valid1"})
+    assert(response1.status_code == NO_ERROR)
