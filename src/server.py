@@ -275,14 +275,14 @@ def user_profile_setname():
 
     return dumps(user_profile_setname_v1(token, name_first, name_last))
 
-#@APP.route("/user/profile/setemail/v1", methods=['PUT'])
-#def user_profile_setemail():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     email = data["email"]
-#
-#    return dumps(user_profile_setemail_v1(token, email))
+@APP.route("/user/profile/setemail/v1", methods=['PUT'])
+def user_profile_setemail():
+     data = request.get_json()
+
+     token = data["token"]
+     email = data["email"]
+
+     return dumps(user_profile_setemail_v1(token, email))
 
 # @APP.route("/user/profile/sethandle/v1", methods=['PUT'])
 # def user_profile_sethandle():
