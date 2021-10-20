@@ -17,6 +17,7 @@ def initial_data():
         "name_last": "Ricciardo"
     })
     user1 = json.loads(user1_response.text)
+    user1_id = user1["auth_user_id"]
     user1_token = user1["token"]
     # Register second user
     user2_response = requests.post(config.url + 'auth/register/v2', json={
@@ -84,9 +85,9 @@ def initial_data():
     channel0_id = channel0["channel_id"]
     # Join channel0 with global user
     requests.post(config.url + 'channel/invite/v2', json={
-        "token": user1_token,
+        "token": user2_token,
         "channel_id": channel0_id,
-        "u_id": user2_id
+        "u_id": user1_id
     })
     
     values = {
@@ -159,8 +160,27 @@ def test_invalid_inputs(initial_data):
     resp2 = requests.post(config.url + 'channel/addowner/v1', json={"token": 4321, "channel_id": 2431, "u_id": 3214})
     assert(resp2.status_code == ACCESS_ERROR)
 
+# auth_user is not a member of the channel
+def test_auth_user_not_in_channel(initial_data):
+    user2_id = initial_data["user2_id"]
+    user3_token = initial_data["user3_token"]
+    channel0_id = initial_data["public_channel_id"]
+
+    resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user3_token, "channel_id": channel0_id, "u_id": user2_id})
+    assert(resp.status_code == ACCESS_ERROR)
+
+# u_id is not a member of the channel
+def test_u_id_not_in_channel(initial_data):
+    user2_token = initial_data["user2_token"]
+    user3_id = initial_data["user3_id"]
+    channel0_id = initial_data["channel0_id"]
+    
+    resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user2_token, "channel_id": channel0_id, "u_id": user3_id})
+    assert(resp.status_code == INPUT_ERROR)
+
+
 # channel_id is valid but the authorised user does not have owner permissions in the channel
-def test_auth_user_isnt_owner():
+def test_auth_user_isnt_owner(initial_data):
     user2_token = initial_data["user2_token"]
     user2_id = initial_data["user2_id"]
     user3_token = initial_data["user3_token"]
