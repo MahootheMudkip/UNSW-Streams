@@ -221,14 +221,13 @@ Exceptions:
 Return Value:
     no values returned
 '''
-def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(token, channel_id):
+    # gets auth_user_id from token and handles exception raising
+    auth_user_id = get_auth_user_id(token)
+
     store = data_store.get()
     users = store["users"]
     channels = store["channels"]
-
-    if auth_user_id not in users.keys():
-        # check whether auth_user_id exists
-        raise AccessError("Invalid auth_user_id")
     
     if channel_id not in channels.keys():
         # check whether channel_id exists
