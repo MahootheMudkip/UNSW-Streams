@@ -102,6 +102,7 @@ def channels_listall():
     token = request.args.get("token")
 
     return dumps(channels_listall_v1(token))
+
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():
     token = request.args.get("token")
@@ -130,11 +131,10 @@ def channel_invite():
 
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages():
-    data = request.get_json()
-    token = data["token"]
-    channel_id = data["channel_id"]
-    start = data["start"]
-
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+    start = int(request.args.get("start"))
+    
     return dumps(channel_messages_v1(token, channel_id, start))
 
 @APP.route("/channel/leave/v1", methods=['POST'])
@@ -242,7 +242,7 @@ def message_remove():
 # 
 #     return dumps(dm_messages_v1(token, dm_id, start))
 
-# @APP.route("message/senddm/v1", methods=['POST'])
+# @APP.route("/message/senddm/v1", methods=['POST'])
 # def message_senddm():
 #     data = request.get_json()
 # 
@@ -265,17 +265,17 @@ def user_profile():
 
     return dumps(user_profile_v1(token, u_id))
 
-# @APP.route("user/profile/setname/v1", methods=['PUT'])
-# def user_profile_setname():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     name_first = data["name_first"]
-#     name_last = data["name_last"]
-# 
-#     return dumps(user_profile_setname_v1(token, name_first, name_last))
+@APP.route("/user/profile/setname/v1", methods=['PUT'])
+def user_profile_setname():
+    data = request.get_json()
 
-#@APP.route("user/profile/setemail/v1", methods=['PUT'])
+    token = data["token"]
+    name_first = data["name_first"]
+    name_last = data["name_last"]
+
+    return dumps(user_profile_setname_v1(token, name_first, name_last))
+
+#@APP.route("/user/profile/setemail/v1", methods=['PUT'])
 #def user_profile_setemail():
 #     data = request.get_json()
 #
@@ -284,7 +284,7 @@ def user_profile():
 #
 #    return dumps(user_profile_setemail_v1(token, email))
 
-# @APP.route("user/profile/sethandle/v1", methods=['PUT'])
+# @APP.route("/user/profile/sethandle/v1", methods=['PUT'])
 # def user_profile_sethandle():
 #     data = request.get_json()
 #
@@ -302,7 +302,7 @@ def user_profile():
 #     
 #     return dumps(admin_user_remove_v1(token, u_id))
 
-# @APP.route("admin/userpermission/change/v1", methods=['POST'])
+# @APP.route("/admin/userpermission/change/v1", methods=['POST'])
 # def admin_userpermission_change():
 #     data = request.get_json()
 # 
