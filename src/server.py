@@ -10,7 +10,8 @@ from src.other import clear_v1
 from src.auth import *
 from src.channels import *
 from src.channel import *
-#from src.message import *
+from src.message import *
+from src.user import *
 #from src.dm import *
 
 
@@ -107,7 +108,7 @@ def channel_details():
     token = request.args.get("token")
     channel_id = request.args.get("channel_id")
 
-    return (dumps(channel_details_v1(token, channel_id)))
+    return (dumps(channel_details_v1(token, int(channel_id))))
 
 @APP.route("/channel/join/v2", methods=['POST'])
 def channel_join():
@@ -136,13 +137,13 @@ def channel_messages():
     
     return dumps(channel_messages_v1(token, channel_id, start))
 
-# @APP.route("/channel/leave/v1", methods=['POST'])
-# def channel_leave():
-#     data = request.get_json()
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-# 
-#     return dumps(channel_leave_v1(token, channel_id))
+@APP.route("/channel/leave/v1", methods=['POST'])
+def channel_leave():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+
+    return dumps(channel_leave_v1(token, channel_id))
 
 # @APP.route("/channel/addowner/v1", methods=['POST'])
 # def channel_addowner():
@@ -164,33 +165,34 @@ def channel_messages():
 # 
 #     return dumps(channel_removeowner_v1(token, channel_id, # u_id))
 
-# @APP.route("/message/send/v1", methods=['POST'])
-# def message_send():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     channel_id = data["Channel_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_send_v1(token, channel_id, message))
+@APP.route("/message/send/v1", methods=['POST'])
+def message_send():
+    data = request.get_json()
 
-# @APP.route("/message/edit/v1", methods=['PUT'])
-# def message_edit():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     message_id = data["message_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_edit_v1(token, message_id, message))
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
 
-# @APP.route("/message/remove/v1", methods=['DELETE'])
-# def message_remove():
-#     data = request.get_json
-#     token = data["token"]
-#     message_id = data["message_id"]
-# 
-#     return dumps(message_remove_v1(token, message_id))
+    return dumps(message_send_v1(token, channel_id, message))
+
+@APP.route("/message/edit/v1", methods=['PUT'])
+def message_edit():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+    message = data["message"]
+
+    return dumps(message_edit_v1(token, message_id, message))
+
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def message_remove():
+    data = request.get_json()
+    
+    token = data["token"]
+    message_id = data["message_id"]
+
+    return dumps(message_remove_v1(token, message_id))
 
 # @APP.route("/dm/create/v1", methods=['POST'])
 # def dm_create():
@@ -250,18 +252,18 @@ def channel_messages():
 # 
 #     return dumps(message_senddm_v1(tokem, dm_id, message))
 
-# @APP.route("/users/all/v1", methods=['GET'])
-# def users_all():
-#     token = request.args.get("token")
-# 
-#     return dumps(users_all_v1(token))
+@APP.route("/users/all/v1", methods=['GET'])
+def users_all():
+    token = request.args.get("token")
 
-# @APP.route("/user/profile/v1", methods=['GET'])
-# def user_profile():
-#     token = request.args.get("token")
-#     u_id = request.args.get("u_id")
-# 
-#     return dumps(user_profile_v1(token, u_id))
+    return dumps(users_all_v1(token))
+
+@APP.route("/user/profile/v1", methods=['GET'])
+def user_profile():
+    token = request.args.get("token")
+    u_id = int(request.args.get("u_id"))
+
+    return dumps(user_profile_v1(token, u_id))
 
 # @APP.route("user/profile/setname/v1", methods=['PUT'])
 # def user_profile_setname():
