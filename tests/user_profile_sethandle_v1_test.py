@@ -63,7 +63,7 @@ def test_handle_str_alphanumeric(setup):
     assert(response2.status_code == INPUT_ERROR)
 
 # test handle is already used by another user
-def test_handle_str_alphanumeric(setup):
+def test_handle_str_is_taken(setup):
     token1 = setup["tok1"]
     response1 = requests.put(URL, json={"token":token1, "handle_str": "juanca"})
     assert(response1.status_code == NO_ERROR)
