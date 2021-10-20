@@ -76,7 +76,7 @@ def test_user_profile_v1_invalid_token(initial_setup):
     assert response.status_code == ACCESS_ERROR
 
 # test invalid u_id only
-def test_user_profile_v1_invalid_token(initial_setup):
+def test_user_profile_v1_invalid_u_id(initial_setup):
     user2_token = initial_setup["user2_token"]
     response = requests.get(URL, params={
         "token":    user2_token,
