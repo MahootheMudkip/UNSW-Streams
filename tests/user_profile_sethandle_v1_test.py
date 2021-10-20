@@ -8,7 +8,7 @@ INPUT_ERROR = 400
 ACCESS_ERROR = 403
 NO_ERROR = 200
 
-URL = url + "user/profile/setname/v1"
+URL = url + "user/profile/sethandle/v1"
 
 @pytest.fixture
 def setup():
@@ -25,7 +25,7 @@ def setup():
     tok1 = response1.json()["token"]
 
     user2_info = {
-        "email" : "email1@gmail.com", 
+        "email" : "valid@mail.com", 
         "password" : "password1",
         "name_first" : "John",
         "name_last" : "Smith" 
@@ -47,11 +47,11 @@ def test_invalid_token():
 def test_handle_str_length(setup):
     token = setup["tok1"]
     # handle is too short
-    response1 = requests.put(URL, json={"token":token, "handle_str": "ju"})
-    assert(response1.status_code == INPUT_ERROR)
+    response = requests.put(URL, json={"token":token, "handle_str": "ju"})
+    assert(response.status_code == INPUT_ERROR)
     # handle is too long
-    response2 = requests.put(URL, json={"token":token, "handle_str": "juancarlospuyovelarde"})
-    assert(response2.status_code == INPUT_ERROR)
+    response = requests.put(URL, json={"token":token, "handle_str": "juancarlospuyovelarde"})
+    assert(response.status_code == INPUT_ERROR)
 
 
 # test handle_str  contains characters that are not alphanumeric
