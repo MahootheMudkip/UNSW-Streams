@@ -335,6 +335,10 @@ def channel_addowner_v1(token, channel_id, u_id):
     channel_all_members = channel_info["all_members"]
     channel_owners = channel_info["owner_members"]
 
+    # check if auth_user does not have owner permissions.
+    if auth_user_id not in channel_owners and users[auth_user_id]["is_owner"] == False:
+        raise AccessError("Authorised User does not have owner permissions in the channel.")
+          
     # checks if auth_user is not a member of the channel.
     if auth_user_id not in channel_all_members:
         raise AccessError("Authorised User is not a member of the channel.")    
@@ -346,10 +350,6 @@ def channel_addowner_v1(token, channel_id, u_id):
     # checks if auth_user is not a member of the channel.
     if u_id not in channel_all_members:
         raise InputError("User is not a member of the channel.")
-    
-    # check if auth_user does not have owner permissions.
-    if auth_user_id not in channel_owners and users[auth_user_id]["is_owner"] == False:
-        raise AccessError("Authorised User does not have owner permissions in the channel.")
     
     # check if u_id is already an owner of the channel.
     if u_id in channel_owners:
