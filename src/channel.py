@@ -161,7 +161,9 @@ Return Value:
     start:    same as argument "start"
     end:      "start + 50" or -1, if there are no more messages remaining
 '''
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(token, channel_id, start):
+    auth_user_id = get_auth_user_id(token)
+
     store = data_store.get()
     users = store["users"]
     channels = store["channels"]
