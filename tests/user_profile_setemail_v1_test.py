@@ -22,6 +22,7 @@ def setup():
     }
 
     response1 = requests.post(url + "auth/register/v2", json=user1_info)
+    assert(response1.status_code == NO_ERROR)
     tok1 = response1.json()["token"]
 
     user2_info = {
@@ -32,6 +33,7 @@ def setup():
     }
 
     response2 = requests.post(url + "auth/register/v2", json=user2_info)
+    assert(response2.status_code == NO_ERROR)
 
     return {
         "tok1": tok1
