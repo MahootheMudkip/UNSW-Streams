@@ -277,7 +277,6 @@ def channel_leave_v1(token, channel_id):
     '''
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
-    users = store["users"]
     channels = store["channels"]
     
     # checks for invalid channel_id.
@@ -293,7 +292,7 @@ def channel_leave_v1(token, channel_id):
     if auth_user_id not in channel_all_members:
         raise AccessError("Authorised User is not a member of the channel.")
     
-    if users[auth_user_id]["is_owner"] == True:
+    if auth_user_id in channel_owners:
         channel_owners.remove(auth_user_id)
 
     channel_all_members.remove(auth_user_id)
