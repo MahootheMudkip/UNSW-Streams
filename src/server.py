@@ -145,15 +145,14 @@ def channel_leave():
 
     return dumps(channel_leave_v1(token, channel_id))
 
-# @APP.route("/channel/addowner/v1", methods=['POST'])
-# def channel_addowner():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     u_id = data["u_id"]
-# 
-#     return dumps(channel_addowner_v1(token, channel_id, u_id))
+@APP.route("/channel/addowner/v1", methods=['POST'])
+def channel_addowner():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+    u_id = data["u_id"]
+
+    return dumps(channel_addowner_v1(token, channel_id, u_id))
 
 # @APP.route("/channel/removeowner/v1", methods=['POST'])
 # def channel_removeowner():
