@@ -70,7 +70,7 @@ def initial_setup():
     # create private channel and extract channel_id
     private_channel_response = requests.post(channel_create_url, json={
         "token":        user1_token,
-        "name":         "public_channel",
+        "name":         "private_channel",
         "is_public":    False
     })
     private_channel = private_channel_response.json()
@@ -148,15 +148,20 @@ def test_channel_join_v2_already_in_public_channel(initial_setup):
 
 # testing user already in private channel
 def test_channel_join_v2_already_in_private_channel(initial_setup):
-    user3_token = initial_setup["user3_token"]
+    user2_token = initial_setup["user2_token"]
+    user1_token = initial_setup["user1_token"]
+    user2_id = initial_setup["user2_id"]
     private_channel = initial_setup["private_channel_id"]
-    response1 = requests.post(URL, json={
-        "token":        user3_token,
-        "channel_id":   private_channel
+
+    invite_response = requests.post(url + "channel/invite/v2", json={
+        "token":        user1_token,
+        "channel_id":   private_channel,
+        "u_id":         user2_id 
     })
-    assert response1.status_code == NO_ERROR
+    assert invite_response.status_code == NO_ERROR
+
     response2 = requests.post(URL, json={
-        "token":        user3_token,
+        "token":        user2_token,
         "channel_id":   private_channel
     })
     assert response2.status_code == INPUT_ERROR
