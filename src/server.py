@@ -258,12 +258,12 @@ def users_all():
 
     return dumps(users_all_v1(token))
 
-# @APP.route("/user/profile/v1", methods=['GET'])
-# def user_profile():
-#     token = request.args.get("token")
-#     u_id = request.args.get("u_id")
-# 
-#     return dumps(user_profile_v1(token, u_id))
+@APP.route("/user/profile/v1", methods=['GET'])
+def user_profile():
+    token = request.args.get("token")
+    u_id = int(request.args.get("u_id"))
+
+    return dumps(user_profile_v1(token, u_id))
 
 # @APP.route("user/profile/setname/v1", methods=['PUT'])
 # def user_profile_setname():
