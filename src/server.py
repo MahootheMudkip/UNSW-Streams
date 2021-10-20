@@ -102,6 +102,7 @@ def channels_listall():
     token = request.args.get("token")
 
     return dumps(channels_listall_v1(token))
+
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details():
     token = request.args.get("token")
@@ -133,7 +134,7 @@ def channel_messages():
     token = request.args.get("token")
     channel_id = int(request.args.get("channel_id"))
     start = int(request.args.get("start"))
-
+    
     return dumps(channel_messages_v1(token, channel_id, start))
 
 @APP.route("/channel/leave/v1", methods=['POST'])
