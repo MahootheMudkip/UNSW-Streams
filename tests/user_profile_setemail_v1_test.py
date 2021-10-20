@@ -23,7 +23,6 @@ def setup():
 
     response1 = requests.post(url + "auth/register/v2", json=user1_info)
     tok1 = response1.json()["token"]
-    u_id1= response1.json()["auth_user_id"]
 
     user2_info = {
         "email" : "taken@email.com", 
@@ -33,14 +32,9 @@ def setup():
     }
 
     response2 = requests.post(url + "auth/register/v2", json=user2_info)
-    tok2 = response2.json()["token"]
-    u_id2 = response2.json()["auth_user_id"]
 
     return {
-        "tok1": tok1,
-        "u_id1": u_id1,
-        "tok2": tok2,
-        "u_id2": u_id2
+        "tok1": tok1
     }
 
 # test invalid token
@@ -50,12 +44,12 @@ def test_invalid_token():
 
 # email does not match regex 
 def test_register_email_invalid(setup):
-    token = setup["tok"]
+    token = setup["tok1"]
     response = requests.put(URL, json={"token":token, "email": "invalid_email.com"})
     assert response.status_code == INPUT_ERROR
 
 # email has already been registered
 def test_register_email_taken(setup):
-    token = setup["tok"]
+    token = setup["tok1"]
     response = requests.put(URL, json={"token":token, "email": "taken@email.com"})
     assert response.status_code == INPUT_ERROR
