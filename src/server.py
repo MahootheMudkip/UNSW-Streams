@@ -137,13 +137,13 @@ def channel_messages():
 
     return dumps(channel_messages_v1(token, channel_id, start))
 
-# @APP.route("/channel/leave/v1", methods=['POST'])
-# def channel_leave():
-#     data = request.get_json()
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-# 
-#     return dumps(channel_leave_v1(token, channel_id))
+@APP.route("/channel/leave/v1", methods=['POST'])
+def channel_leave():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+
+    return dumps(channel_leave_v1(token, channel_id))
 
 # @APP.route("/channel/addowner/v1", methods=['POST'])
 # def channel_addowner():
@@ -316,4 +316,4 @@ def users_all():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully) # For coverage
-    APP.run(debug=True, port=config.port) # Do not edit this port
+    APP.run(port=config.port) # Do not edit this port
