@@ -284,14 +284,13 @@ def user_profile_setname():
 #
 #    return dumps(user_profile_setemail_v1(token, email))
 
-# @APP.route("/user/profile/sethandle/v1", methods=['PUT'])
-# def user_profile_sethandle():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     handle_str = data["handle_str"]
-# 
-#     return dumps(user_profile_setemail_v1(token, handle_str))
+@APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def user_profile_sethandle():
+    data = request.get_json()
+    token = data["token"]
+    handle_str = data["handle_str"]
+
+    return dumps(user_profile_sethandle_v1(token, handle_str))
 
 # @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 # def admin_user_remove():
