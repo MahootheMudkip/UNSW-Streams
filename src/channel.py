@@ -391,7 +391,6 @@ def channel_removeowner_v1(token, channel_id, u_id):
     
     # Obtain required channel information.
     channel_info = channels[channel_id]
-    channel_all_members = channel_info["all_members"]
     channel_owners = channel_info["owner_members"]
 
     # check if auth_user does not have owner permissions.
