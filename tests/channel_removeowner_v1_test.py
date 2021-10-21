@@ -47,8 +47,8 @@ def initial_data():
         "name_last": "Fanning"
     })
     user4 = json.loads(user4_response.text)
-    user4_id = user4["auth_user_id"]
     user4_token = user4["token"]
+    user4_id = user4["auth_user_id"]
     # Make public channel
     public_channel_response = requests.post(config.url + 'channels/create/v2', json={
         "token": user1_token,
@@ -83,16 +83,18 @@ def initial_data():
     private_channel = json.loads(private_channel_response.text)
     private_channel_id = private_channel["channel_id"]
     # Invite users to private channel
-    requests.post(config.url + 'channel/invite/v2', json={
+    resp = requests.post(config.url + 'channel/invite/v2', json={
         "token": user1_token,
         "channel_id": private_channel_id,
         "u_id": user2_id
     })
-    requests.post(config.url + 'channel/invite/v2', json={
+    assert(resp.status_code == NO_ERROR)
+    resp = requests.post(config.url + 'channel/invite/v2', json={
         "token": user1_token,
         "channel_id": private_channel_id,
         "u_id": user3_id
     })
+    assert(resp.status_code == NO_ERROR)
     # Make users owners of the private channel 
     resp = requests.post(config.url + 'channel/addowner/v1', json={
         "token": user1_token, 
@@ -125,11 +127,13 @@ def initial_data():
         "user2_token": user2_token,
         "user3_token": user3_token,
         "user4_token": user4_token,
+        "user1_id": user1_id,
         "user2_id": user2_id,
         "user3_id": user3_id,
+        "user4_id": user4_id,
         "public_channel_id": public_channel_id,
         "private_channel_id": private_channel_id,
-        "channel0_id": channel0_id
+        "channel0_id": channel0_id,
     }
     return values
 

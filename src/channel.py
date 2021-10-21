@@ -355,3 +355,63 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     return {}
 
+def channel_removeowner_v1(token, channel_id, u_id):
+    '''
+    Removes the specified u_id as an owner from the specified channel from the given channel_id.
+
+    Arguments:
+        token        (str): the hashed authorised user id
+        channel_id   (int): the given channel id
+        u_id        (u_id): the auth_user id to remove from owners
+
+    Exceptions:
+        InputError:
+            - channel_id invalid (doesn't exist)
+            - u_id refers to a user who is currently 
+                the only owner of the channel.
+            - u_id refers to a user who is not an owner of the channel.
+            - u_id does not refer to a valid user
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - channel_id is valid and the authorised user 
+                does not have owner permissions in the channel
+
+    Return Value:
+        empty dictionary.
+    '''
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    channels = store["channels"]
+    users = store["users"]
+
+    # checks for invalid channel_id.
+    if channel_id not in channels.keys():
+        raise InputError("Invalid Channel. Doesn't exist.")
+    
+    # Obtain required channel information.
+    channel_info = channels[channel_id]
+    channel_all_members = channel_info["all_members"]
+    channel_owners = channel_info["owner_members"]
+
+    # check if auth_user does not have owner permissions.
+    if auth_user_id not in channel_owners and users[auth_user_id]["is_owner"] == False:
+        raise AccessError("Authorised User does not have owner permissions in the channel.")
+    
+    # checks for invalid u_id.
+    if u_id not in users.keys():
+        raise InputError("Invalid User. Doesn't exist.")
+
+    # checks if auth_user is not a member of the channel.
+    if u_id not in channel_all_members:
+        raise InputError("User is not a member of the channel.")
+    
+    # check if u_id is not an owner of the channel.
+    if u_id not in channel_owners:
+        raise InputError("User is not an owner of this channel.")
+    
+    if len(channel_owners) == 1:
+        raise InputError("Can't remove the only owner of this channel")
+    
+    channel_owners.remove(u_id)
+
+    return {}       
