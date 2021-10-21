@@ -2,6 +2,7 @@ import json
 import pytest
 import requests
 from src.config import url
+from src.data_store import data_store
 
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
@@ -57,6 +58,7 @@ def data():
         "user3_id"    : user3_id
     }
 
+# test list of u_ids given is invalid
 def test_invalid_u_id(data):
     token = data["user1_token"]
     u_ids = [-32,235,65]
@@ -67,6 +69,7 @@ def test_invalid_u_id(data):
     })
     assert response.status_code == INPUT_ERROR
 
+# token given is invalid
 def test_invalid_token(data):
     u_ids = [data["user2_token"], data["user3_token"]]
     response = requests.post(url + "dm/create/v1", 
@@ -76,8 +79,8 @@ def test_invalid_token(data):
     })
     assert response.status_code == ACCESS_ERROR
 
+# token and u_id given are both invalid
 def test_invalid_token_invalid_id(data):
-    
     response = requests.post(url + "dm/create/v1", 
     json = {
         "token":    "yoyoyo",
@@ -85,8 +88,8 @@ def test_invalid_token_invalid_id(data):
     })
     assert response.status_code == ACCESS_ERROR
 
+# valid token and list of u_ids
 def test_valid_dm_creation(data):
-
     dm_ids = []
     u_ids = [data["user2_id"], data["user3_id"]]
     i = 0
@@ -101,3 +104,22 @@ def test_valid_dm_creation(data):
         i += 1
         
     assert len(set(dm_ids)) == 50
+
+def test_dm_create_correct_dm_id(data):
+    u_ids = [data["user2_id"], data["user3_id"]]
+    response = requests.post(url + "dm/create/v1", json={"token":data["user1_token"],"u_ids":u_ids})
+    assert response.status_code == NO_ERROR
+    assert response.json()["dm_id"] == 0
+
+    response = requests.post(url + "dm/create/v1", json={"token":data["user1_token"],"u_ids":u_ids})
+    assert response.status_code == NO_ERROR
+    assert response.json()["dm_id"] == 1
+
+    response = requests.post(url + "dm/create/v1", json={"token":data["user1_token"],"u_ids":u_ids})
+    assert response.status_code == NO_ERROR
+    assert response.json()["dm_id"] == 2
+
+    response = requests.post(url + "dm/create/v1", json={"token":data["user1_token"],"u_ids":u_ids})
+    assert response.status_code == NO_ERROR
+    assert response.json()["dm_id"] == 3
+    
