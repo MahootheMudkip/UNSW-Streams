@@ -5,6 +5,7 @@ from json import loads
 
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
+NO_ERROR = 200
 
 @pytest.fixture
 def data(): 
@@ -65,25 +66,33 @@ def test_channels_create_v1_invalid_name(data):
     response2 = requests.post(url + "channels/create/v2", json={"token":token2, "name":"abcdefghijklmnopqrstuvwxyz", "is_public":False})
     assert response2.status_code == INPUT_ERROR
 
+#testing when the user is valid with a valid name 
+def test_channels_create_v1_valid_parameters(data):
+    token1 = data["token1"]
+    token2 = data["token2"]
 
-# #testing when the user is valid with a valid name 
-# def test_channels_create_v1_valid_parameters(data):
-#     token1 = data["token1"]
-#     response1 = requests.post(url + "channels/create/v2", json={"token":token1, "name":"Channel1", "is_public":True})
-#     channel1_id = response1.json()["channel_id"]
-#     response1 = requests.get(url + "channel/details/v2", params={"token":token1, "channel_id":channel1_id})
-#     channel_info1 = loads(response1.json())
-#     assert (channel_info1["name"] == "Channel1")
-#     assert (channel_info1["is_public"] == True)
-#     assert (len(channel_info1["owner_members"]) == 1)
-#     assert (len(channel_info1["all_members"]) == 1)
+    response = requests.post(url + "channels/create/v2", json={"token":token1, "name":"Channel1", "is_public":True})
+    assert response.status_code == NO_ERROR
+    channel1_id = response.json()["channel_id"]
 
-#     token2 = data["token2"]
-#     response2 = requests.post(url + "channels/create/v2", json={"token":token2, "name":"Channel2", "is_public":False})
-#     channel2_id = response2.json()["channel_id"]
-#     response2 = requests.get(url + "channel/details/v2", params={"token":token2, "channel_id":channel2_id})
-#     channel_info2 = loads(response2.json())
-#     assert (channel_info2["name"] == "Channel2")
-#     assert (channel_info2["is_public"] == False)
-#     assert (len(channel_info2["owner_members"]) == 1)
-#     assert (len(channel_info2["all_members"]) == 1)
+    response = requests.get(url + "channel/details/v2", params={"token":token1, "channel_id":channel1_id})
+    assert response.status_code == NO_ERROR
+    channel_info1 = response.json() 
+
+    assert (channel_info1["name"] == "Channel1")
+    assert (channel_info1["is_public"] == True)
+    assert (len(channel_info1["owner_members"]) == 1)
+    assert (len(channel_info1["all_members"]) == 1)
+
+    response = requests.post(url + "channels/create/v2", json={"token":token2, "name":"Channel2", "is_public":False})
+    assert response.status_code == NO_ERROR
+    channel2_id = response.json()["channel_id"]
+
+    response = requests.get(url + "channel/details/v2", params={"token":token2, "channel_id":channel2_id})
+    assert response.status_code == NO_ERROR
+    channel_info2 = response.json()
+
+    assert (channel_info2["name"] == "Channel2")
+    assert (channel_info2["is_public"] == False)
+    assert (len(channel_info2["owner_members"]) == 1)
+    assert (len(channel_info2["all_members"]) == 1)
