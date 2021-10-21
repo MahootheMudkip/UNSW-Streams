@@ -88,7 +88,7 @@ def test_invalid_token_invalid_id(data):
 def test_valid_dm_creation(data):
 
     dm_ids = []
-    u_ids = [data["user2_token"], data["user3_token"]]
+    u_ids = [data["user2_id"], data["user3_id"]]
     for i in range(50):
         response = requests.post(url + "dm/create/v1", 
         json = {

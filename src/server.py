@@ -12,7 +12,7 @@ from src.channels import *
 from src.channel import *
 from src.message import *
 from src.user import *
-#from src.dm import *
+from src.dm import *
 
 
 def quit_gracefully(*args):
@@ -193,14 +193,14 @@ def message_remove():
 
     return dumps(message_remove_v1(token, message_id))
 
-# @APP.route("/dm/create/v1", methods=['POST'])
-# def dm_create():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     u_ids = data["u_ids"]
-# 
-#     return dumps(dm_create_v1(token, u_ids))
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    data = request.get_json()
+
+    token = data["token"]
+    u_ids = data["u_ids"]
+
+    return dumps(dm_create_v1(token, u_ids))
 
 # @APP.route("/dm/list/v1", methods=['GET'])
 # def dm_list():
