@@ -55,3 +55,9 @@ def test_register_email_taken(setup):
     token = setup["tok1"]
     response = requests.put(URL, json={"token":token, "email": "taken@email.com"})
     assert response.status_code == INPUT_ERROR
+
+# test update email
+def test_valid_email(setup):
+    token = setup["tok1"]
+    response = requests.put(URL, json={"token":token, "email": "valid@email.com"})
+    assert response.status_code == NO_ERROR

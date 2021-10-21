@@ -3,6 +3,7 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.auth import is_taken
 import re
+from src.auth import is_taken
 
 '''
 Returns a list of all users and their associated details.
@@ -178,4 +179,3 @@ def user_profile_sethandle_v1(token, handle_str):
     user["handle_str"] = handle_str
 
     return {}
-
