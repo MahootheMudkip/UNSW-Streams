@@ -2,6 +2,8 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.auth import is_taken
+import re
+from src.auth import is_taken
 
 '''
 Returns a list of all users and their associated details.
@@ -100,6 +102,42 @@ def user_profile_setname_v1(token, name_first, name_last):
     data_store.set(store)
     return {}
 
+def user_profile_setemail_v1(token, email):
+    '''
+    Sets user's email to a new email
+
+    Arguments:
+        token  (str): the given token
+        email  (str): the given email
+
+    Exceptions:
+        AccessError:
+            - invalid token
+
+        InputError:
+            - email entered is not a valid email.
+            - email is already taken.
+
+    Return Value:
+        empty dictionary
+    '''
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    users = store["users"]
+    user = store["users"][auth_user_id]
+
+    # Perform series of checks to make sure registration can be authorised
+    # - Email entered is not a valid email (does not match regex)
+    if re.fullmatch(R'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email) == None:
+        raise InputError("Invalid email format")
+    # - Email address is already being used by another user
+    for user in users.values():
+        if user["email"] == email:
+            raise InputError("Email already taken")
+
+    user["email"] = email
+
+    return {}
 
 def user_profile_sethandle_v1(token, handle_str):
     '''
@@ -141,5 +179,3 @@ def user_profile_sethandle_v1(token, handle_str):
     user["handle_str"] = handle_str
 
     return {}
-
-     
