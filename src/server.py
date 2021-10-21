@@ -13,6 +13,7 @@ from src.channel import *
 from src.message import *
 from src.user import *
 from src.dm import *
+from src.admin import *
 
 
 def quit_gracefully(*args):
@@ -290,14 +291,14 @@ def user_profile_sethandle():
 
     return dumps(user_profile_sethandle_v1(token, handle_str))
 
-# @APP.route("/admin/user/remove/v1", methods=['DELETE'])
-# def admin_user_remove():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     u_id = data["u_id"]
-#     
-#     return dumps(admin_user_remove_v1(token, u_id))
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+def admin_user_remove():
+    data = request.get_json()
+
+    token = data["token"]
+    u_id = data["u_id"]
+    
+    return dumps(admin_user_remove_v1(token, u_id))
 
 # @APP.route("/admin/userpermission/change/v1", methods=['POST'])
 # def admin_userpermission_change():
