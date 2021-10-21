@@ -174,3 +174,75 @@ def test_channel_messages_v2_invalid_start(initial_setup):
     })
     assert response2.status_code == INPUT_ERROR
 
+def test_channel_messages_v2_valid(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    public_channel = initial_setup["public_channel_id"]
+    
+    requests.post(url + "message/send/v1", json={
+        "token": user1_token,
+        "channel_id": public_channel,
+        "message": "hi"
+    })
+
+    requests.post(url + "message/send/v1", json={
+        "token": user1_token,
+        "channel_id": public_channel,
+        "message": "hi"
+    })
+    response1 = requests.get(URL, params={
+        "token":        user1_token,
+        "channel_id":   public_channel,
+        "start": 0
+    })
+    assert response1.status_code == NO_ERROR
+
+    data = response1.json()
+    assert data["start"] == 0
+    assert len(data["messages"]) == 2
+    assert data["end"] == -1
+
+def test_channel_messages_v2_valid2(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    public_channel = initial_setup["public_channel_id"]
+    
+    for i in range(51):
+        requests.post(url + "message/send/v1", json={
+            "token": user1_token,
+            "channel_id": public_channel,
+            "message": "hi" + str(i)
+        })
+
+    response1 = requests.get(URL, params={
+        "token":        user1_token,
+        "channel_id":   public_channel,
+        "start": 0
+    })
+    assert response1.status_code == NO_ERROR
+
+    data = response1.json()
+    assert data["start"] == 0
+    assert len(data["messages"]) == 50
+    assert data["end"] == 50
+
+def test_channel_messages_v2_valid3(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    public_channel = initial_setup["public_channel_id"]
+    
+    for i in range(50):
+        requests.post(url + "message/send/v1", json={
+            "token": user1_token,
+            "channel_id": public_channel,
+            "message": "hi" + str(i)
+        })
+
+    response1 = requests.get(URL, params={
+        "token":        user1_token,
+        "channel_id":   public_channel,
+        "start": 0
+    })
+    assert response1.status_code == NO_ERROR
+
+    data = response1.json()
+    assert data["start"] == 0
+    assert len(data["messages"]) == 50
+    assert data["end"] == -1
