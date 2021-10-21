@@ -352,6 +352,7 @@ def channel_addowner_v1(token, channel_id, u_id):
         raise InputError("User is already an owner of this channel.")
     
     channel_owners.append(u_id)
+    data_store.set(store)
 
     return {}
 
@@ -409,5 +410,6 @@ def channel_removeowner_v1(token, channel_id, u_id):
         raise InputError("Can't remove the only owner of this channel")
     
     channel_owners.remove(u_id)
+    data_store.set(store)
 
     return {}
