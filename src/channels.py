@@ -15,15 +15,12 @@ Exceptions:
 Return Type:
     A list of dictionaries each of which contains the channel_id and name of that channel
 '''
-def channels_list_v1(auth_user_id):
+def channels_list_v1(token):
     # get data from data_store
+    auth_user_id = get_auth_user_id(token)
+    
     store = data_store.get()
-    users = store["users"]
     channels = store["channels"]
-
-    # Checks if auth_user_id is invalid.
-    if auth_user_id not in users.keys():
-        raise AccessError("Invalid user")
 
     # List of channels to be returned
     return_list = []
