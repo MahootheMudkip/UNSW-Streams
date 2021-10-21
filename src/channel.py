@@ -414,4 +414,4 @@ def channel_removeowner_v1(token, channel_id, u_id):
     
     channel_owners.remove(u_id)
 
-    return {}       
+    return {}

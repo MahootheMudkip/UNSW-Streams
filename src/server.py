@@ -158,9 +158,9 @@ def channel_addowner():
 def channel_removeowner():
     data = request.get_json()
     token = data["token"]
-    channel_id = data["Channel_id"]
+    channel_id = data["channel_id"]
     u_id = data["u_id"]
-
+    
     return dumps(channel_removeowner_v1(token, channel_id, u_id))
 
 @APP.route("/message/send/v1", methods=['POST'])
