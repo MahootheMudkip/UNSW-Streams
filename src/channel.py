@@ -103,30 +103,34 @@ def channel_details_v1(token, channel_id):
     # Creates a list of dictionaries, where each dictionary contains types of user.
     channel_new_all_members = []
     for u_id in channel_all_members:
-        new_user = {}
-        new_user["u_id"] = u_id
-        # users[u_id] is a dictionary of one user.
-        # e.g key = "name", value = "Juan"
-        for key, value in users[u_id].items():
-            if key != "password":
-                new_user[key] = value
-        channel_new_all_members.append(new_user)
         # appending new_user dictionary
-    
+        user_info = users[u_id]
+        user_copy = user_info.copy()
+        # remove unecessary fields
+        user_copy.pop("password")
+        user_copy.pop("is_owner")
+        user_copy.pop("sessions")
+        # add u_id item
+        user_copy["u_id"] = u_id
+
+        channel_new_all_members.append(user_copy)
+
     # list of member u_ids
     channel_owner_members = channel_info["owner_members"]
     # Creates a list of dictionaries, where each dictionary contains types of user.
     channel_new_owner_members = []
     for u_id in channel_owner_members:
-        new_user = {}
-        new_user["u_id"] = u_id
-        # users[u_id] is a dictionary of one user.
-        # e.g key = "name", value = "Juan"
-        for key, value in users[u_id].items():
-            if key != "password":
-                new_user[key] = value
-        channel_new_owner_members.append(new_user)
         # appending new_user dictionary
+        user_info = users[u_id]
+        user_copy = user_info.copy()
+        # remove unecessary fields
+        user_copy.pop("password")
+        user_copy.pop("is_owner")
+        user_copy.pop("sessions")
+        # add u_id item
+        user_copy["u_id"] = u_id
+
+        channel_new_owner_members.append(user_copy)
 
     return {
         "name": channel_name,
