@@ -23,6 +23,7 @@ def setup():
 
     response1 = requests.post(url + "auth/register/v2", json=user1_info)
     tok1 = response1.json()["token"]
+    u_id1 = response1.json()["auth_user_id"]
 
     user2_info = {
         "email" : "valid@mail.com", 
@@ -36,6 +37,7 @@ def setup():
 
     return {
         "tok1": tok1,
+        "u_id1": u_id1,
         "tok2": tok2
     }
 
@@ -75,5 +77,9 @@ def test_handle_str_is_taken(setup):
 # test given handle is valid
 def test_valid_handle(setup):
     token = setup["tok1"]
+    u_id = setup["u_id1"]
     response1 = requests.put(URL, json={"token":token, "handle_str": "valid1"})
     assert(response1.status_code == NO_ERROR)
+
+    response = requests.get(url + "user/profile/v1", params={"token":token,"u_id":u_id})
+    assert response.json()["user"]["handle_str"] == "valid1"

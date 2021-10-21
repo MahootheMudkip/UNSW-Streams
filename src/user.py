@@ -124,7 +124,6 @@ def user_profile_setemail_v1(token, email):
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
     users = store["users"]
-    user = store["users"][auth_user_id]
 
     # Perform series of checks to make sure registration can be authorised
     # - Email entered is not a valid email (does not match regex)
@@ -135,7 +134,9 @@ def user_profile_setemail_v1(token, email):
         if user["email"] == email:
             raise InputError("Email already taken")
 
+    user = store["users"][auth_user_id]
     user["email"] = email
+    data_store.set(store)
 
     return {}
 
@@ -170,12 +171,13 @@ def user_profile_sethandle_v1(token, handle_str):
         raise InputError("Handle must be between 3 and 20 characters inclusive.")
     
     if handle_str.isalnum() == False:
-        raise InputError("Handle must only contain alphanumeric characters.")   
+        raise InputError("Handle must only contain alphanumeric characters.")
 
     if is_taken(users, handle_str) == True:
         raise InputError("Handle is already taken.")
     
     # Update user handle
     user["handle_str"] = handle_str
+    data_store.set(store)
 
     return {}
