@@ -171,6 +171,7 @@ def channel_messages_v1(token, channel_id, start):
 
     store = data_store.get()
     channels = store["channels"]
+    all_messages = store["messages"]
 
     # specified channel doesn't exist
     if channel_id not in channels.keys(): 
@@ -185,6 +186,7 @@ def channel_messages_v1(token, channel_id, start):
     channel_info = channels[channel_id]
     channel_members = channel_info["all_members"]
     channel_messages = channel_info["messages"]
+
     # list of message_id's
     total_message_num = len(channel_messages)
 
@@ -195,7 +197,8 @@ def channel_messages_v1(token, channel_id, start):
     if start > total_message_num:
         raise InputError("start is an invalid value")
 
-    messages = channel_messages[:end]
+    channel_messages = list(reversed(channel_messages))[start:end]
+    messages = [all_messages[message] for message in channel_messages]
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 
