@@ -105,6 +105,7 @@ def initial_data():
     message_id_public = []
     message_id_private = []
 
+    # create messages in public and private channels
     for i in range(3):
         response = requests.post(f"{url}message/send/v1", json={
             "token":        user2_token,
@@ -124,6 +125,27 @@ def initial_data():
         assert response.status_code == NO_ERROR
         data = response.json()
         message_id_private.append(data["message_id"])
+
+    # create messages in dms
+#    for i in range(3):
+#        response = requests.post(f"{url}message/senddm/v1", json={
+#            "token":        user2_token,
+#            "channel_id":   dm1_id,
+#            "message":      f"Hello there! I am message {i}!"
+#        })
+#        assert response.status_code == NO_ERROR
+#        data = response.json()
+#        message_id_public.append(data["message_id"])
+#
+#    for j in range(3):
+#        response = requests.post(f"{url}message/senddm/v1", json={
+#            "token":        user2_token,
+#            "channel_id":   dm2_id,
+#            "message":      f"Bye! I am message {i}!"
+#        })
+#        assert response.status_code == NO_ERROR
+#        data = response.json()
+#        message_id_public.append(data["message_id"])
 
     return {
         "user0_token":          user0_token,
@@ -237,6 +259,27 @@ def test_admin_user_remove_user2(initial_data):
     messages[1]["message"] = "Removed user"
     messages[2]["message"] = "Removed user"
     messages[3]["message"] = "Removed user"
+
+    # check dm messages have been replaced with 'Removed user'
+#    dm_messages_response = requests.get(url + 'dm/messages/v1', params={"token": user0_token, "dm_id": dm1_id, "start": 0})
+#    assert(dm_messages_response.status_code == NO_ERROR)
+#    details = json.loads(dm_messages_response.text)
+#
+#    messages = details["messages"]
+#    messages[0]["message"] = "Removed user"
+#    messages[1]["message"] = "Removed user"
+#    messages[2]["message"] = "Removed user"
+#    messages[3]["message"] = "Removed user"
+#
+#    dm_messages_response = requests.get(url + 'channel/messages/v2', params={"token": user0_token, "dm_id": dm2_id, "start": 0})
+#    assert(dm_messages_response.status_code == NO_ERROR)
+#    details = json.loads(dm_messages_response.text)
+#
+#    messages = details["messages"]
+#    messages[0]["message"] = "Removed user"
+#    messages[1]["message"] = "Removed user"
+#    messages[2]["message"] = "Removed user"
+#    messages[3]["message"] = "Removed user"
 
     # check name_first is 'Removed' and name_last is 'user'
     user_profile_response = requests.get(url + 'user/profile/v1', params={"token": user2_token, "u_id": user2_id})
