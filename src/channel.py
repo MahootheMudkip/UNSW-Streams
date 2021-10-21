@@ -400,10 +400,6 @@ def channel_removeowner_v1(token, channel_id, u_id):
     # checks for invalid u_id.
     if u_id not in users.keys():
         raise InputError("Invalid User. Doesn't exist.")
-
-    # checks if auth_user is not a member of the channel.
-    if u_id not in channel_all_members:
-        raise InputError("User is not a member of the channel.")
     
     # check if u_id is not an owner of the channel.
     if u_id not in channel_owners:
