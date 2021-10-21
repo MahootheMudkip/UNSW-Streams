@@ -202,8 +202,8 @@ def test_admin_user_remove_user2(initial_data):
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
     private_channel_id = initial_data["private_channel_id"]
-    dm1_id = initial_data["dm1_id"]
-    dm2_id = initial_data["dm2_id"]
+#    dm1_id = initial_data["dm1_id"]
+#    dm2_id = initial_data["dm2_id"]
 
     # remove user
     resp = requests.delete(URL, json={"token": user0_token, "u_id": user2_id})
@@ -287,7 +287,7 @@ def test_admin_user_remove_user2(initial_data):
 
     assert user["name_first"] == "Removed"
     assert user["name_last"] == "user"
-    reusable_handle = user["handle_str"]
+    #reusable_handle = user["handle_str"]
 
     # check handle_str and email are reusable
 #    new_user_response = requests.post(url + 'auth/register/v2', json={      
