@@ -197,8 +197,10 @@ def channel_messages_v1(token, channel_id, start):
     if start > total_message_num:
         raise InputError("start is an invalid value")
 
+    # Reverse channel_messages so that most recent msg is index 0
+    # Then, slice list to get msgs between start and end index
     channel_messages = list(reversed(channel_messages))[start:end]
-    messages = [all_messages[message] for message in channel_messages]
+    messages = [all_messages[x] for x in channel_messages]
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 
