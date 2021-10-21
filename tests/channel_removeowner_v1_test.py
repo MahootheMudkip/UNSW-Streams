@@ -46,6 +46,7 @@ def initial_data():
         "name_first": "Mick", 
         "name_last": "Fanning"
     })
+    assert(user4_response.status_code == NO_ERROR)
     user4 = json.loads(user4_response.text)
     user4_token = user4["token"]
     user4_id = user4["auth_user_id"]
@@ -58,14 +59,16 @@ def initial_data():
     public_channel = json.loads(public_channel_response.text)
     public_channel_id = public_channel["channel_id"]
     # Make users join the public channel
-    requests.post(config.url + 'channel/join/v2', json={
+    resp = requests.post(config.url + 'channel/join/v2', json={
         "token": user2_token,
         "channel_id": public_channel_id
     })
-    requests.post(config.url + 'channel/join/v2', json={
+    assert(resp.status_code == NO_ERROR)
+    resp = requests.post(config.url + 'channel/join/v2', json={
         "token": user3_token,
         "channel_id": public_channel_id
     })
+    assert(resp.status_code == NO_ERROR) 
     # Make user2 owner of the public channel 
     resp = requests.post(config.url + 'channel/addowner/v1', json={
         "token": user1_token, 
@@ -108,19 +111,22 @@ def initial_data():
         "name": "channel0",
         "is_public": True
     })
+    assert(channel0_response.status_code == NO_ERROR)
     channel0 = json.loads(channel0_response.text)
     channel0_id = channel0["channel_id"]
     # Join channel0 with global user
-    requests.post(config.url + 'channel/invite/v2', json={
+    resp = requests.post(config.url + 'channel/invite/v2', json={
         "token": user2_token,
         "channel_id": channel0_id,
         "u_id": user1_id
     })
-    requests.post(config.url + 'channel/invite/v2', json={
+    assert(resp.status_code == NO_ERROR)
+    resp = requests.post(config.url + 'channel/invite/v2', json={
         "token": user2_token,
         "channel_id": channel0_id,
         "u_id": user3_id
     })
+    assert(resp.status_code == NO_ERROR)
     
     values = {
         "user1_token": user1_token,
@@ -247,7 +253,7 @@ def test_u_id_is_last_owner(initial_data):
 
 
 # test removes owner from the private channel
-def test_adding_owner_private_channel(initial_data):
+def test_remove_owner_private_channel(initial_data):
     user1_token = initial_data["user1_token"]
     user2_id = initial_data["user2_id"]
     private_channel_id = initial_data["private_channel_id"]
@@ -267,6 +273,7 @@ def test_adding_owner_private_channel(initial_data):
     assert(len(owner_members_list) == 1)
 
 # test removes owner from the public channel
+def test_remove_owner_public_channel(initial_data):
     user1_token = initial_data["user1_token"]
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
