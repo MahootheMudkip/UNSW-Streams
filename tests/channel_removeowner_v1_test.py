@@ -228,6 +228,19 @@ def test_u_id_is_an_owner(initial_data):
     resp = requests.post(config.url + 'channel/removeowner/v1', json={"token": user1_token, "channel_id": channel0_id, "u_id": user3_id})
     assert(resp.status_code == INPUT_ERROR)
 
+# u_id is the only owner of the channel
+def test_u_id_is_last_owner(initial_data):
+    user1_token = initial_data["user1_token"]
+    user1_id = initial_data["user1_id"]
+    user2_token = initial_data["user2_token"]
+    user2_id = initial_data["user2_id"]
+    public_channel_id = initial_data["public_channel_id"]
+
+    resp = requests.post(config.url + 'channel/removeowner/v1', json={"token": user2_token, "channel_id": public_channel_id, "u_id": user1_id})
+    assert(resp.status_code == NO_ERROR)
+    resp = requests.post(config.url + 'channel/removeowner/v1', json={"token": user1_token, "channel_id": public_channel_id, "u_id": user2_id})
+    assert(resp.status_code == INPUT_ERROR)
+
 
 # test removes owner from the private channel
 def test_adding_owner_private_channel(initial_data):
@@ -249,7 +262,7 @@ def test_adding_owner_private_channel(initial_data):
     owner_members_list = details["owner_members"]
     assert(len(owner_members_list) == 1)
 
-# test adds two owners to the public channel
+# test removes owner from the public channel
     user1_token = initial_data["user1_token"]
     user2_id = initial_data["user2_id"]
     public_channel_id = initial_data["public_channel_id"]
