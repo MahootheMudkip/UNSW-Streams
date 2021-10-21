@@ -89,7 +89,8 @@ def test_valid_dm_creation(data):
 
     dm_ids = []
     u_ids = [data["user2_id"], data["user3_id"]]
-    for i in range(50):
+    i = 0
+    while i < 50:
         response = requests.post(url + "dm/create/v1", 
         json = {
             "token":    data["user1_token"],
@@ -97,5 +98,6 @@ def test_valid_dm_creation(data):
         })
         assert response.status_code == NO_ERROR
         dm_ids.append(response.json()["dm_id"])
+        i += 1
         
     assert len(set(dm_ids)) == 50
