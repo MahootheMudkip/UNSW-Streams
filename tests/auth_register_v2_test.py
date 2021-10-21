@@ -1,8 +1,10 @@
+from tests.auth_logout_v2_test import NO_ERROR
 import pytest
 import requests
 from src.config import url
 
 INPUT_ERROR = 400
+NO_ERROR = 200
 
 @pytest.fixture
 def clear():
@@ -58,12 +60,13 @@ def test_register_email_invalid(clear):
 # email has already been registered
 def test_register_email_taken(clear):
     user_info = {
-        "email" : "emailtaken@.com",
+        "email" : "email@taken.com",
         "password" : "password",
         "name_first" : "John", 
         "name_last" : "Smith"
     }
-    requests.post(url + "auth/register/v2", json=user_info)
+    response = requests.post(url + "auth/register/v2", json=user_info)
+    assert response.status_code == NO_ERROR
     response = requests.post(url + "auth/register/v2", json=user_info)
     assert response.status_code == INPUT_ERROR
 
@@ -100,24 +103,24 @@ def test_register_lastname_invalid(clear):
     response = requests.post(url + "auth/register/v2", json=user_info)
     assert response.status_code == INPUT_ERROR
 
-# # users should have unique and valid handles according to handle generation rules
-# def test_register_handle_generation(setup):
-#     # register user 1, 2 and 3
-#     id1 = setup["id1"]
-#     id2 = setup["id2"]
-#     id3 = setup["id3"]
+# users should have unique and valid handles according to handle generation rules
+def test_register_handle_generation(setup):
+    # register user 1, 2 and 3
+    id1 = setup["id1"]
+    id2 = setup["id2"]
+    id3 = setup["id3"]
 
-#     # create channels for users 1, 2 and 3
-#     c_id1 = requests.post(url + "channels/create/v2", json={"token":id1, "name":"c1", "is_public":True}).json()["channel_id"]
-#     c_id2 = requests.post(url + "channels/create/v2", json={"token":id2, "name":"c2", "is_public":True}).json()["channel_id"]
-#     c_id3 = requests.post(url + "channels/create/v2", json={"token":id3, "name":"c3", "is_public":True}).json()["channel_id"]
+    # create channels for users 1, 2 and 3
+    c_id1 = requests.post(url + "channels/create/v2", json={"token":id1, "name":"c1", "is_public":True}).json()["channel_id"]
+    c_id2 = requests.post(url + "channels/create/v2", json={"token":id2, "name":"c2", "is_public":True}).json()["channel_id"]
+    c_id3 = requests.post(url + "channels/create/v2", json={"token":id3, "name":"c3", "is_public":True}).json()["channel_id"]
     
-#     # request details for channels 1, 2 and 3
-#     d1 = requests.get(url + "channel/details/v2", json={"token":id1, "channel_id":c_id1}).json()
-#     d2 = requests.get(url + "channel/details/v2", json={"token":id2, "channel_id":c_id2}).json()
-#     d3 = requests.get(url + "channel/details/v2", json={"token":id3, "channel_id":c_id3}).json()
+    # request details for channels 1, 2 and 3
+    d1 = requests.get(url + "channel/details/v2", params={"token":id1, "channel_id":c_id1}).json()
+    d2 = requests.get(url + "channel/details/v2", params={"token":id2, "channel_id":c_id2}).json()
+    d3 = requests.get(url + "channel/details/v2", params={"token":id3, "channel_id":c_id3}).json()
 
-#     # view details of owners (users 1 and 2) to verify their handles are different
-#     assert d1["owner_members"][0]["handle_str"] == "johnsmith"
-#     assert d2["owner_members"][0]["handle_str"] == "johnsmith0"
-#     assert d3["owner_members"][0]["handle_str"] == "johnsmith1"
+    # view details of owners (users 1 and 2) to verify their handles are different
+    assert d1["owner_members"][0]["handle_str"] == "johnsmith"
+    assert d2["owner_members"][0]["handle_str"] == "johnsmith0"
+    assert d3["owner_members"][0]["handle_str"] == "johnsmith1"
