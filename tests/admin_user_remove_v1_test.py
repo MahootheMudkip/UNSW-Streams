@@ -204,6 +204,12 @@ def test_admin_user_remove_user2(initial_data):
     private_channel_id = initial_data["private_channel_id"]
 #    dm1_id = initial_data["dm1_id"]
 #    dm2_id = initial_data["dm2_id"]
+    user_profile_response = requests.get(url + 'user/profile/v1', params={"token": user2_token, "u_id": user2_id})
+    assert(user_profile_response.status_code == NO_ERROR)
+    user_response = user_profile_response.json()
+    user = user_response["user"]
+    reusable_handle = user["handle_str"]
+    reusable_email = user["email"]
 
     # remove user
     resp = requests.delete(URL, json={"token": user0_token, "u_id": user2_id})
@@ -287,21 +293,23 @@ def test_admin_user_remove_user2(initial_data):
 
     assert user["name_first"] == "Removed"
     assert user["name_last"] == "user"
-    #reusable_handle = user["handle_str"]
 
     # check handle_str and email are reusable
-#    new_user_response = requests.post(url + 'auth/register/v2', json={      
-#        "email":        "wtf@gmail.com", 
-#        "password":     "234789",
-#        "name_first":   "James",
-#        "name_last":    "May"
-#    })
-#    assert(new_user_response.status_code == NO_ERROR)
-#    new_user = new_user_response.json()
-#    token = new_user["token"]
-#    u_id = new_user["auth_user_id"]
-#
-#    user_profile_response = requests.get(url + 'user/profile/v1', params={"token": token, "u_id": u_id})
-#    assert(user_profile_response.status_code == NO_ERROR)
-#    new_user_profile = json.loads(user_profile_response.text)
-#    assert(new_user_profile["handle_str"] == reusable_handle)
+    new_user_response = requests.post(url + 'auth/register/v2', json={      
+        "email":        "wtf@gmail.com", 
+        "password":     "234789",
+        "name_first":   "James",
+        "name_last":    "May"
+    })
+    assert(new_user_response.status_code == NO_ERROR)
+    new_user = new_user_response.json()
+    token = new_user["token"]
+    u_id = new_user["auth_user_id"]
+
+    user_profile_response = requests.get(url + 'user/profile/v1', params={"token": token, "u_id": u_id})
+    assert(user_profile_response.status_code == NO_ERROR)
+    new_user_profile_response = json.loads(user_profile_response.text)
+
+    new_user = new_user_profile_response["user"]
+    assert(new_user["handle_str"] == reusable_handle)
+    assert(new_user["email"] == reusable_email)

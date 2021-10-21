@@ -36,6 +36,15 @@ def admin_user_remove_v1(token, u_id):
     # checks for invalid u_id.
     if u_id not in users.keys():
         raise InputError("Invalid User. Doesn't exist.")
+
+    global_owners = []
+    for user_id, user_info in users.items():
+        if user_info["is_owner"] == True:
+            global_owners.append(user_id)
+    
+    if u_id in global_owners:
+        raise InputError("u_id refers to a user who is the only global owner")
+
     
     # remove user from channels
     for channel_id in channels.keys():
@@ -44,15 +53,18 @@ def admin_user_remove_v1(token, u_id):
         channel_owners = channel_info["owner_members"]
         if u_id in channel_owners:
             channel_owners.remove(u_id)
-        elif u_id in channel_members:
+        if u_id in channel_members:
             channel_members.remove(u_id)
     
     # remove user from dms
     for dm_id in dms.keys():
         dm_info = dms[dm_id]
         dm_members = dm_info["members"]
+        dm_owner = dm_info["owner"]
         if u_id in dm_members:
             dm_members.remove(u_id)
+        if u_id == dm_owner:
+            dm_owner = None
     
     # Replace user's messages with 'Removed user'
     for message_id in messages.keys():
@@ -60,6 +72,7 @@ def admin_user_remove_v1(token, u_id):
         user_id = message_info["u_id"]
         if u_id == user_id:
             message_info["message"] = "Removed user"
+
     
     # Replace user's first name with 'Removed' and last name with 'user'
     user = store["users"][u_id]
@@ -67,6 +80,8 @@ def admin_user_remove_v1(token, u_id):
     user["name_last"] = "user"
 
     # Make handle_str and email reusable
+    user["handle_str"] = None
+    user["email"] = None
 
     data_store.set(store)
 
