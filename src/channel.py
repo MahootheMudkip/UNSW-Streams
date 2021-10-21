@@ -362,7 +362,7 @@ def channel_removeowner_v1(token, channel_id, u_id):
     Arguments:
         token        (str): the hashed authorised user id
         channel_id   (int): the given channel id
-        u_id        (u_id): the auth_user id to remove from owners
+        u_id         (int): the auth_user id to remove from owners
 
     Exceptions:
         InputError:
