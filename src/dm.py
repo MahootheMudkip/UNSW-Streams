@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
  
+
 def dm_create_v1(token, u_ids):
     '''
     Creates a new Dm
@@ -31,9 +32,10 @@ def dm_create_v1(token, u_ids):
     for id in u_ids:
         if id not in users.keys() or id == auth_user_id:
             raise InputError("user id is not valid")
-  
+    
     # getting values to be entred in the new dm
-    dm_name = ", ".join([str(i) for i in sorted(u_ids)])
+    u_ids.append(auth_user_id)
+    dm_name = ", ".join(sorted([users[u_id]["handle_str"] for u_id in  u_ids]))
 
     #create dm
     dms[dm_id] = {
