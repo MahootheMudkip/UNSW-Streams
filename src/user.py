@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.auth import is_taken
 import re
 
 '''
@@ -136,3 +137,45 @@ def user_profile_setemail_v1(token, email):
     user["email"] = email
 
     return {}
+
+def user_profile_sethandle_v1(token, handle_str):
+    '''
+    Sets user's handle_str to a new handle.
+
+    Arguments:
+        token  (str): the given token
+        handle (str): the given handle
+
+    Exceptions:
+        AccessError:
+            - invalid token
+
+        InputError:
+            - length of handle_str is not between 3 and 20 characters inclusive
+            - handle_str contains characters that are not alphanumeric
+            - the handle is already used by another user
+
+    Return Value:
+        empty dictionary
+    '''
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    users = store["users"]
+    user = store["users"][auth_user_id]
+    
+    handle_length = len(handle_str)
+
+    if handle_length < 3 or handle_length > 20:
+        raise InputError("Handle must be between 3 and 20 characters inclusive.")
+    
+    if handle_str.isalnum() == False:
+        raise InputError("Handle must only contain alphanumeric characters.")   
+
+    if is_taken(users, handle_str) == True:
+        raise InputError("Handle is already taken.")
+    
+    # Update user handle
+    user["handle_str"] = handle_str
+
+    return {}
+

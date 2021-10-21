@@ -145,15 +145,14 @@ def channel_leave():
 
     return dumps(channel_leave_v1(token, channel_id))
 
-# @APP.route("/channel/addowner/v1", methods=['POST'])
-# def channel_addowner():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     u_id = data["u_id"]
-# 
-#     return dumps(channel_addowner_v1(token, channel_id, u_id))
+@APP.route("/channel/addowner/v1", methods=['POST'])
+def channel_addowner():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+    u_id = data["u_id"]
+
+    return dumps(channel_addowner_v1(token, channel_id, u_id))
 
 # @APP.route("/channel/removeowner/v1", methods=['POST'])
 # def channel_removeowner():
@@ -284,14 +283,13 @@ def user_profile_setemail():
 
      return dumps(user_profile_setemail_v1(token, email))
 
-# @APP.route("/user/profile/sethandle/v1", methods=['PUT'])
-# def user_profile_sethandle():
-#     data = request.get_json()
-#
-#     token = data["token"]
-#     handle_str = data["handle_str"]
-# 
-#     return dumps(user_profile_setemail_v1(token, handle_str))
+@APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def user_profile_sethandle():
+    data = request.get_json()
+    token = data["token"]
+    handle_str = data["handle_str"]
+
+    return dumps(user_profile_sethandle_v1(token, handle_str))
 
 # @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 # def admin_user_remove():
