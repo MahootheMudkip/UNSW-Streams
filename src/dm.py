@@ -202,7 +202,7 @@ def message_senddm_v1(token, dm_id, message):
         raise InputError("Invalid message length")
 
     # at this point, everything is valid
-    dm_id_tracker = store["dm_id_tracker"]
+    message_id_tracker = store["message_id_tracker"]
     dm_messages = dm_info["messages"]
 
     # timestamp
