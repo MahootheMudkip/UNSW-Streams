@@ -67,7 +67,7 @@ def data():
     dm2 = dm_create2_res.json()
     dm2_id = dm2["dm_id"]
 
-    #create a user with 2 members
+    #create a dm with 2 members
     dm_create3_res = requests.post (url + "dm/create/v1", 
     json = {
         "token" : user2_token,
@@ -124,27 +124,35 @@ def test_returned_details(data):
     dm3_id = data["dm3_id"]
 
     #check dm id for user 1
-    dm_id_response1 = requests.get(url + "dm/list/v1", params={"token": token1})
+    dm_id_response1 = requests.get(url + "dm/list/v1", 
+    params = {
+        "token": token1
+    })
     assert dm_id_response1.status_code == NO_ERROR
     data1 = dm_id_response1.json()
     assert (data1["dms"][0]["dm_id"] == dm1_id)
+    assert (data1["dms"][0]["name"] == "donjqfe")    
 
     #check dm id for user 2
-    dm_id_response1 = requests.get(url + "dm/list/v1", params={
+    dm_id_response2 = requests.get(url + "dm/list/v1", 
+    params = {
         "token":    token2
     })
-    assert dm_id_response1.status_code == NO_ERROR
-    data2 = dm_id_response1.json()
-    assert (data2["dms"][0]["dm_id"] == dm2_id)
-    assert (data2["dms"][1]["dm_id"] == dm3_id)
+    assert dm_id_response2.status_code == NO_ERROR
+    data2 = dm_id_response2.json()
+    assert (data2["dms"][1]["dm_id"] == dm2_id)
+    assert (data2["dms"][2]["dm_id"] == dm3_id)
+    assert (data2["dms"][0]["name"] == "donjqfe, ghijkl, ratsat") 
 
-    #check dm id for user 2
-    dm_id_response1 = requests.get(url + "dm/list/v1", params={
-        "token":    token2
+    #check dm id for user 3
+    dm_id_response3 = requests.get(url + "dm/list/v1", 
+    params = {
+        "token":    token3
     })
-    assert dm_id_response1.status_code == NO_ERROR
+    assert dm_id_response3.status_code == NO_ERROR
     data3 = dm_id_response1.json()
     assert (data3["dms"][0]["dm_id"] == dm2_id)
     assert (data3["dms"][1]["dm_id"] == dm3_id)
+    assert (data3["dms"][0]["name"] == "ghijkl, ratsat")
     
 
