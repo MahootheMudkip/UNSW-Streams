@@ -142,7 +142,7 @@ def initial_data():
         response = requests.post(f"{url}message/send/v1", json={
             "token":        user0_token,
             "channel_id":   channel_id,
-            "message":      f"Bye! I am message {j}!"
+            "message":      f"Bye! I am message {k}!"
         })
         assert response.status_code == NO_ERROR
         data = response.json()
