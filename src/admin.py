@@ -17,6 +17,7 @@ def admin_user_remove_v1(token, u_id):
             - u_id refers to a user who is the only global owner
         AccessError:
             - the authorised user is not a global owner
+            - invalid token
 
     Return Value:
         empty dictionary
@@ -101,6 +102,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
             and they are being demoted to member
         AccessError:
             - the authorised user is not a global owner
+            - invalid token
 
     Return Value:
         empty dictionary
