@@ -47,8 +47,7 @@ def admin_user_remove_v1(token, u_id):
 
     
     # remove user from channels
-    for channel_id in channels.keys():
-        channel_info = channels[channel_id]
+    for channel_info in channels.values():
         channel_members = channel_info["all_members"]
         channel_owners = channel_info["owner_members"]
         if u_id in channel_owners:
@@ -57,8 +56,7 @@ def admin_user_remove_v1(token, u_id):
             channel_members.remove(u_id)
     
     # remove user from dms
-    for dm_id in dms.keys():
-        dm_info = dms[dm_id]
+    for dm_info in dms.values():
         dm_members = dm_info["members"]
         dm_owner = dm_info["owner"]
         if u_id in dm_members:
@@ -67,8 +65,7 @@ def admin_user_remove_v1(token, u_id):
             dm_owner = None
     
     # Replace user's messages with 'Removed user'
-    for message_id in messages.keys():
-        message_info = messages[message_id]
+    for message_info in messages.values():
         user_id = message_info["u_id"]
         if u_id == user_id:
             message_info["message"] = "Removed user"
