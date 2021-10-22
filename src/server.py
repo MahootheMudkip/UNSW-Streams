@@ -202,11 +202,11 @@ def dm_create():
 
     return dumps(dm_create_v1(token, u_ids))
 
-# @APP.route("/dm/list/v1", methods=['GET'])
-# def dm_list():
-#     token = request.args.get("token")
-# 
-#     return dumps(dm_list_v1(token))
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    token = request.args.get("token")
+ 
+    return dumps(dm_list_v1(token))
 
 # @APP.route("/dm/remove/v1", methods=['DELETE'])
 # def dm_remove():
