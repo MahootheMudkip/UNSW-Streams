@@ -24,6 +24,7 @@ def setup():
     response1 = requests.post(url + "auth/register/v2", json=user1_info)
     assert(response1.status_code == NO_ERROR)
     tok1 = response1.json()["token"]
+    u_id1 = response1.json()["auth_user_id"]
 
     user2_info = {
         "email" : "taken@email.com", 
@@ -36,7 +37,8 @@ def setup():
     assert(response2.status_code == NO_ERROR)
 
     return {
-        "tok1": tok1
+        "tok1": tok1,
+        "u_id1": u_id1
     }
 
 # test invalid token
@@ -59,5 +61,9 @@ def test_register_email_taken(setup):
 # test update email
 def test_valid_email(setup):
     token = setup["tok1"]
+    u_id = setup["u_id1"]
     response = requests.put(URL, json={"token":token, "email": "valid@email.com"})
     assert response.status_code == NO_ERROR
+
+    response = requests.get(url + "user/profile/v1", params={"token":token,"u_id":u_id})
+    assert response.json()["user"]["email"] == "valid@email.com"
