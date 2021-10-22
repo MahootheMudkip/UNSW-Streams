@@ -1,7 +1,6 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
- 
 
 def dm_create_v1(token, u_ids):
     '''
@@ -77,7 +76,6 @@ def dm_list_v1(token):
     store = data_store.get()
     dms = store["dms"]
     
-    
     #check if the user is part of a dm
     #append the dm_is to dm list if they are
     for dm in dms.keys():
@@ -87,7 +85,6 @@ def dm_list_v1(token):
     return {
         "dms" : dm_list
     }    
-
 
 def dm_details_v1(token, dm_id ):
     
@@ -114,14 +111,43 @@ def dm_details_v1(token, dm_id ):
     #append each member's details from users to members list
     #remove is_owner, password and sessions field
     for member_id in member_ids:
-        user = users[member_id]
-        user.pop("password")
-        user.pop("is_owner")
-        user.pop("sessions")
-        user["u_id"] = member_id
-        members.append(user)
+        # appending new_user dictionary
+        user_info = users[member_id]
+        user_copy = user_info.copy()
+        # remove unecessary fields
+        user_copy.pop("password")
+        user_copy.pop("is_owner")
+        user_copy.pop("sessions")
+        # add u_id item
+        user_copy["u_id"] = member_id
+    
+        members.append(user_copy)
     
     return {
         "name" : name, 
         "members" : members
     }
+
+
+
+def dm_remove_v1(token, dm_id):
+    #get user id from a token
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    dms = store["dms"]
+    
+    #check if dm id is valid
+    if dm_id not in dms:
+        raise InputError("dm id not valid")
+
+    #check if user is the owner
+    if auth_user_id != dms[dm_id]["owner"]:
+        raise AccessError("user not the owner of the dm")
+
+    #remove the dm
+    del dms[dm_id]
+    
+    data_store.set(store)
+    return {}
+
