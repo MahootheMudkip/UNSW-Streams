@@ -104,18 +104,30 @@ def test_check_dm_removed(data):
         "dm_id" : 0
     })
 
-    store = data_store.get()
-    dms = store["dms"]
-    assert (dm1 not in dms.keys())
-
-    reponnse1 = requests.get(url + "dm/remove/v1", params={
-        "token" : data["token2"]
-        "dm_id" : 1
+    
+    #get a list of dms of user with token and test
+    response1 = requests.get(url + "dm/leave/v1", params={
+        "token" : data["token1"],
+        "dm_id": data["dm_id2"]
     })
+    assert response1.status_code == NO_ERROR
 
-    store = data_store.get()
-    dms = store["dms"]
-    assert (dm2 not in dms.keys())
+    
+    dm_id_response1 = requests.get(url + "dm/list/v1", 
+    params = {
+        "token": token1
+    })
+    assert dm_id_response1.status_code == NO_ERROR
+    data1 = dm_id_response1.json()
+
+    #loop through the dms list and check that dm, user left isn't there
+    for dms in data1["dms"]:
+        for dm_ids in dms["dm_id"]:
+            #user id of token 1 is 0
+            assert (dm_ids != 0)
+
+
+
 
 
         
