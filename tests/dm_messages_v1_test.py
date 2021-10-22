@@ -72,11 +72,11 @@ def test_dm_messages_invalid_token(initial_setup):
 
 # testing non-member trying to access valid dm
 def test_dm_messages_unauthorised_user(initial_setup):
-    user2_token = initial_setup["user2_token"]
+    user1_token = initial_setup["user1_token"]
     dm_id = initial_setup["dm_id"]
 
     response1 = requests.get(URL, params={
-        "token":        user2_token,
+        "token":        user1_token,
         "dm_id":        dm_id,
         "start":        0
     })
@@ -93,11 +93,11 @@ def test_dm_messages_invalid_token_and_dm_id(initial_setup):
 
 # invalid start value only
 def test_dm_messages_invalid_start(initial_setup):
-    user1_token = initial_setup["user1_token"]
+    user0_token = initial_setup["user0_token"]
     dm_id = initial_setup["dm_id"]
 
     response1 = requests.get(URL, params={
-        "token":        user1_token,
+        "token":        user0_token,
         "dm_id":        dm_id,
         "start":        498986984
     })
@@ -105,22 +105,22 @@ def test_dm_messages_invalid_start(initial_setup):
 
 # valid start index 
 def test_dm_messages_valid(initial_setup):
-    user1_token = initial_setup["user1_token"]
+    user0_token = initial_setup["user0_token"]
     dm_id = initial_setup["dm_id"]
     
     requests.post(url + "message/senddm/v1", json={
-        "token":        user1_token,
+        "token":        user0_token,
         "dm_id":        dm_id,
         "message":      "hi"
     })
     requests.post(url + "message/senddm/v1", json={
-        "token":        user1_token,
+        "token":        user0_token,
         "dm_id":        dm_id,
         "message":      "hi"
     })
 
     response1 = requests.get(URL, params={
-        "token":        user1_token,
+        "token":        user0_token,
         "dm_id":        dm_id,
         "start":        0
     })
@@ -133,18 +133,18 @@ def test_dm_messages_valid(initial_setup):
 
 # valid start index, extracting 50 dms, 1 dm remaining
 def test_dm_messages_valid_1_remaining(initial_setup):
-    user1_token = initial_setup["user1_token"]
+    user0_token = initial_setup["user0_token"]
     dm_id = initial_setup["dm_id"]
     
     for i in range(51):
         requests.post(url + "message/senddm/v1", json={
-            "token":        user1_token,
+            "token":        user0_token,
             "dm_id":        dm_id,
             "message":      "hi" + str(i)
         })
 
     response1 = requests.get(URL, params={
-        "token":        user1_token,
+        "token":        user0_token,
         "dm_id":        dm_id,
         "start":        0
     })
@@ -157,18 +157,18 @@ def test_dm_messages_valid_1_remaining(initial_setup):
 
 # valid start index, extracting 50 dms, 1 dm remaining
 def test_dm_messages_valid_0_remaining(initial_setup):
-    user1_token = initial_setup["user1_token"]
+    user0_token = initial_setup["user0_token"]
     dm_id = initial_setup["dm_id"]
     
     for i in range(50):
         requests.post(url + "message/senddm/v1", json={
-            "token":        user1_token,
+            "token":        user0_token,
             "dm_id":        dm_id,
             "message":      "hi" + str(i)
         })
 
     response1 = requests.get(URL, params={
-        "token":        user1_token,
+        "token":        user0_token,
         "dm_id":        dm_id,
         "start":        0
     })
