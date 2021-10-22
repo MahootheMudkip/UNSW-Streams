@@ -35,7 +35,7 @@ def data():
     })
     user2 = json.loads(user2_response.text)
     user2_token = user2["token"]
-    user2_id = user2["auth_user_id"]
+    
 
     #create user 3
     user3_response = requests.post(url + "auth/register/v2", 
@@ -111,7 +111,7 @@ def test_num_dm(data):
     })
     assert response2.status_code == NO_ERROR
     data2 = response2.json()
-    assert (len(data1["dms"]) == 2)
+    assert (len(data2["dms"]) == 2)
 
 
 #test deatils of dms list returned
@@ -140,9 +140,10 @@ def test_returned_details(data):
     })
     assert dm_id_response2.status_code == NO_ERROR
     data2 = dm_id_response2.json()
-    assert (data2["dms"][1]["dm_id"] == dm2_id)
-    assert (data2["dms"][2]["dm_id"] == dm3_id)
-    assert (data2["dms"][0]["name"] == "donjqfe, ghijkl, ratsat") 
+    assert (data2["dms"][0]["dm_id"] == dm2_id)
+    assert (data2["dms"][1]["dm_id"] == dm3_id)
+    assert (data2["dms"][0]["name"] == "donjqfe, ghijkl, ratsat")
+    assert (data2["dms"][1]["name"] == "ghijkl, ratsat") 
 
     #check dm id for user 3
     dm_id_response3 = requests.get(url + "dm/list/v1", 
@@ -150,9 +151,10 @@ def test_returned_details(data):
         "token":    token3
     })
     assert dm_id_response3.status_code == NO_ERROR
-    data3 = dm_id_response1.json()
+    data3 = dm_id_response3.json()
+    assert (data3["dms"][1]["name"] == "ghijkl, ratsat")
     assert (data3["dms"][0]["dm_id"] == dm2_id)
     assert (data3["dms"][1]["dm_id"] == dm3_id)
-    assert (data3["dms"][0]["name"] == "ghijkl, ratsat")
+    
     
 
