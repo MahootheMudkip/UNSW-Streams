@@ -178,7 +178,6 @@ def test_u_id_not_in_channel(initial_data):
     resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user2_token, "channel_id": channel0_id, "u_id": user3_id})
     assert(resp.status_code == INPUT_ERROR)
 
-
 # channel_id is valid but the authorised user does not have owner permissions in the channel
 def test_auth_user_isnt_owner(initial_data):
     user2_token = initial_data["user2_token"]
@@ -195,12 +194,42 @@ def test_auth_user_isnt_owner(initial_data):
 # u_id refers to a user who is already an owner of the channel
 def test_u_id_is_an_owner(initial_data):
     user2_id = initial_data["user2_id"]
-    user1_token = initial_data["user1_token"]
+    user2_token = initial_data["user2_token"]
     channel0_id = initial_data["channel0_id"]
     
-    resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user1_token, "channel_id": channel0_id, "u_id": user2_id})
+    resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user2_token, "channel_id": channel0_id, "u_id": user2_id})
     assert(resp.status_code == INPUT_ERROR)
 
+# u_id refers to a global owner is a member of the channel
+def test_u_id_global_owner_is_member(initial_data):
+    user3_id = initial_data["user3_id"]
+    user1_token = initial_data["user1_token"]
+    user3_token = initial_data["user3_token"]
+    channel0_id = initial_data["channel0_id"]
+
+    response = requests.post(config.url + "channel/join/v2", json={
+        "token":        user3_token,
+        "channel_id":   channel0_id
+    })
+    assert response.status_code == NO_ERROR
+    
+    resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user1_token, "channel_id": channel0_id, "u_id": user3_id})
+    assert(resp.status_code == NO_ERROR)
+
+# u_id refers to a global owner who is not a member of the channel
+def test_u_id_global_owner_not_member(initial_data):
+    user2_id = initial_data["user2_id"]
+    user1_token = initial_data["user1_token"]
+    channel0_id = initial_data["channel0_id"]
+
+    response = requests.post(config.url + "channel/leave/v1", json={
+        "token":        user1_token,
+        "channel_id":   channel0_id
+    })
+    assert response.status_code == NO_ERROR
+
+    resp = requests.post(config.url + 'channel/addowner/v1', json={"token": user1_token, "channel_id": channel0_id, "u_id": user2_id})
+    assert(resp.status_code == ACCESS_ERROR)
 
 # test adds two owners to the private channel
 def test_adding_owner_private_channel(initial_data):
