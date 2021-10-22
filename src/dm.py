@@ -87,3 +87,41 @@ def dm_list_v1(token):
     return {
         "dms" : dm_list
     }    
+
+
+def dm_details_v1(token, dm_id ):
+    
+    #get user id from a token
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    dms = store["dms"]
+    users = store["users"]
+
+    #check if user dm id valid
+    if dm_id not in dms:
+        raise InputError("dm id not valid")
+
+    #check if the user is part of the dm
+    if auth_user_id not in dms[dm_id]["members"]:
+        raise AccessError("user is not part of the dm")
+    
+    #extract details
+    name = dms[dm_id]["name"]
+    member_ids = dms[dm_id]["members"]
+    members = []
+
+    #append each member's details from users to members list
+    #remove is_owner, password and sessions field
+    for member_id in member_ids:
+        user = users[member_id]
+        user.pop("password")
+        user.pop("is_owner")
+        user.pop("sessions")
+        user["u_id"] = member_id
+        members.append(user)
+    
+    return {
+        "name" : name, 
+        "members" : members
+    }

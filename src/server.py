@@ -217,12 +217,12 @@ def dm_list():
 # 
 #     return dumps(dm_remove_v1(token, dm_id))
 
-# @APP.route("/dm/details/v1", methods=['GET'])
-# def dm_details():
-#     token = request.args.get("token")
-#     dm_id = request.args.get("dm_id")
-# 
-#     return dumps(dm_details_v1(token, dm_id))
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_details():
+    token = request.args.get("token")
+    dm_id = int(request.args.get("dm_id"))
+
+    return dumps(dm_details_v1(token, dm_id))
 
 # @APP.route("/dm/leave/v1", methods=['POST'])
 # def dm_leave():
