@@ -241,15 +241,15 @@ def dm_leave():
 # 
 #     return dumps(dm_messages_v1(token, dm_id, start))
 
-# @APP.route("/message/senddm/v1", methods=['POST'])
-# def message_senddm():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_senddm_v1(tokem, dm_id, message))
+@APP.route("/message/senddm/v1", methods=['POST'])
+def message_senddm():
+    data = request.get_json()
+
+    token = data["token"]
+    dm_id = data["dm_id"]
+    message = data["message"]
+
+    return dumps(message_senddm_v1(token, dm_id, message))
 
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
