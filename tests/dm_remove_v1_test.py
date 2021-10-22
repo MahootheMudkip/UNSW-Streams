@@ -125,8 +125,6 @@ def test_check_dm_removed(data):
     data2 = dm_id_response2.json()
 
     assert (len(data2["dms"]) == 1)
-    
-
 
 
         

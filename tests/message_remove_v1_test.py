@@ -317,3 +317,11 @@ def test_message_remove_v1_normal_user_messages(initial_setup):
         "message_id":   message2_id,
     })
     assert response6.status_code == NO_ERROR
+
+    response = requests.get(url + "channel/messages/v2", params={
+        "token":        user2_token,
+        "channel_id":   private_channel_id,
+        "start":        0
+    })
+    assert response.status_code == NO_ERROR
+    assert len(response.json()["messages"]) == 3
