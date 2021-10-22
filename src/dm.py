@@ -55,3 +55,35 @@ def dm_create_v1(token, u_ids):
         "dm_id" : dm_id
     }
   
+def dm_list_v1(token):
+    '''
+    Returns the list of DMs that the user is a member of.
+    
+    Arguments:
+        token (str):            the given token
+        
+    Exceptions:
+        AccessError:
+            - token invalid
+    
+    Return Value:
+        A dictionary with dms as key and value being a list of DMs
+        that the user is a member of.
+    '''
+    auth_user_id = get_auth_user_id(token)
+    dm_list = []
+    
+    #extract data from data store
+    store = data_store.get()
+    dms = store["dms"]
+    
+    
+    #check if the user is part of a dm
+    #append the dm_is to dm list if they are
+    for dm in dms.keys():
+        if auth_user_id in dms[dm]["members"]:
+            dm_list.append({"dm_id" : dm , "name" : dms[dm]["name"]})
+    
+    return {
+        "dms" : dm_list
+    }    
