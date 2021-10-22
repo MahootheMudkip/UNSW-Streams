@@ -68,9 +68,9 @@ def get_auth_user_id(encoded_jwt):
                 return u_id
     # token is not in valid format
     except Exception as e:
-        raise AccessError("Token is invalid") from e
+        raise AccessError(description="Token is invalid") from e
     # session_id does not exist
-    raise AccessError("Session is inactive")
+    raise AccessError(description="Session is inactive")
 
 def get_session_id(encoded_jwt):
     """

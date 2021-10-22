@@ -33,17 +33,17 @@ def message_send_v1(token, channel_id, message):
 
     # specified channel doesn't exist
     if channel_id not in channels.keys(): 
-        raise InputError("Invalid channel_id")
+        raise InputError(description="Invalid channel_id")
 
     # if it reaches this point, the channel_id must be valid
     channel_info = channels[channel_id]
     channel_members = channel_info["all_members"]
 
     if auth_user_id not in channel_members:
-        raise AccessError("Valid channel_id and authorised user not a member")
+        raise AccessError(description="Valid channel_id and authorised user not a member")
 
     if not 1 <= len(message) <= 1000:
-        raise InputError("Invalid message length")
+        raise InputError(description="Invalid message length")
 
     # at this point, everything is valid
     message_id_tracker = store["message_id_tracker"]
@@ -128,7 +128,7 @@ def message_edit_v1(token, message_id, message):
                     break
     
     if location_found == False:
-        raise InputError("message_id not within a channel/dm that the user has joined")
+        raise InputError(description="message_id not within a channel/dm that the user has joined")
 
     # if it reaches this point, the user is part of the channel/dm of the message
     # and a valid location has been found
@@ -141,14 +141,14 @@ def message_edit_v1(token, message_id, message):
         if location_type == "channel":
             if auth_user_id not in location_info["owner_members"] and user_is_owner == False:
                 # not a owner or global owner
-                raise AccessError("Unauthorised user")
+                raise AccessError(description="Unauthorised user")
         else:
             if auth_user_id != location_info["owner"]:
-                raise AccessError("Unauthorised user")
+                raise AccessError(description="Unauthorised user")
     
     # if it reaches this point, user has proper authorisation
     if len(message) > 1000:
-        raise InputError("Message is too long")    
+        raise InputError(description="Message is too long")    
     
     # if message is empty, delete it 
     if len(message) == 0:

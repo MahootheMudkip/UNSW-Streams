@@ -32,11 +32,11 @@ def admin_user_remove_v1(token, u_id):
 
     # check if auth_user does not have owner permissions.
     if users[auth_user_id]["is_owner"] == False:
-        raise AccessError("Authorised User is not a global owner.")
+        raise AccessError(description="Authorised User is not a global owner.")
     
     # checks for invalid u_id.
     if u_id not in users.keys():
-        raise InputError("Invalid User. Doesn't exist.")
+        raise InputError(description="Invalid User. Doesn't exist.")
 
     global_owners = []
     for user_id, user_info in users.items():
@@ -44,7 +44,7 @@ def admin_user_remove_v1(token, u_id):
             global_owners.append(user_id)
     
     if u_id in global_owners and len(global_owners) == 1:
-        raise InputError("u_id refers to a user who is the only global owner")
+        raise InputError(description="u_id refers to a user who is the only global owner")
 
 
     # remove user from channels
@@ -114,15 +114,15 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
 
     # check if auth_user does not have owner permissions.
     if users[auth_user_id]["is_owner"] == False:
-        raise AccessError("Authorised User is not a global owner.")
+        raise AccessError(description="Authorised User is not a global owner.")
     
     # cheks for invalid permission_id
     if permission_id not in [1, 2]:
-        raise InputError("Permission_id is invalid")
+        raise InputError(description="Permission_id is invalid")
 
     # checks for invalid u_id.
     if u_id not in users.keys():
-        raise InputError("Invalid User. Doesn't exist.")
+        raise InputError(description="Invalid User. Doesn't exist.")
     
     # get list of global_owners
     global_owners = []
@@ -132,7 +132,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     
     # checks for u_id being last user with global permissions
     if u_id in global_owners and len(global_owners) == 1 and permission_id == 2:
-        raise InputError("u_id refers to a user who is the only global owner")
+        raise InputError(description="u_id refers to a user who is the only global owner")
 
     # change specified user's permissions
     if permission_id == 1:
