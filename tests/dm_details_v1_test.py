@@ -42,7 +42,7 @@ def data():
         "name_last": "Ritcher"
 
     })
-    token3 = response1.json()["token"]
+    token3 = response3.json()["token"]
 
     # create user 4 
     response4 = requests.post(url + "auth/register/v2", json={
@@ -52,7 +52,7 @@ def data():
         "name_last": "Von hagen"
 
     })
-    token4 = response1.json()["token"]
+    token4 = response4.json()["token"]
 
     response = requests.post(url + "dm/create/v1", json={
         "token": token1,
