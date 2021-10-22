@@ -210,6 +210,38 @@ def test_auth_user_not_in_channel(initial_data):
     resp = requests.post(config.url + 'channel/removeowner/v1', json={"token": user4_token, "channel_id": channel0_id, "u_id": user2_id})
     assert(resp.status_code == ACCESS_ERROR)
 
+# u_id refers to a global owner is a member of the channel
+def test_u_id_global_owner_is_member(initial_data):
+    user3_id = initial_data["user3_id"]
+    user1_token = initial_data["user1_token"]
+    channel0_id = initial_data["channel0_id"]
+
+    response = requests.post(config.url + "channel/addowner/v1", json={
+        "token":        user1_token,
+        "channel_id":   channel0_id,
+        "u_id":         user3_id
+    })
+    assert response.status_code == NO_ERROR
+    
+    resp = requests.post(config.url + 'channel/removeowner/v1', json={"token": user1_token, "channel_id": channel0_id, "u_id": user3_id})
+    assert(resp.status_code == NO_ERROR)
+
+# u_id refers to a global owner who is not a member of the channel
+def test_u_id_global_owner_not_member(initial_data):
+    user2_id = initial_data["user2_id"]
+    user1_token = initial_data["user1_token"]
+    channel0_id = initial_data["channel0_id"]
+
+    response = requests.post(config.url + "channel/leave/v1", json={
+        "token":        user1_token,
+        "channel_id":   channel0_id
+    })
+    assert response.status_code == NO_ERROR
+
+    resp = requests.post(config.url + 'channel/removeowner/v1', json={"token": user1_token, "channel_id": channel0_id, "u_id": user2_id})
+    assert(resp.status_code == ACCESS_ERROR)
+
+
 # u_id is not a member of the channel
 def test_u_id_not_in_channel(initial_data):
     user2_token = initial_data["user2_token"]

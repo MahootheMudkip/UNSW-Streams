@@ -404,11 +404,15 @@ def channel_removeowner_v1(token, channel_id, u_id):
     # Obtain required channel information.
     channel_info = channels[channel_id]
     channel_owners = channel_info["owner_members"]
+    channel_all_members = channel_info["all_members"]
 
     # check if auth_user does not have owner permissions.
-    if auth_user_id not in channel_owners and users[auth_user_id]["is_owner"] == False:
+    if users[auth_user_id]["is_owner"] == True:
+        if auth_user_id not in channel_all_members:
+            raise AccessError(description="Authorised User does not have owner permissions in the channel.")
+    elif auth_user_id not in channel_owners:
         raise AccessError(description="Authorised User does not have owner permissions in the channel.")
-    
+        
     # checks for invalid u_id.
     if u_id not in users.keys():
         raise InputError(description="Invalid User. Doesn't exist.")
