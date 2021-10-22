@@ -266,3 +266,26 @@ def test_message_send_v1_unique_message_id(initial_setup):
         uid.append(data2["message_id"])
 
     assert len(set(uid)) == 150
+
+# testing that message contents are unique
+def test_message_send_v1_unique_message_contents(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    public_channel = initial_setup["public_channel_id"]
+
+    response = requests.post(URL, json={
+        "token": user1_token,
+        "channel_id": public_channel,
+        "message": "Kieran and christian loves maths tests so much that they did another one"
+    })
+    response.status_code == NO_ERROR
+
+    response = requests.get(url + "channel/messages/v2", params={
+        "token": user1_token,
+        "channel_id": public_channel,
+        "start": 0
+    })
+    response.status_code == NO_ERROR
+
+    messages = response.json()["messages"]
+    assert messages[0]["message"] == "Kieran and christian loves maths tests so much that they did another one"
+
