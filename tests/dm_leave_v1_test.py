@@ -102,22 +102,18 @@ def test_user_left(data):
     assert response1.status_code == NO_ERROR
 
     #get a list of dms of user with token and test
-    dm_id_response1 = requests.get(url + "dm/list/v1", 
+    dm_id_response1 = requests.get(url + "dm/details/v1", 
     params = {
         "token": token1
     })
     assert dm_id_response1.status_code == NO_ERROR
     data1 = dm_id_response1.json()
 
-    #loop through the dms list and check that dm, user left isn't there
-    for dms in data1["dms"]:
-        for dm_ids in dms["dm_id"]:
-            #user id of token 1 is 0
-            assert (dm_ids != 0)
+    assert (len(data1["members"] == 1))
 
 
     #when a normal user leaves
-    response2 = requests.get(url + "dm/leave/v1", params={
+    response2 = requests.get(url + "dm/details/v1", params={
         "token" : data["token0"],
         "dm_id": data["dm_id1"]
     })
@@ -130,12 +126,10 @@ def test_user_left(data):
     })
     assert dm_id_response2.status_code == NO_ERROR
     data2 = dm_id_response1.json()
-    
-    #loop through the dms list and check that dm, user left isn't there
-    for dms in data2["dms"]:
-        for dm_ids in dms["dm_id"]:
-            #user id of token 1 is 0
-            assert (dm_ids != 0)
 
+    assert (len(data2["members"] == 2))
+
+    
+    
 
 
