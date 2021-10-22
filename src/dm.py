@@ -179,8 +179,6 @@ def dm_leave_v1(token, dm_id):
 
 def message_senddm_v1(token, dm_id, message):
 
-
-
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
@@ -229,3 +227,51 @@ def message_senddm_v1(token, dm_id, message):
         "message_id": message_id_tracker
     }
 
+
+def dm_messages_v1(token, dm_id, start):
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    dms = store["dms"]
+    all_messages = store["messages"]
+
+    # specified dm doesn't exist
+    if dm_id not in dms.keys(): 
+        raise InputError("Invalid dm_id")
+
+    # declaring default values for return variables
+    total_message_num = 0
+    messages = []
+    end = start + 50
+
+    # if it reaches this point, the dm_id must be valid
+    dm_info = dms[dm_id]
+    dm_members = dm_info["members"]
+    dm_messages = dm_info["messages"]
+
+    # list of message_id's
+    total_message_num = len(dm_messages)
+
+    if auth_user_id not in dm_members:
+        raise AccessError("Valid dm_id and authorised user not a member")
+
+    # start is greater than the total number of messages in dm
+    if start > total_message_num:
+        raise InputError("start is an invalid value")
+
+    # Reverse channel_messages so that most recent msg is index 0
+    # Then, slice list to get msgs between start and end index
+    dm_messages = list(reversed(dm_messages))[start:end]
+    messages = [all_messages[x] for x in dm_messages]
+
+    # this is when you return the least recent message in the channel
+    # since "start" starts from 0, we use >= rather than > 
+    if (start + 50) >= total_message_num:
+        end = -1
+
+    return {
+        'messages': messages,
+        'start': start,
+        'end': end,
+    }
