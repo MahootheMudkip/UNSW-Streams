@@ -1,4 +1,6 @@
 import json
+from src.error import AccessError
+from typing import NoReturn
 import pytest
 import requests
 from src.config import url
@@ -10,13 +12,16 @@ NO_ERROR = 200
 URL = url + "message/edit/v1"
 
         # "user0_token":          user0_token,
+        # "user0_id":             user0_id,
         # "user1_token":          user1_token,
         # "user2_token":          user2_token,
         # "user2_id":             user2_id,
         # "message_id_public":    message_id_public,
         # "message_id_private":   message_id_private,
         # "public_channel_id":    public_channel_id,
-        # "private_channel_id":   private_channel_id
+        # "private_channel_id":   private_channel_id,
+        # "dm_messages":          dm_messages,
+        # "dm_id1":               dm_id1
 
 @pytest.fixture
 def initial_setup():
@@ -101,6 +106,24 @@ def initial_setup():
         data = response.json()
         message_id_private.append(data["message_id"])
 
+    response = requests.post(url + "dm/create/v1", json={
+        "token":    user1_token,
+        "u_ids":    [0, 2]
+        })
+    assert response.status_code == NO_ERROR
+    dm_id1 = response.json()["dm_id"]
+
+    dm_messages = []
+    for j in range(3):
+        response = requests.post(f"{url}message/senddm/v1", json={
+            "token":        user1_token,
+            "dm_id":        dm_id1,
+            "message":      f"This is dm msg {j}"
+        })
+        assert response.status_code == NO_ERROR
+        data = response.json()
+        dm_messages.append(data["message_id"])
+        
     return {
         "user0_token":          user0_token,
         "user0_id":             user0_id,
@@ -110,7 +133,9 @@ def initial_setup():
         "message_id_public":    message_id_public,
         "message_id_private":   message_id_private,
         "public_channel_id":    public_channel_id,
-        "private_channel_id":   private_channel_id
+        "private_channel_id":   private_channel_id,
+        "dm_messages":          dm_messages,
+        "dm_id1":               dm_id1
     }
 
 # testing invalid token only
@@ -241,7 +266,7 @@ def test_message_edit_v1_user_not_owner(initial_setup):
     })
     assert response4.status_code == ACCESS_ERROR
 
-# testing global owner (member of channel) editing non own messages
+# testing global owner (member of channel) editing non own messages in channel
 def test_message_edit_v1_global_user_messages(initial_setup):
     user1_token = initial_setup["user1_token"]
     user0_id = initial_setup["user0_id"]
@@ -269,18 +294,38 @@ def test_message_edit_v1_global_user_messages(initial_setup):
     response3 = requests.put(URL, json={
         "token":        user0_token,
         "message_id":   message_id1,
-        "message":      "valid message"
+        "message":      "hello there 2"
     })
     assert response3.status_code == NO_ERROR
 
     response4 = requests.put(URL, json={
         "token":        user0_token,
         "message_id":   message_id2,
-        "message":      "valid message"
+        "message":      "hello there 1"
     })
     assert response4.status_code == NO_ERROR
 
-# testing normal user (member of channel) editing own messages
+    response = requests.get(url + "channel/messages/v2", params={
+        "token":        user1_token,
+        "channel_id":   public_channel_id,
+        "start":        0
+    })
+    # Need to check index in reverse order as messages are returned from 
+    # most recent to least recent
+    assert response.status_code == NO_ERROR
+    assert response.json()["messages"][0]["message"] == "hello there 2"
+
+    response = requests.get(url + "channel/messages/v2", params={
+        "token":        user1_token,
+        "channel_id":   private_channel_id,
+        "start":        0
+    })
+    # Need to check index in reverse order as messages are returned from 
+    # most recent to least recent
+    assert response.status_code == NO_ERROR
+    assert response.json()["messages"][1]["message"] == "hello there 1"
+
+# testing normal user (member of channel) editing own messages in channel
 def test_message_edit_v1_normal_user_messages(initial_setup):
     user1_token = initial_setup["user1_token"]
     user2_id = initial_setup["user2_id"]
@@ -334,3 +379,83 @@ def test_message_edit_v1_normal_user_messages(initial_setup):
         "message":      "Rachmaninoff"
     })
     assert response6.status_code == NO_ERROR
+
+# testing global owner (member of dm) editing someone elses messages
+def test_message_edit_v1_global_owner_someone_elses_msgs(initial_setup):
+    user0_token = initial_setup["user0_token"]
+    message_id1 = initial_setup["dm_messages"][0]
+
+    response = requests.put(URL, json={
+        "token":        user0_token,
+        "message_id":   message_id1,
+        "message":      "new message"
+    })
+    assert response.status_code == ACCESS_ERROR 
+
+# testing global owner (not member of dm) editing non own messages in dm
+def test_message_edit_v1_global_user_dm(initial_setup):
+    user0_token = initial_setup["user0_token"]
+    message_id1 = initial_setup["dm_messages"][0]
+
+    # leave dm
+    requests.post(url + "dm/leave/v1", json={
+        "token":    user0_token,
+        "dm_id":    0
+    })
+    # try to edit dm that user0 has already left
+    response = requests.put(URL, json={
+        "token":        user0_token,
+        "message_id":   message_id1,
+        "message":      "new message"
+    })
+    assert response.status_code == INPUT_ERROR
+
+# testing member editing own messages in dm
+def test_message_edit_v1_own_dm(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    message_id1 = initial_setup["dm_messages"][0]
+
+    response = requests.put(URL, json={
+        "token":        user1_token,
+        "message_id":   message_id1,
+        "message":      "new message"
+    })
+    assert response.status_code == NO_ERROR
+
+    response = requests.get(url + "dm/messages/v1", params={
+        "token":        user1_token,
+        "dm_id":        0,
+        "start":        0
+    })
+    assert response.status_code == NO_ERROR
+    assert response.json()["end"] == -1
+    assert response.json()["messages"][2]["message"] == "new message"
+
+# testing owner editing someone elses messages in dm
+def test_message_edit_v1_owner_changes_someones_elses_dm(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    user2_token = initial_setup["user2_token"]
+
+    response = requests.post(f"{url}message/senddm/v1", json={
+        "token":        user2_token,
+        "dm_id":        0,
+        "message":      "bye bye"
+    })
+    assert response.status_code == NO_ERROR
+    message_id3 = response.json()["message_id"]
+
+    response = requests.put(URL, json={
+        "token":        user1_token,
+        "message_id":   message_id3,
+        "message":      "ineedsleep"
+    })
+    assert response.status_code == NO_ERROR
+
+    response = requests.get(url + "dm/messages/v1", params={
+        "token":        user1_token,
+        "dm_id":        0,
+        "start":        0
+    })
+    assert response.status_code == NO_ERROR
+    assert response.json()["end"] == -1
+    assert response.json()["messages"][0]["message"] == "ineedsleep"

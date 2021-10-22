@@ -130,7 +130,8 @@ def message_edit_v1(token, message_id, message):
     if location_found == False:
         raise InputError("message_id not within a channel/dm that the user has joined")
 
-    # if it reaches this point, a valid location has been found
+    # if it reaches this point, the user is part of the channel/dm of the message
+    # and a valid location has been found
     user_info = store["users"][auth_user_id]
     user_is_owner = user_info["is_owner"]
     
@@ -141,8 +142,8 @@ def message_edit_v1(token, message_id, message):
             if auth_user_id not in location_info["owner_members"] and user_is_owner == False:
                 # not a owner or global owner
                 raise AccessError("Unauthorised user")
-        elif location_type == "dm":
-            if auth_user_id != location_info["owner"] and user_is_owner == False:
+        else:
+            if auth_user_id != location_info["owner"]:
                 raise AccessError("Unauthorised user")
     
     # if it reaches this point, user has proper authorisation

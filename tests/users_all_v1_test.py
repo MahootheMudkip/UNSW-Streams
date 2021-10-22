@@ -110,3 +110,28 @@ def test_users_all_v1_correct_details(initial_setup):
         "name_last":    "Clarkson",
         "handle_str":   "jeremyclarkson"
     }
+
+def test_users_all_v1_remove_user(initial_setup):
+    token0 = initial_setup["user0_token"]
+    id1 = initial_setup["user1_id"]
+
+    # make sure there are initially 3 users
+    response = requests.get(URL, params={
+        "token": token0
+    })
+    assert response.status_code == NO_ERROR
+    assert len(response.json()["users"]) == 3
+
+    # remove a user
+    response = requests.delete(url + "admin/user/remove/v1", json={
+        "token": token0,
+        "u_id": id1
+    })
+    assert response.status_code == NO_ERROR
+
+    # make sure there are now only 2 users being returned
+    response = requests.get(URL, params={
+        "token": token0
+    })
+    assert response.status_code == NO_ERROR
+    assert len(response.json()["users"]) == 2
