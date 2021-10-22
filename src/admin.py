@@ -83,3 +83,60 @@ def admin_user_remove_v1(token, u_id):
     data_store.set(store)
 
     return {}
+
+
+def admin_userpermission_change_v1(token, u_id, permission_id):
+    '''
+    Given a u_id, changes the specified user's stream permissions.
+
+    Arguments:
+        token           (str): the given token
+        u_id            (int): the given u_id
+        permission_id   (int): type of permission to change into
+
+    Exceptions:
+        InputError:
+            - u_id does not refer to a valid user
+            - u_id refers to a user who is the only global owner
+            and they are being demoted to member
+        AccessError:
+            - the authorised user is not a global owner
+
+    Return Value:
+        empty dictionary
+    '''
+
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    users = store["users"]
+
+    # check if auth_user does not have owner permissions.
+    if users[auth_user_id]["is_owner"] == False:
+        raise AccessError("Authorised User is not a global owner.")
+    
+    # cheks for invalid permission_id
+    if permission_id not in [1, 2]:
+        raise InputError("Permission_id is invalid")
+
+    # checks for invalid u_id.
+    if u_id not in users.keys():
+        raise InputError("Invalid User. Doesn't exist.")
+    
+    # get list of global_owners
+    global_owners = []
+    for user_id, user_info in users.items():
+        if user_info["is_owner"] == True:
+            global_owners.append(user_id)
+    
+    # checks for u_id being last user with global permissions
+    if u_id in global_owners and len(global_owners) == 1 and permission_id == 2:
+        raise InputError("u_id refers to a user who is the only global owner")
+
+    # change specified user's permissions
+    if permission_id == 1:
+        users[u_id]["is_owner"] = True
+    elif permission_id == 2:
+        users[u_id]["is_owner"] = False
+
+    data_store.set(store)
+    return {}

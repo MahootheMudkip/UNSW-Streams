@@ -300,15 +300,15 @@ def admin_user_remove():
     
     return dumps(admin_user_remove_v1(token, u_id))
 
-# @APP.route("/admin/userpermission/change/v1", methods=['POST'])
-# def admin_userpermission_change():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     u_id = data["u_id"]
-#     permission_id = data["permission_id"]
-# 
-#     return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission_change():
+    data = request.get_json()
+
+    token = data["token"]
+    u_id = data["u_id"]
+    permission_id = data["permission_id"]
+
+    return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
