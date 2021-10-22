@@ -208,14 +208,14 @@ def dm_list():
  
     return dumps(dm_list_v1(token))
 
-# @APP.route("/dm/remove/v1", methods=['DELETE'])
-# def dm_remove():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-# 
-#     return dumps(dm_remove_v1(token, dm_id))
+@APP.route("/dm/remove/v1", methods=['DELETE'])
+def dm_remove():
+    data = request.get_json()
+
+    token = data["token"]
+    dm_id = data["dm_id"]
+
+    return dumps(dm_remove_v1(token, dm_id))
 
 @APP.route("/dm/details/v1", methods=['GET'])
 def dm_details():

@@ -125,3 +125,27 @@ def dm_details_v1(token, dm_id ):
         "name" : name, 
         "members" : members
     }
+
+
+
+def dm_remove_v1(token, dm_id):
+    #get user id from a token
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    dms = store["dms"]
+    
+    #check if dm id is valid
+    if dm_id not in dms:
+        raise InputError("dm id not valid")
+
+    #check if user is the owner
+    if auth_user_id != dms[dm_id]["owner"]:
+        raise AccessError("user not the owner of the dm")
+
+    #remove the dm
+    del dms[dm_id]
+    
+    data_store.set(store)
+    return {}
+
