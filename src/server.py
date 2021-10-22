@@ -233,13 +233,13 @@ def dm_leave():
 
     return dumps(dm_leave_v1(token, dm_id))
 
-# @APP.route("/dm/messages/v1", methods=['GET'])
-# def dm_messages():
-#     token = request.args.gets("token")
-#     dm_id = request.args.get("dm_id")
-#     start = request.args.get("start")
-# 
-#     return dumps(dm_messages_v1(token, dm_id, start))
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    token = request.args.get("token")
+    dm_id = int(request.args.get("dm_id"))
+    start = int(request.args.get("start"))
+
+    return dumps(dm_messages_v1(token, dm_id, start))
 
 @APP.route("/message/senddm/v1", methods=['POST'])
 def message_senddm():
