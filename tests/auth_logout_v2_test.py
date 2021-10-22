@@ -1,3 +1,4 @@
+from src.error import AccessError
 from tests.channels_create_v1_test import ACCESS_ERROR
 import pytest
 import requests
@@ -70,3 +71,7 @@ def test_auth_logout_multiple_sessions(setup):
     response1 = requests.post(url + "channels/create/v2", json={"token":token0, "name":"channel1", "is_public":True})
     assert response1.status_code == ACCESS_ERROR
 
+# logging out with a user token in the correct format but user doesn't exist
+def test_token_correct_format_user_doesnt_exist(setup):
+    response = requests.post(url + "auth/logout/v1", json={"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoX3VzZXJfaWQiOjEsInNlc3Npb25faWQiOjJ9.oxK-flUTSSD_p8xE-WKgn6Q3Mp8oojh-RGCqj69JPE4"})
+    assert response.status_code == ACCESS_ERROR
