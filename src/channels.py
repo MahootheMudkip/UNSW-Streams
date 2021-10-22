@@ -104,7 +104,7 @@ def channels_create_v1(token, name, is_public):
 
     # check length of channel name is valid
     if not 1 <= len(name) <= 20:
-        raise InputError("Invalid channel name")
+        raise InputError(description="Invalid channel name")
 
     # Create new channel and initialise fields
     new_channel = {

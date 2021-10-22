@@ -37,7 +37,7 @@ def auth_login_v1(email, password):
 
     # Raise input error if user cannot be logged in
     if return_id == None:
-        raise InputError("Email or Password is invalid")
+        raise InputError(description="Email or Password is invalid")
 
     return {
         'auth_user_id': return_id,
@@ -121,17 +121,17 @@ def auth_register_v1(email, password, name_first, name_last):
     # Perform series of checks to make sure registration can be authorised
     # - Email entered is not a valid email (does not match regex)
     if re.fullmatch(R'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email) == None:
-        raise InputError("Invalid email format")
+        raise InputError(description="Invalid email format")
     # - Email address is already being used by another user
     for user in users.values():
         if user["email"] == email:
-            raise InputError("Email already taken")
+            raise InputError(description="Email already taken")
     if len(password) < 6:
-        raise InputError("Password must be at least 6 characters")
+        raise InputError(description="Password must be at least 6 characters")
     if not 1 <= len(name_first) <= 50:
-        raise InputError("First name must be between 1 and 50 characters long")
+        raise InputError(description="First name must be between 1 and 50 characters long")
     if not 1 <= len(name_last) <= 50:
-        raise InputError("Last name must be between 1 and 50 characters long")
+        raise InputError(description="Last name must be between 1 and 50 characters long")
 
     # generate handle for user
     handle = generate_handle(name_first, name_last, users)
