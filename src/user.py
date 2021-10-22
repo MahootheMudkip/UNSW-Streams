@@ -27,14 +27,16 @@ def users_all_v1(token):
     users_list = []
 
     for u_id, user_info in users.items():
-        user_copy = user_info.copy()
-        # creates a separate dict copy
-        user_copy.pop("password")
-        user_copy.pop("is_owner")
-        user_copy.pop("sessions")
-        # remove password item from dict
-        user_copy["u_id"] = u_id
-        users_list.append(user_copy)
+        # add user to list if they're not a removed user
+        if user_info["email"] != None and user_info["handle_str"] != None:
+            user_copy = user_info.copy()
+            # creates a separate dict copy
+            user_copy.pop("password")
+            user_copy.pop("is_owner")
+            user_copy.pop("sessions")
+            # remove password item from dict
+            user_copy["u_id"] = u_id
+            users_list.append(user_copy)
         
     return {
         "users": users_list
