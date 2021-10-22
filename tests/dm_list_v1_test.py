@@ -13,7 +13,7 @@ def data():
     #clear
     requests.delete(url + "clear/v1")
 
-    #create a user
+    #create user 1
     user1_response = requests.post(url + "auth/register/v2", 
     json = {      
         "email":        "jwa@yamw.com", 
@@ -25,7 +25,7 @@ def data():
     user1_token = user1["token"]
     user1_id = user1["auth_user_id"]
 
-    #create a user
+    #create user 2
     user2_response = requests.post(url + "auth/register/v2", 
     json = {      
         "email":        "cat@mat.com", 
@@ -37,7 +37,7 @@ def data():
     user2_token = user2["token"]
     user2_id = user2["auth_user_id"]
 
-    #create a user
+    #create user 3
     user3_response = requests.post(url + "auth/register/v2", 
     json = {      
         "email":        "abc@def.com", 
@@ -73,7 +73,7 @@ def data():
         "token" : user2_token,
         "u_ids" : [user3_id]
     })
-    dm3 = dm_create1_res.json()
+    dm3 = dm_create3_res.json()
     dm3_id = dm3["dm_id"]
 
     return {
@@ -103,7 +103,7 @@ def test_num_dm(data):
     })
     assert response1.status_code == NO_ERROR
     data1 = response1.json()
-    assert (len(data1["dms"]) == 1)
+    assert (len(data1["dms"]) == 2)
 
     #check for user 2
     response2 = requests.get(url + "dm/list/v1", params={
@@ -135,9 +135,8 @@ def test_returned_details(data):
     })
     assert dm_id_response1.status_code == NO_ERROR
     data2 = dm_id_response1.json()
-    assert (data2["dms"][0]["dm_id"] == dm1_id)
-    assert (data2["dms"][1]["dm_id"] == dm2_id)
-    assert (data2["dms"][2]["dm_id"] == dm3_id)
+    assert (data2["dms"][0]["dm_id"] == dm2_id)
+    assert (data2["dms"][1]["dm_id"] == dm3_id)
 
     #check dm id for user 2
     dm_id_response1 = requests.get(url + "dm/list/v1", params={
