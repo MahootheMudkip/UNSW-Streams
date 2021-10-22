@@ -224,14 +224,14 @@ def dm_details():
 
     return dumps(dm_details_v1(token, dm_id))
 
-# @APP.route("/dm/leave/v1", methods=['POST'])
-# def dm_leave():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-# 
-#     return dumps(dm_leave_v1(token, dm_id))
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_leave():
+    data = request.get_json()
+
+    token = data["token"]
+    dm_id = data["dm_id"]
+
+    return dumps(dm_leave_v1(token, dm_id))
 
 # @APP.route("/dm/messages/v1", methods=['GET'])
 # def dm_messages():
