@@ -435,7 +435,6 @@ def test_message_edit_v1_own_dm(initial_setup):
 def test_message_edit_v1_owner_changes_someones_elses_dm(initial_setup):
     user1_token = initial_setup["user1_token"]
     user2_token = initial_setup["user2_token"]
-    message_id1 = initial_setup["dm_messages"][0]
 
     response = requests.post(f"{url}message/senddm/v1", json={
         "token":        user2_token,
