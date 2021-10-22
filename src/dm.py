@@ -151,3 +151,24 @@ def dm_remove_v1(token, dm_id):
     data_store.set(store)
     return {}
 
+
+def dm_leave_v1(token, dm_id):
+    #get user_id from token
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    dms = store["dms"]
+
+    #check if user dm id valid
+    if dm_id not in dms:
+        raise InputError("dm id not valid")
+
+    #check if the user is part of the dm
+    if auth_user_id not in dms[dm_id]["members"]:
+        raise AccessError("user is not part of the dm")
+
+    #remove the user
+    dms[dm_id]["members"].remove(auth_user_id)
+    data_store.set(store)
+
+    return {}
