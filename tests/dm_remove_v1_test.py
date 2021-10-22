@@ -126,7 +126,19 @@ def test_check_dm_removed(data):
 
     assert (len(data2["dms"]) == 1)
     
+# check if the person removing the dm is the owner
+def test_owner_check(data):
+    response1   = requests.delete(url + "dm/remove/v1", json={
+        "token" : data["token3"],
+        "dm_id" : data["dm_id1"]
+    })
+    assert response1.status_code == ACCESS_ERROR
 
+    response2 = requests.delete(url + "dm/remove/v1", json={
+        "token" : data["token1"],
+        "dm_id" : data["dm_id1"]
+    })
+    assert response2.status_code == NO_ERROR
 
 
         
