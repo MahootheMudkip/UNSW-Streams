@@ -1,4 +1,3 @@
-from tests.dm_create_v1_test import test_invalid_token
 import pytest
 import requests
 from requests.api import request
@@ -68,10 +67,10 @@ def data():
 def test_permission_change_invalid_token(data):
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            data["token2"],
-        "u_id":             data["token3"],
+        "u_id":             2,
         "permission_id":    OWNER_PID
     })
-    assert response.status_code == ACCESS_ERROR
+    assert response.status_code ==  ACCESS_ERROR
 
 # valid token, invalid u_id, valid permission_id
 def test_permission_change_invalid_u_id(data):
@@ -86,7 +85,7 @@ def test_permission_change_invalid_u_id(data):
 def test_permission_change_invalid_p_id(data):
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            data["token1"],
-        "u_id":             data["token2"],
+        "u_id":             1,
         "permission_id":    -91299
     })
     assert response.status_code == INPUT_ERROR
@@ -95,7 +94,7 @@ def test_permission_change_invalid_p_id(data):
 def test_permission_change_invalid_p_id_invalid_token(data):
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            data["token2"],
-        "u_id":             data["token3"],
+        "u_id":             2,
         "permission_id":    -91299
     })
     assert response.status_code == ACCESS_ERROR
@@ -113,7 +112,7 @@ def test_permission_change_invalid_token_invalid_u_id(data):
 def test_permission_change_last_owner(data):
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            data["token1"],
-        "u_id":             data["token1"],
+        "u_id":             0,
         "permission_id":    MEMBER_PID
     })
     assert response.status_code == INPUT_ERROR
@@ -122,17 +121,17 @@ def test_permission_change_last_owner(data):
 def test_permission_change_last_owner_no_change(data):
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            data["token1"],
-        "u_id":             data["token1"],
+        "u_id":             0,
         "permission_id":    OWNER_PID
     })
     assert response.status_code == NO_ERROR
 
-# user with permissions promotoed to owner now have owner privileges
+# user with permissions promoted to owner now have owner privileges
 def test_permission_change_promotion(data):
     token1 = data["token1"]
     token2 = data["token2"]
     # check that user2 initially can't use admin remove (member permissions)
-    response = requests.delete(url + "admin/users/remove/v2", json={
+    response = requests.delete(url + "admin/user/remove/v1", json={
         "token":    token2,
         "u_id":     2
     })
@@ -141,32 +140,32 @@ def test_permission_change_promotion(data):
     # change user2's permissions into global owner
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            token1,
-        "u_id":             token2,
+        "u_id":             1,
         "permission_id":    OWNER_PID
     })
     assert response.status_code == NO_ERROR
 
     # check that user2 can now use admin remove (global permissions)
-    response = requests.delete(url + "admin/users/remove/v2", json={
+    response = requests.delete(url + "admin/user/remove/v1", json={
         "token":    token2,
         "u_id":     2
     })
     assert response.status_code == NO_ERROR
 
-# user with permissions promotoed to owner now have owner privileges
-def test_permission_change_promotion(data):
+# user with permissions demoted to member no longer have owner permission
+def test_permission_change_demotion(data):
     token1 = data["token1"]
     token2 = data["token2"]
     # change user2's permissions into global owner
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            token1,
-        "u_id":             token2,
+        "u_id":             1,
         "permission_id":    OWNER_PID
     })
     assert response.status_code == NO_ERROR
 
     # check that user2 can now use admin remove (global permissions)
-    response = requests.delete(url + "admin/users/remove/v2", json={
+    response = requests.delete(url + "admin/user/remove/v1", json={
         "token":    token2,
         "u_id":     2
     })
@@ -175,13 +174,13 @@ def test_permission_change_promotion(data):
     # change user2's permissions back into member
     response = requests.post(url + "admin/userpermission/change/v1", json={
         "token":            token1,
-        "u_id":             token2,
+        "u_id":             1,
         "permission_id":    MEMBER_PID
     })
     assert response.status_code == NO_ERROR
 
     # check that user2 can no longer use admin remove (member permissions)
-    response = requests.delete(url + "admin/users/remove/v2", json={
+    response = requests.delete(url + "admin/user/remove/v1", json={
         "token":    token2,
         "u_id":     3
     })
