@@ -42,7 +42,7 @@ def admin_user_remove_v1(token, u_id):
         if user_info["is_owner"] == True:
             global_owners.append(user_id)
     
-    if u_id in global_owners:
+    if u_id in global_owners and len(global_owners) == 1:
         raise InputError("u_id refers to a user who is the only global owner")
 
     

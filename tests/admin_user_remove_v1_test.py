@@ -64,18 +64,27 @@ def initial_data():
 
     # create public channel and extract channel_id
     public_channel_response = requests.post(channel_create_url, json={
-        "token":        user0_token,
+        "token":        user2_token,
         "name":         "public_channel",
         "is_public":    True
     })
     public_channel = public_channel_response.json()
     public_channel_id = public_channel["channel_id"]
 
-    # Make user2 join the public channel
+    # Make user0 join the public channel
     requests.post(url + 'channel/join/v2', json={
-        "token": user2_token,
+        "token": user0_token,
         "channel_id": public_channel_id
     })
+
+    # create public channel and extract channel_id
+    public_channel_response = requests.post(channel_create_url, json={
+        "token":        user0_token,
+        "name":         "channel",
+        "is_public":    True
+    })
+    public_channel = public_channel_response.json()
+    channel_id = public_channel["channel_id"]
 
     # create private channel and extract channel_id
     private_channel_response = requests.post(channel_create_url, json={
@@ -98,9 +107,12 @@ def initial_data():
     assert response.status_code == NO_ERROR
     dm1_id = response.json()["dm_id"]
 
-    response = requests.post(url + "dm/create/v1", json={"token":user0_token,"u_ids":[user2_id, user3_id]})
+    response = requests.post(url + "dm/create/v1", json={"token":user2_token,"u_ids":[user1_id, user3_id]})
     assert response.status_code == NO_ERROR
     dm2_id = response.json()["dm_id"]
+
+    response = requests.post(url + "dm/create/v1", json={"token":user0_token,"u_ids":[user1_id, user3_id]})
+    assert response.status_code == NO_ERROR
 
     message_id_public = []
     message_id_private = []
@@ -120,6 +132,16 @@ def initial_data():
         response = requests.post(f"{url}message/send/v1", json={
             "token":        user2_token,
             "channel_id":   private_channel_id,
+            "message":      f"Bye! I am message {j}!"
+        })
+        assert response.status_code == NO_ERROR
+        data = response.json()
+        message_id_private.append(data["message_id"])
+    
+    for k in range(3):
+        response = requests.post(f"{url}message/send/v1", json={
+            "token":        user0_token,
+            "channel_id":   channel_id,
             "message":      f"Bye! I am message {j}!"
         })
         assert response.status_code == NO_ERROR
@@ -186,6 +208,11 @@ def test_invalid_inputs(initial_data):
     assert(resp2.status_code == ACCESS_ERROR)
 
 # u_id is the only global owner.
+def test_u_id_only_global_owner(initial_data):
+    user0_token = initial_data["user0_token"]
+    user0_id = initial_data["user0_id"]
+    resp = requests.delete(URL, json={"token": user0_token, "u_id": user0_id})
+    assert(resp.status_code == INPUT_ERROR)
 
 # The authorised user is not a global owner
 def test_auth_user_not_global_owner(initial_data):
