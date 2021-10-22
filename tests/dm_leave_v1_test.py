@@ -60,24 +60,24 @@ def data():
     dm_id2 = response2.json()["dm_id"]
 
     return {
-        "token1" : token1
-        "token2" : token2
-        "token3" : token3
-        "dm_id1" : dm_id1
+        "token1" : token1,
+        "token2" : token2,
+        "token3" : token3,
+        "dm_id1" : dm_id1,
         "dm_id2" : dm_id2
     }
 
 #check if token is invalid
 def test_dm_details_invalid_token(data):
-    response = requests.get(url + "dm/leave/v1", params={
+    response = requests.post(url + "dm/leave/v1", json={
         "token" : "abcde",
-        "dm_id": data["dm_id"]
+        "dm_id": data["dm_id1"]
     })
     assert response.status_code == ACCESS_ERROR
 
 # dm_id given doesn't exist
 def test_dm_details_dm_id_invalid(data):
-    response = requests.get(url + "dm/leave/v1", params={
+    response = requests.post(url + "dm/leave/v1", json={
         "token" : data["token2"],
         "dm_id" : -5346
     })
@@ -85,7 +85,7 @@ def test_dm_details_dm_id_invalid(data):
 
 # user not a part of the dm
 def test_dm_details_user_not_in_dm(data):
-    response = requests.get(url + "dm/leave/v1", params={
+    response = requests.post(url + "dm/leave/v1", json={
         "token" : data["token3"],
         "dm_id": data["dm_id2"]
     })
@@ -95,7 +95,7 @@ def test_dm_details_user_not_in_dm(data):
 def test_user_left(data):
     
     #when the owner leaves
-    response1 = requests.get(url + "dm/leave/v1", params={
+    response1 = requests.post(url + "dm/leave/v1", json={
         "token" : data["token1"],
         "dm_id": data["dm_id2"]
     })
@@ -104,32 +104,11 @@ def test_user_left(data):
     #get a list of dms of user with token and test
     dm_id_response1 = requests.get(url + "dm/details/v1", 
     params = {
-        "token": token1
+        "token" : data["token2"],
+        "dm_id" : data["dm_id2"]
     })
     assert dm_id_response1.status_code == NO_ERROR
     data1 = dm_id_response1.json()
 
-    assert (len(data1["members"] == 1))
-
-
-    #when a normal user leaves
-    response2 = requests.get(url + "dm/details/v1", params={
-        "token" : data["token0"],
-        "dm_id": data["dm_id1"]
-    })
-    assert response1.status_code == NO_ERROR
-
-    #get a list of dms of user with token and test
-    dm_id_response2 = requests.get(url + "dm/list/v1", 
-    params = {
-        "token": token1
-    })
-    assert dm_id_response2.status_code == NO_ERROR
-    data2 = dm_id_response1.json()
-
-    assert (len(data2["members"] == 2))
-
-    
-    
-
+    assert len(data1["members"]) == 1
 
