@@ -45,7 +45,7 @@ def admin_user_remove_v1(token, u_id):
     if u_id in global_owners and len(global_owners) == 1:
         raise InputError("u_id refers to a user who is the only global owner")
 
-    
+
     # remove user from channels
     for channel_info in channels.values():
         channel_members = channel_info["all_members"]
@@ -135,7 +135,7 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     # change specified user's permissions
     if permission_id == 1:
         users[u_id]["is_owner"] = True
-    elif permission_id == 2:
+    else:
         users[u_id]["is_owner"] = False
 
     data_store.set(store)
