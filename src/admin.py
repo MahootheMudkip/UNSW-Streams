@@ -77,6 +77,9 @@ def admin_user_remove_v1(token, u_id):
     user["name_first"] = "Removed"
     user["name_last"] = "user"
 
+    # logout of all current sessions
+    user["sessions"] = []
+
     # Make handle_str and email reusable
     user["handle_str"] = None
     user["email"] = None
