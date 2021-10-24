@@ -1,4 +1,5 @@
 import sys
+import json
 import signal
 from json import dumps, loads
 from flask import Flask, request
@@ -6,6 +7,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 
+from src.data_store import data_store
 from src.other import clear_v1
 from src.auth import *
 from src.channels import *
@@ -314,4 +316,12 @@ def admin_userpermission_change():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully) # For coverage
+    try:
+        with open('database.json', 'r') as FILE:
+            store = json.load(FILE)
+            data_store.set(store)
+    except FileNotFoundError:
+        data_store.__init__
+    
     APP.run(port=config.port) # Do not edit this port
+    
