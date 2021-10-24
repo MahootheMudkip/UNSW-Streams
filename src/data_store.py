@@ -1,3 +1,5 @@
+import json
+
 '''
 data_store.py
 
@@ -78,6 +80,7 @@ message_id = {
     "message":      string
 }
 '''
+
 initial_object = {
     "users":    {},
     "channels": {},
@@ -100,6 +103,8 @@ class Datastore:
         if not isinstance(store, dict):
             raise TypeError('store must be of type dictionary')
         self.__store = store
+        with open('database.json', 'w') as FILE:
+            json.dump(self.__store, FILE)
 
 print('Loading Datastore...')
 

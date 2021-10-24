@@ -4,7 +4,6 @@ from src.error import AccessError
 import jwt
 from src.data_store import data_store
 
-SESSION_TRACKER = 0
 SECRET = "8PHk9NI6EuasvQWjvyadYJMB5m4F9W"
 
 def generate_new_session_id():
@@ -14,9 +13,11 @@ def generate_new_session_id():
     Returns:
         The next session ID (int)
     """
-    global SESSION_TRACKER
-    SESSION_TRACKER += 1
-    return SESSION_TRACKER
+    store = data_store.get()
+    session_id_tracker = store["session_id_tracker"]
+    store["session_id_tracker"] += 1
+    data_store.set(store)
+    return session_id_tracker
 
 def get_hash(input_string):
     """
