@@ -2,20 +2,20 @@ from src.sessions import get_auth_user_id
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
-'''
-Provides a list of all channels a user is part of.
-
-Parameters:
-    auth_user_id (int): The user id of the person whose public channels are to be displayed
-
-Exceptions:
-    AccessError:
-        - When auth_user_id is invalid
-
-Return Type:
-    A list of dictionaries each of which contains the channel_id and name of that channel
-'''
 def channels_list_v1(token):
+    '''
+    Provides a list of all channels a user is part of.
+
+    Parameters:
+        auth_user_id (int): The user id of the person whose public channels are to be displayed
+
+    Exceptions:
+        AccessError:
+            - When auth_user_id is invalid
+
+    Return Type:
+        A list of dictionaries each of which contains the channel_id and name of that channel
+    '''
     # get data from data_store
     auth_user_id = get_auth_user_id(token)
     
@@ -41,20 +41,20 @@ def channels_list_v1(token):
         "channels" : return_list
     }
 
-'''
-Provides a list of all channels ever created
-
-Parameters:
-    auth_user_id (int)
-
-Exceptions:
-    AccessError:
-        - When auth_user_id is invalid
-
-Return Type:
-    A list of dictionaries each of which contains the channel_id and name of that channel
-'''
 def channels_listall_v1(token):
+    '''
+    Provides a list of all channels ever created
+
+    Parameters:
+        auth_user_id (int)
+
+    Exceptions:
+        AccessError:
+            - When auth_user_id is invalid
+
+    Return Type:
+        A list of dictionaries each of which contains the channel_id and name of that channel
+    '''
 
     # get data from data_store
     get_auth_user_id(token)

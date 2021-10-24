@@ -3,28 +3,27 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from datetime import *
 
-
-'''
-Send a message from the authorised user to the channel specified by channel_id.
-
-Arguments:
-    token       (str): the given token
-    channel_id  (int): the given channel id
-    message     (str): message text
-
-Exceptions:
-    InputError:
-        - channel_id invalid (doesn't exist)
-        - length of message is less than 1 character or > 1000 characters
-    AccessError:
-        - auth_user_id is invalid (doesn't exist)
-        - channel_id is valid and the auth_user_id refers to a user
-          who is not a member of the channel
-
-Return Value:
-    message_id  (int): newly created message's id
-'''
 def message_send_v1(token, channel_id, message):
+    '''
+    Send a message from the authorised user to the channel specified by channel_id.
+
+    Arguments:
+        token       (str): the given token
+        channel_id  (int): the given channel id
+        message     (str): message text
+
+    Exceptions:
+        InputError:
+            - channel_id invalid (doesn't exist)
+            - length of message is less than 1 character or > 1000 characters
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - channel_id is valid and the auth_user_id refers to a user
+            who is not a member of the channel
+
+    Return Value:
+        message_id  (int): newly created message's id
+    '''
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
@@ -73,30 +72,31 @@ def message_send_v1(token, channel_id, message):
         "message_id": message_id_tracker
     }
 
-'''
-Given a message, update its text with new text.
-If the new message is an empty string, the message is deleted.
 
-Arguments:
-    token       (str): the given token
-    message_id  (int): the given channel id
-    message     (str): message text
-
-Exceptions:
-    InputError:
-        - length of message is > 1000 characters
-        - message_id does not refer to a valid message within a 
-          channel/DM that the authorised user has joined
-    AccessError:
-        - auth_user_id is invalid (doesn't exist)
-        AccessError is thrown if none of the following are true:
-            - authorised user has owner permissions
-            - message was made by the authorised user
-
-Return Value:
-    n/a
-'''
 def message_edit_v1(token, message_id, message):
+    '''
+    Given a message, update its text with new text.
+    If the new message is an empty string, the message is deleted.
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given channel id
+        message     (str): message text
+
+    Exceptions:
+        InputError:
+            - length of message is > 1000 characters
+            - message_id does not refer to a valid message within a 
+            channel/DM that the authorised user has joined
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            AccessError is thrown if none of the following are true:
+                - authorised user has owner permissions
+                - message was made by the authorised user
+
+    Return Value:
+        n/a
+    '''
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
@@ -161,27 +161,27 @@ def message_edit_v1(token, message_id, message):
     data_store.set(store)
     return {} 
 
-'''
-Given a message, remove it from the channel/dm
-
-Arguments:
-    token       (str): the given token
-    message_id  (int): the given channel id
-
-Exceptions:
-    InputError:
-        - message_id does not refer to a valid message within a 
-          channel/DM that the authorised user has joined
-    AccessError:
-        - auth_user_id is invalid (doesn't exist)
-        AccessError is thrown if none of the following are true:
-            - authorised user has owner permissions
-            - message was made by the authorised user
-
-Return Value:
-    n/a
-'''
 def message_remove_v1(token, message_id):
+    '''
+    Given a message, remove it from the channel/dm
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given channel id
+
+    Exceptions:
+        InputError:
+            - message_id does not refer to a valid message within a 
+            channel/DM that the authorised user has joined
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            AccessError is thrown if none of the following are true:
+                - authorised user has owner permissions
+                - message was made by the authorised user
+
+    Return Value:
+        n/a
+    '''
     message_edit_v1(token, message_id, "")
     # this does the same thing
     return {}

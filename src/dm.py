@@ -88,7 +88,24 @@ def dm_list_v1(token):
     }    
 
 def dm_details_v1(token, dm_id ):
+    '''
+    Returns details of given dm_id.
     
+    Arguments:
+        token (str):            the given token
+        dm_id (int):            the given dm_id
+        
+    Exceptions:
+        AccessError:
+            - token invalid
+            - dm_id is valid and auth_user is not in dm.
+        InputError:
+            - dm_id is not valid.
+    
+    Return Value:
+        name    (str):                the name of given dm_id.
+        members (list of user dicts): list of members of the given dm_id.
+    '''
     #get user id from a token
     auth_user_id = get_auth_user_id(token)
 
@@ -129,9 +146,24 @@ def dm_details_v1(token, dm_id ):
         "members" : members
     }
 
-
-
 def dm_remove_v1(token, dm_id):
+    '''
+    Removes the given dm_id.
+    
+    Arguments:
+        token (str):            the given token
+        dm_id (int):            the given dm_id
+        
+    Exceptions:
+        AccessError:
+            - token invalid
+            - dm_id is valid and auth_user is not the owner.
+        InputError:
+            - dm_id is not valid.
+    
+    Return Value:
+        Empty dictionary.
+    '''
     #get user id from a token
     auth_user_id = get_auth_user_id(token)
 
@@ -154,6 +186,23 @@ def dm_remove_v1(token, dm_id):
 
 
 def dm_leave_v1(token, dm_id):
+    '''
+    Auth_user leaves specified dm_id.
+    
+    Arguments:
+        token (str):            the given token
+        dm_id (int):            the given dm_id
+        
+    Exceptions:
+        AccessError:
+            - token invalid
+            - dm_id is valid and auth_user is not in dm.
+        InputError:
+            - dm_id is not valid.
+    
+    Return Value:
+        Empty dictionary.
+    '''
     #get user_id from token
     auth_user_id = get_auth_user_id(token)
 
@@ -175,9 +224,27 @@ def dm_leave_v1(token, dm_id):
     return {}
 
 
-
-
 def message_senddm_v1(token, dm_id, message):
+    '''
+    Send a message from the authorised user to the dm specified by dm_id.
+
+    Arguments:
+        token       (str): the given token
+        dm_id       (int): the given dm id
+        message     (str): message text
+
+    Exceptions:
+        InputError:
+            - dm_id invalid (doesn't exist)
+            - length of message is less than 1 character or > 1000 characters
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - dm_id is valid and the auth_user_id refers to a user
+            who is not a member of the channel
+
+    Return Value:
+        message_id  (int): newly created message's id
+    '''
 
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
@@ -229,6 +296,32 @@ def message_senddm_v1(token, dm_id, message):
 
 
 def dm_messages_v1(token, dm_id, start):
+    '''
+    Returns up to 50 messages between index "start" and "start + 50". 
+    Message with index 0 is the most recent message in the dm. 
+    This function returns a new index "end" which is the value of "start + 50" or
+    -1 if there are no more messages to load after this return.
+
+    Arguments:
+        auth_user_id (int): the given authorised user id
+        dm_id        (int): the given dm id
+        start        (int): index to start returning messages from
+                            (start is assumed to be >= 0)
+    Exceptions:
+        InputError:
+            - dm_id invalid (doesn't exist)
+            - start > total number of messages in channel
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - dm_id is valid and the auth_user_id refers to a user
+            who is not a member/owner of the channel
+
+    Return Value:
+        messages: List of dictionaries, where each dictionary 
+                contains types { message_id, u_id, message, time_created }
+        start:    same as argument "start"
+        end:      "start + 50" or -1, if there are no more messages remaining
+    '''
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
