@@ -98,7 +98,7 @@ initial_object = {
 class Datastore:
     def __init__(self):
         self.__store = initial_object
-
+   
     def get(self):
         return self.__store
 

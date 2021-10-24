@@ -316,7 +316,12 @@ def admin_userpermission_change():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully) # For coverage
+    try:
+        with open('database.json', 'r') as FILE:
+            store = json.load(FILE)
+            data_store.set(store)
+    except FileNotFoundError:
+        data_store.__init__
+    
     APP.run(port=config.port) # Do not edit this port
-    with open('database.json', 'r') as FILE:
-        store = json.load(FILE)
-        data_store.set(store)
+    
