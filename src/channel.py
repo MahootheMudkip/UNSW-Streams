@@ -139,33 +139,34 @@ def channel_details_v1(token, channel_id):
         "all_members": channel_new_all_members,
     }
 
-'''
-Returns up to 50 messages between index "start" and "start + 50". 
-Message with index 0 is the most recent message in the channel. 
-This function returns a new index "end" which is the value of "start + 50" or
--1 if there are no more messages to load after this return.
 
-Arguments:
-    auth_user_id (int): the given authorised user id
-    channel_id   (int): the given channel id
-    start        (int): index to start returning messages from
-                        (start is assumed to be >= 0)
-Exceptions:
-    InputError:
-        - channel_id invalid (doesn't exist)
-        - start > total number of messages in channel
-    AccessError:
-        - auth_user_id is invalid (doesn't exist)
-        - channel_id is valid and the auth_user_id refers to a user
-          who is not a member/owner of the channel
-
-Return Value:
-    messages: List of dictionaries, where each dictionary 
-              contains types { message_id, u_id, message, time_created }
-    start:    same as argument "start"
-    end:      "start + 50" or -1, if there are no more messages remaining
-'''
 def channel_messages_v1(token, channel_id, start):
+    '''
+    Returns up to 50 messages between index "start" and "start + 50". 
+    Message with index 0 is the most recent message in the channel. 
+    This function returns a new index "end" which is the value of "start + 50" or
+    -1 if there are no more messages to load after this return.
+
+    Arguments:
+        auth_user_id (int): the given authorised user id
+        channel_id   (int): the given channel id
+        start        (int): index to start returning messages from
+                            (start is assumed to be >= 0)
+    Exceptions:
+        InputError:
+            - channel_id invalid (doesn't exist)
+            - start > total number of messages in channel
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - channel_id is valid and the auth_user_id refers to a user
+            who is not a member/owner of the channel
+
+    Return Value:
+        messages: List of dictionaries, where each dictionary 
+                contains types { message_id, u_id, message, time_created }
+        start:    same as argument "start"
+        end:      "start + 50" or -1, if there are no more messages remaining
+    '''
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
@@ -213,26 +214,26 @@ def channel_messages_v1(token, channel_id, start):
         'end': end,
     }
 
-'''
-Adds the specified auth_user_id to the given channel_id
-
-Arguments:
-    auth_user_id (int): the given authorised user id
-    channel_id   (int): the given channel id
-
-Exceptions:
-    InputError:
-        - channel_id invalid (doesn't exist)
-        - auth_user_id already member of channel
-    AccessError:
-        - auth_user_id is invalid (doesn't exist)
-        - channel_id refers to private channel 
-          and auth_user_id is not the owner of the channel
-
-Return Value:
-    no values returned
-'''
 def channel_join_v1(token, channel_id):
+    '''
+    Adds the specified auth_user_id to the given channel_id
+
+    Arguments:
+        auth_user_id (int): the given authorised user id
+        channel_id   (int): the given channel id
+
+    Exceptions:
+        InputError:
+            - channel_id invalid (doesn't exist)
+            - auth_user_id already member of channel
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - channel_id refers to private channel 
+            and auth_user_id is not the owner of the channel
+
+    Return Value:
+        no values returned
+    '''
     # gets auth_user_id from token and handles exception raising
     auth_user_id = get_auth_user_id(token)
 

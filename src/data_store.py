@@ -95,6 +95,7 @@ initial_object = {
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
+# Modified data_store.set to dump initial_object to json file and have persistence.
 class Datastore:
     def __init__(self):
         self.__store = initial_object
