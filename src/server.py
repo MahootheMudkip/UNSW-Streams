@@ -204,54 +204,54 @@ def dm_create():
 
     return dumps(dm_create_v1(token, u_ids))
 
-# @APP.route("/dm/list/v1", methods=['GET'])
-# def dm_list():
-#     token = request.args.get("token")
-# 
-#     return dumps(dm_list_v1(token))
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    token = request.args.get("token")
+ 
+    return dumps(dm_list_v1(token))
 
-# @APP.route("/dm/remove/v1", methods=['DELETE'])
-# def dm_remove():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-# 
-#     return dumps(dm_remove_v1(token, dm_id))
+@APP.route("/dm/remove/v1", methods=['DELETE'])
+def dm_remove():
+    data = request.get_json()
 
-# @APP.route("/dm/details/v1", methods=['GET'])
-# def dm_details():
-#     token = request.args.get("token")
-#     dm_id = request.args.get("dm_id")
-# 
-#     return dumps(dm_details_v1(token, dm_id))
+    token = data["token"]
+    dm_id = data["dm_id"]
 
-# @APP.route("/dm/leave/v1", methods=['POST'])
-# def dm_leave():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-# 
-#     return dumps(dm_leave_v1(token, dm_id))
+    return dumps(dm_remove_v1(token, dm_id))
 
-# @APP.route("/dm/messages/v1", methods=['GET'])
-# def dm_messages():
-#     token = request.args.gets("token")
-#     dm_id = request.args.get("dm_id")
-#     start = request.args.get("start")
-# 
-#     return dumps(dm_messages_v1(token, dm_id, start))
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_details():
+    token = request.args.get("token")
+    dm_id = int(request.args.get("dm_id"))
 
-# @APP.route("/message/senddm/v1", methods=['POST'])
-# def message_senddm():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-#     message = data["message"]
-# 
-#     return dumps(message_senddm_v1(tokem, dm_id, message))
+    return dumps(dm_details_v1(token, dm_id))
+
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_leave():
+    data = request.get_json()
+
+    token = data["token"]
+    dm_id = data["dm_id"]
+
+    return dumps(dm_leave_v1(token, dm_id))
+
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages():
+    token = request.args.get("token")
+    dm_id = int(request.args.get("dm_id"))
+    start = int(request.args.get("start"))
+
+    return dumps(dm_messages_v1(token, dm_id, start))
+
+@APP.route("/message/senddm/v1", methods=['POST'])
+def message_senddm():
+    data = request.get_json()
+
+    token = data["token"]
+    dm_id = data["dm_id"]
+    message = data["message"]
+
+    return dumps(message_senddm_v1(token, dm_id, message))
 
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
@@ -302,15 +302,15 @@ def admin_user_remove():
     
     return dumps(admin_user_remove_v1(token, u_id))
 
-# @APP.route("/admin/userpermission/change/v1", methods=['POST'])
-# def admin_userpermission_change():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     u_id = data["u_id"]
-#     permission_id = data["permission_id"]
-# 
-#     return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission_change():
+    data = request.get_json()
+
+    token = data["token"]
+    u_id = data["u_id"]
+    permission_id = data["permission_id"]
+
+    return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 

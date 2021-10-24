@@ -313,7 +313,7 @@ def test_admin_user_remove_user2(initial_data):
 #    messages[3]["message"] = "Removed user"
 
     # check name_first is 'Removed' and name_last is 'user'
-    user_profile_response = requests.get(url + 'user/profile/v1', params={"token": user2_token, "u_id": user2_id})
+    user_profile_response = requests.get(url + 'user/profile/v1', params={"token": user0_token, "u_id": user2_id})
     assert(user_profile_response.status_code == NO_ERROR)
     user_response = user_profile_response.json()
     user = user_response["user"]

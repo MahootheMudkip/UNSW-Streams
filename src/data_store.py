@@ -38,7 +38,9 @@ user_id = {
     "name_first":   string,
     "name_last":    string,
     "password":     string,
-    "handle_str":   string
+    "handle_str":   string,
+    "is_owner":     bool,
+    "sessions":     list of ints(session_ids)
 }
 
 - "channels" is a dictionary containing dictionaries of "channel"s
@@ -75,6 +77,7 @@ eg.
 
 *message_id is an integer
 message_id = {
+    "message_id":   int,
     "u_id":         int, 
     "time_created": int,
     "message":      string

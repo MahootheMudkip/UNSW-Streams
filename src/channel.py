@@ -33,7 +33,7 @@ def channel_invite_v1(token, channel_id, u_id):
     
     # checks for invalid channel_id.
     if channel_id not in channels.keys():
-        raise InputError("Invalid Channel. Doesn't exist.")
+        raise InputError(description="Invalid Channel. Doesn't exist.")
     
     # Obtain required channel information.
     channel_info = channels[channel_id]
@@ -41,15 +41,15 @@ def channel_invite_v1(token, channel_id, u_id):
 
     # checks if auth_user is not a member of the channel.
     if auth_user_id not in channel_all_members:
-        raise AccessError("Authorised User is not a member of the channel.")
+        raise AccessError(description="Authorised User is not a member of the channel.")
     
     # checks for invalid u_id.
     if u_id not in users.keys():
-        raise InputError("Invalid User. Doesn't exist.")
+        raise InputError(description="Invalid User. Doesn't exist.")
     
     # checks if u_id is already in the channel.
     if u_id in channel_all_members:
-        raise InputError("Invited user is already a member of the channel.")
+        raise InputError(description="Invited user is already a member of the channel.")
 
     # If this point is reached, there must be a valid auth_user_id, channel_id and u_id.
     channel_all_members.append(u_id)
@@ -86,7 +86,7 @@ def channel_details_v1(token, channel_id):
 
     # checks if channel_id exists.
     if channel_id not in channels.keys():
-        raise InputError("Invalid Channel id. Channel doesn't exists")
+        raise InputError(description="Invalid Channel id. Channel doesn't exists")
 
     # Obtain channel information.
     channel_info = channels[channel_id]
@@ -98,7 +98,7 @@ def channel_details_v1(token, channel_id):
     
     # test if user is a member of the channel
     if auth_user_id not in channel_all_members:
-        raise AccessError("User is not a member of the channel.")
+        raise AccessError(description="User is not a member of the channel.")
     
     # Creates a list of dictionaries, where each dictionary contains types of user.
     channel_new_all_members = []
@@ -175,7 +175,7 @@ def channel_messages_v1(token, channel_id, start):
 
     # specified channel doesn't exist
     if channel_id not in channels.keys(): 
-        raise InputError("Invalid channel_id")
+        raise InputError(description="Invalid channel_id")
 
     # declaring default values for return variables
     total_message_num = 0
@@ -191,11 +191,11 @@ def channel_messages_v1(token, channel_id, start):
     total_message_num = len(channel_messages)
 
     if auth_user_id not in channel_members:
-        raise AccessError("Valid channel_id and authorised user not a member")
+        raise AccessError(description="Valid channel_id and authorised user not a member")
 
     # start is greater than the total number of messages in channel
     if start > total_message_num:
-        raise InputError("start is an invalid value")
+        raise InputError(description="start is an invalid value")
 
     # Reverse channel_messages so that most recent msg is index 0
     # Then, slice list to get msgs between start and end index
@@ -242,7 +242,7 @@ def channel_join_v1(token, channel_id):
     
     if channel_id not in channels.keys():
         # check whether channel_id exists
-        raise InputError("Invalid channel_id")
+        raise InputError(description="Invalid channel_id")
     
     channel_info = channels[channel_id]
     channel_is_public = channel_info["is_public"]
@@ -254,11 +254,11 @@ def channel_join_v1(token, channel_id):
         if auth_user_id not in channel_members and users[auth_user_id]["is_owner"] == False:
             # auth_user_id does not refer to a channel member and is 
             # not a global owner
-            raise AccessError("Channel is private and authorised user is not an owner/channel member")
+            raise AccessError(description="Channel is private and authorised user is not an owner/channel member")
 
     if auth_user_id in channel_members:
         # this checks if the auth_user_id is already a member
-        raise InputError("Authorised user already a member of channel")
+        raise InputError(description="Authorised user already a member of channel")
 
     # if it reaches this point, auth_user_id and channel_id are both valid
     channel_members.append(auth_user_id)
@@ -291,7 +291,7 @@ def channel_leave_v1(token, channel_id):
     
     # checks for invalid channel_id.
     if channel_id not in channels.keys():
-        raise InputError("Invalid Channel. Doesn't exist.")
+        raise InputError(description="Invalid Channel. Doesn't exist.")
     
     # Obtain required channel information.
     channel_info = channels[channel_id]
@@ -300,7 +300,7 @@ def channel_leave_v1(token, channel_id):
 
     # checks if auth_user is not a member of the channel.
     if auth_user_id not in channel_all_members:
-        raise AccessError("Authorised User is not a member of the channel.")
+        raise AccessError(description="Authorised User is not a member of the channel.")
     
     if auth_user_id in channel_owners:
         channel_owners.remove(auth_user_id)
@@ -337,28 +337,31 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     # checks for invalid channel_id.
     if channel_id not in channels.keys():
-        raise InputError("Invalid Channel. Doesn't exist.")
+        raise InputError(description="Invalid Channel. Doesn't exist.")
     
     # Obtain required channel information.
     channel_info = channels[channel_id]
     channel_all_members = channel_info["all_members"]
     channel_owners = channel_info["owner_members"]
-
-    # check if auth_user does not have owner permissions.
-    if auth_user_id not in channel_owners and users[auth_user_id]["is_owner"] == False:
-        raise AccessError("Authorised User does not have owner permissions in the channel.")
     
+    # check if auth_user does not have owner permissions.
+    if users[auth_user_id]["is_owner"] == True:
+        if auth_user_id not in channel_all_members:
+            raise AccessError(description="Authorised User does not have owner permissions in the channel.")
+    elif auth_user_id not in channel_owners:
+        raise AccessError(description="Authorised User does not have owner permissions in the channel.")
+        
     # checks for invalid u_id.
     if u_id not in users.keys():
-        raise InputError("Invalid User. Doesn't exist.")
+        raise InputError(description="Invalid User. Doesn't exist.")
 
     # checks if auth_user is not a member of the channel.
     if u_id not in channel_all_members:
-        raise InputError("User is not a member of the channel.")
+        raise InputError(description="User is not a member of the channel.")
     
     # check if u_id is already an owner of the channel.
     if u_id in channel_owners:
-        raise InputError("User is already an owner of this channel.")
+        raise InputError(description="User is already an owner of this channel.")
     
     channel_owners.append(u_id)
     data_store.set(store)
@@ -396,26 +399,30 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     # checks for invalid channel_id.
     if channel_id not in channels.keys():
-        raise InputError("Invalid Channel. Doesn't exist.")
+        raise InputError(description="Invalid Channel. Doesn't exist.")
     
     # Obtain required channel information.
     channel_info = channels[channel_id]
     channel_owners = channel_info["owner_members"]
+    channel_all_members = channel_info["all_members"]
 
     # check if auth_user does not have owner permissions.
-    if auth_user_id not in channel_owners and users[auth_user_id]["is_owner"] == False:
-        raise AccessError("Authorised User does not have owner permissions in the channel.")
-    
+    if users[auth_user_id]["is_owner"] == True:
+        if auth_user_id not in channel_all_members:
+            raise AccessError(description="Authorised User does not have owner permissions in the channel.")
+    elif auth_user_id not in channel_owners:
+        raise AccessError(description="Authorised User does not have owner permissions in the channel.")
+        
     # checks for invalid u_id.
     if u_id not in users.keys():
-        raise InputError("Invalid User. Doesn't exist.")
+        raise InputError(description="Invalid User. Doesn't exist.")
     
     # check if u_id is not an owner of the channel.
     if u_id not in channel_owners:
-        raise InputError("User is not an owner of this channel.")
+        raise InputError(description="User is not an owner of this channel.")
     
     if len(channel_owners) == 1:
-        raise InputError("Can't remove the only owner of this channel")
+        raise InputError(description="Can't remove the only owner of this channel")
     
     channel_owners.remove(u_id)
     data_store.set(store)

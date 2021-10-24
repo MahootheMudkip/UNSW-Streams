@@ -31,7 +31,7 @@ def get_hash(input_string):
     """
     return hashlib.sha256(input_string.encode()).hexdigest()
 
-def get_token(auth_user_id, session_id=None):
+def get_token(auth_user_id, session_id):
     """
     Generates a JWT using the global SECRET
 
@@ -41,9 +41,6 @@ def get_token(auth_user_id, session_id=None):
     Returns:
         JWT Encoded string (str) 
     """
-    if session_id is None:
-        session_id = generate_new_session_id()
-
     return jwt.encode({'auth_user_id': auth_user_id, 'session_id': session_id}, SECRET, algorithm='HS256')
 
 def get_auth_user_id(encoded_jwt):
@@ -72,9 +69,9 @@ def get_auth_user_id(encoded_jwt):
                 return u_id
     # token is not in valid format
     except Exception as e:
-        raise AccessError("Token is invalid") from e
+        raise AccessError(description="Token is invalid") from e
     # session_id does not exist
-    raise AccessError("Session is inactive")
+    raise AccessError(description="Session is inactive")
 
 def get_session_id(encoded_jwt):
     """
@@ -91,18 +88,8 @@ def get_session_id(encoded_jwt):
     Returns:
         session_id (int)
     """
-    users = data_store.get()["users"]
-    try:
-        # decode jwt token
-        jwt_user = jwt.decode(encoded_jwt, SECRET, algorithms=['HS256'])
-        # return auth_user_id if the user_id and session_id matches data_store
-        if jwt_user["auth_user_id"] in users:
-            u_id = jwt_user["auth_user_id"]
-            if jwt_user["session_id"] in users[u_id]["sessions"]:
-                return jwt_user["session_id"]
-    # token is not in valid format
-    except Exception as e:
-        raise AccessError("Token is invalid") from e
-    # session_id does not exist
-    raise AccessError("Session is inactive")
+    # decode jwt token
+    jwt_user = jwt.decode(encoded_jwt, SECRET, algorithms=['HS256'])
+    # return session_id
+    return jwt_user["session_id"]
 

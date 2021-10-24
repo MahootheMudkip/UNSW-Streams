@@ -27,14 +27,16 @@ def users_all_v1(token):
     users_list = []
 
     for u_id, user_info in users.items():
-        user_copy = user_info.copy()
-        # creates a separate dict copy
-        user_copy.pop("password")
-        user_copy.pop("is_owner")
-        user_copy.pop("sessions")
-        # remove password item from dict
-        user_copy["u_id"] = u_id
-        users_list.append(user_copy)
+        # add user to list if they're not a removed user
+        if user_info["email"] != None and user_info["handle_str"] != None:
+            user_copy = user_info.copy()
+            # creates a separate dict copy
+            user_copy.pop("password")
+            user_copy.pop("is_owner")
+            user_copy.pop("sessions")
+            # remove password item from dict
+            user_copy["u_id"] = u_id
+            users_list.append(user_copy)
         
     return {
         "users": users_list
@@ -49,7 +51,7 @@ def user_profile_v1(token, u_id):
     
     # u_id not a key in users dictionary
     if u_id not in users.keys():
-        raise InputError("u_id does not refer to a valid user")
+        raise InputError(description="u_id does not refer to a valid user")
 
     # make a copy of the specified u_id's dictionary
     user_info = users[u_id]
@@ -91,9 +93,9 @@ def user_profile_setname_v1(token, name_first, name_last):
     
     # First name and last name are a valid amount of characters
     if not 1 <= len(name_first) <= 50:
-        raise InputError("First name must be between 1 and 50 characters long")
+        raise InputError(description="First name must be between 1 and 50 characters long")
     if not 1 <= len(name_last) <= 50:
-        raise InputError("Last name must be between 1 and 50 characters long")
+        raise InputError(description="Last name must be between 1 and 50 characters long")
 
     # change first name and last name
     user["name_first"] = name_first
@@ -124,18 +126,19 @@ def user_profile_setemail_v1(token, email):
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
     users = store["users"]
-    user = store["users"][auth_user_id]
 
     # Perform series of checks to make sure registration can be authorised
     # - Email entered is not a valid email (does not match regex)
     if re.fullmatch(R'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email) == None:
-        raise InputError("Invalid email format")
+        raise InputError(description="Invalid email format")
     # - Email address is already being used by another user
     for user in users.values():
         if user["email"] == email:
-            raise InputError("Email already taken")
+            raise InputError(description="Email already taken")
 
+    user = store["users"][auth_user_id]
     user["email"] = email
+    data_store.set(store)
 
     return {}
 
@@ -167,15 +170,16 @@ def user_profile_sethandle_v1(token, handle_str):
     handle_length = len(handle_str)
 
     if handle_length < 3 or handle_length > 20:
-        raise InputError("Handle must be between 3 and 20 characters inclusive.")
+        raise InputError(description="Handle must be between 3 and 20 characters inclusive.")
     
     if handle_str.isalnum() == False:
-        raise InputError("Handle must only contain alphanumeric characters.")   
+        raise InputError(description="Handle must only contain alphanumeric characters.")
 
     if is_taken(users, handle_str) == True:
-        raise InputError("Handle is already taken.")
+        raise InputError(description="Handle is already taken.")
     
     # Update user handle
     user["handle_str"] = handle_str
+    data_store.set(store)
 
     return {}
