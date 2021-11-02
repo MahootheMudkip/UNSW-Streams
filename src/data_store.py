@@ -34,13 +34,16 @@ eg.
 
 *user_id is an integer
 user_id = {
-    "email":        string, 
-    "name_first":   string,
-    "name_last":    string,
-    "password":     string,
-    "handle_str":   string,
-    "is_owner":     bool,
-    "sessions":     list of ints(session_ids)
+    "email":            string, 
+    "name_first":       string,
+    "name_last":        string,
+    "password":         string,
+    "handle_str":       string,
+    "is_owner":         bool,
+    "sessions":         list of ints(session_ids),
+    "user_stats":       dict of user's stats,
+    "profile_img_url":  string,
+    "notifications":    list of most recent notifications
 }
 
 - "channels" is a dictionary containing dictionaries of "channel"s
@@ -80,18 +83,31 @@ message_id = {
     "message_id":   int,
     "u_id":         int, 
     "time_created": int,
-    "message":      string
+    "message":      string,
+    "reacts":       list of dicts, where each dictionary contains types { react_id, u_ids, is_this_user_reacted },
+    "is_pinned":    bool
 }
+
+- "users_stats" is a dictionary containing:
+
+Dictionary of shape {
+     channels_exist: [{num_channels_exist, time_stamp}], 
+     dms_exist: [{num_dms_exist, time_stamp}], 
+     messages_exist: [{num_messages_exist, time_stamp}], 
+     utilization_rate 
+    }
+
 '''
 
 initial_object = {
-    "users":    {},
-    "channels": {},
-    "dms":      {},
-    "messages": {},
-    "session_id_tracker": 0,
-    "dm_id_tracker": 0,
-    "message_id_tracker": 0
+    "users":                {},
+    "channels":             {},
+    "dms":                  {},
+    "messages":             {},
+    "session_id_tracker":   0,
+    "dm_id_tracker":        0,
+    "message_id_tracker":   0,
+    "users_stats":          {} 
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
