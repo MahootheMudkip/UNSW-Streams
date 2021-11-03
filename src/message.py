@@ -206,6 +206,7 @@ def search_v1(token, query_str):
     '''
     Given a query string, return a collection of messages in all of 
     the channels/DMs that the user has joined that contain the query.
+    Note: pattern matching is CASE_SENSITIVE
 
     Arguments:
         token       (str): the given token
