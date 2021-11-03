@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from datetime import *
+import re
 
 def message_send_v1(token, channel_id, message):
     '''
@@ -185,3 +186,60 @@ def message_remove_v1(token, message_id):
     message_edit_v1(token, message_id, "")
     # this does the same thing
     return {}
+
+# returns a list of type `messages` which are sent by `auth_user_id` 
+# and which contain the `query_str`.
+def helper_search_v1(all_messages, message_list, auth_user_id, query_str):
+    matches = []
+    
+    for message_id in message_list:
+        message_info = all_messages[message_id]
+        if message_info["u_id"] == auth_user_id:
+            # message sent by authorised user
+            if re.search(query_str, message_info["message"]) != None:
+                # valid match found
+                matches.append(message_info)
+
+    return matches
+
+def search_v1(token, query_str):
+    '''
+    Given a query string, return a collection of messages in all of 
+    the channels/DMs that the user has joined that contain the query.
+
+    Arguments:
+        token       (str): the given token
+        query_str   (str): the given search query string
+
+    Exceptions:
+        InputError:
+            - length of query_str is less than 1 or over 1000 characters
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+
+    Return Value:
+        messages: List of dictionaries, where each dictionary 
+            contains types { message_id, u_id, message, time_created }
+    '''
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    channels = store["channels"]
+    dms = store["dms"]
+    all_messages = store["messages"]
+
+    matches = []
+    # stores the valid messages which match the query string
+
+    for channel in channels.values():
+        if auth_user_id in channel["all_members"]:
+            matches += helper_search_v1(all_messages, channel["messages"], auth_user_id, query_str)
+
+    for dm in dms.values():
+        if auth_user_id in dm["members"]:
+            matches += helper_search_v1(all_messages, dm["messages"], auth_user_id, query_str)
+
+    return {
+        "messages": matches
+    }

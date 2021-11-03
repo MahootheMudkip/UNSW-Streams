@@ -4,6 +4,7 @@ import signal
 from json import dumps, loads
 from flask import Flask, request
 from flask_cors import CORS
+import requests
 from src.error import InputError
 from src import config
 
@@ -311,6 +312,12 @@ def admin_userpermission_change():
     permission_id = data["permission_id"]
 
     return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
+
+@APP.route("/search/v1", methods=["GET"])
+def search():
+    token = request.args.get("token")
+    query_str = requests.args.get("query_str")
+    return dumps(search_v1(token, query_str))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
