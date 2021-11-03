@@ -224,6 +224,10 @@ def search_v1(token, query_str):
     # get auth_user_id from token (this function handles all exceptions)
     auth_user_id = get_auth_user_id(token)
 
+    # checking for valid query_str length
+    if not 1 <= len(query_str) <= 1000:
+        raise InputError(description="Invalid query_str")
+
     store = data_store.get()
     channels = store["channels"]
     dms = store["dms"]

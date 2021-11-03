@@ -316,7 +316,7 @@ def admin_userpermission_change():
 @APP.route("/search/v1", methods=["GET"])
 def search():
     token = request.args.get("token")
-    query_str = requests.args.get("query_str")
+    query_str = request.args.get("query_str")
     return dumps(search_v1(token, query_str))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
