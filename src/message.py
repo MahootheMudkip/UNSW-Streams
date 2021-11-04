@@ -187,18 +187,15 @@ def message_remove_v1(token, message_id):
     # this does the same thing
     return {}
 
-# returns a list of type `messages` which are sent by `auth_user_id` 
-# and which contain the `query_str`.
+# returns a list of type `messages` which contain the `query_str`.
 def helper_search_v1(all_messages, message_list, auth_user_id, query_str):
     matches = []
     
     for message_id in message_list:
         message_info = all_messages[message_id]
-        if message_info["u_id"] == auth_user_id:
-            # message sent by authorised user
-            if re.search(query_str, message_info["message"]) != None:
-                # valid match found
-                matches.append(message_info)
+        if re.search(query_str, message_info["message"]) != None:
+            # valid match found
+            matches.append(message_info)
 
     return matches
 
