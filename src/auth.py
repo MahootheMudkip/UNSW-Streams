@@ -485,7 +485,7 @@ def auth_passwordreset_request_v1(email):
     for user_info in users.values():
         if user_info["email"] == email:
             user_found = True
-            recovery_code = user_info["password"]
+            recovery_code = user_info["handle_str"]
             # log user out of all sessions
             user_info["sessions"].clear()
             break
@@ -494,6 +494,9 @@ def auth_passwordreset_request_v1(email):
     if user_found == False:
         return 
 
+    # make secret recovery code
+    recovery_code = get_hash(recovery_code)
+    
     # if this point is reached, email must belong to a user
     send_email(email, recovery_code)
 
