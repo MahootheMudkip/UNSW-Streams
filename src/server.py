@@ -313,17 +313,154 @@ def admin_userpermission_change():
 
     return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
 
+# @APP.route("notifications/get/v1", methods = ['GET'])
+# def notifications_get():
+#     token = request.args.get("token")
+#     return dumps(notifications_get_v1(token))
+
 @APP.route("/search/v1", methods=["GET"])
 def search():
     token = request.args.get("token")
     query_str = request.args.get("query_str")
     return dumps(search_v1(token, query_str))
 
+# @APP.route("message/share/v1", methods = ['POST'])
+# def message_share():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     og_message_id = data["og_message_id"]
+#     message = data["message"]
+#     channel_id = data["channel_id"]
+#     dm_id = data["dm_id"]
+# 
+#     return dumps(message_share_v1(token, og_message_id, message, channel_id, dm_id))
+
+# @APP.route("message/react/v1", methods=['POST'])
+# def message_react():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     message_id = data["message_id"]
+#     react_id = data["react_id"]
+# 
+#     return dumps(message_react_v1(token, message_id, react_id))
+# 
+# @APP.route("message/unreact/v1", methods=['POST'])
+# def message_unreact():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     message_id = data["message_id"]
+#     react_id = data["react_id"]
+# 
+#     return dumps(message_unreact_v1(token, message_id, react_id))
+
+# @APP.route("message/pin/v1", methods=['POST'])
+# def message_pin():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     message_id = data["message_id"]
+# 
+#     return dumps(message_pin_v1(token, message_id))
+# 
+# @APP.route("message/unpin/v1", methods=['POST'])
+# def message_unpin():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     message_id = data["message_id"]
+# 
+#     return dumps(message_unpin_v1(token, message_id))
+
+# @APP.route("message/sendlater/v1", methods=['POST'])
+# def message_sendlater():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     channel_id = data["channel_id"]
+#     message = data["message"]
+#     time_sent = data["time_sent"]
+# 
+#     return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
+
+# @APP.route("message/sendlaterdm/v1", methods=['POST'])
+# def message_sendlaterdm():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     dm_id = data["dm_id"]
+#     message = data["message"]
+#     time_sent = data["time_sent"]
+# 
+#     return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
+
+# @APP.route("standup/start/v1", methods=['POST'])
+# def standup_start():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     channel_id = data["channel_id"]
+#     length = data["length"]
+# 
+#     return dumps(standup_start_v1(token, channel_id, length))
+
+# @APP.route("standup/active/v1", methods = ['GET'])
+# def standup_active():
+#     token = request.args.get("token")
+#     channel_id = request.args.get("channel_id")
+# 
+#     return dumps(standup_active_v1(token, channel_id))
+
+# @APP.route("standup/send/v1", methods=['POST'])
+# def standup_send():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     channel_id = data["channel_id"]
+#     message = data["message"]
+# 
+#     return dumps(standup_send_v1(token, channel_id, message))
+
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def auth_passwordreset_request():
     data = request.get_json()
     email = data["email"]
     return dumps(auth_passwordreset_request_v1(email))
+
+# @APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+# def auth_passwordreset_request():
+#     data = request.get_json()
+#     reset_code = data["reset_code"]
+#     new_password = data["new_password"]
+# 
+#     return dumps(auth_passwordreset_reset_v1(reset_code, new_password))
+
+# @APP.route("user/profile/uploadphoto/v1", methods=['POST'])
+# def user_profile_uploadphoto():
+#     data = request.get_json()
+# 
+#     token = data["token"]
+#     img_url = data["img_url"]
+#     x_start = data["x_start"]
+#     y_start = data["y_start"]
+#     x_end = data["x_end"]
+#     y_end = data["y_end"]
+# 
+#     return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
+
+# @APP.route("user/stats/v1", methods=['GET'])
+# def user_stats():
+#     token = request.args.get("token")
+# 
+#     return dumps(user_stats_v1(token))
+# 
+# @APP.route("users/stats/v1", methods=['GET'])
+# def users_stats():
+#     token = request.args.get("token")
+# 
+#     return dumps(users_stats_v1(token))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
