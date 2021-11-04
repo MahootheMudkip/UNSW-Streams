@@ -319,6 +319,12 @@ def search():
     query_str = request.args.get("query_str")
     return dumps(search_v1(token, query_str))
 
+@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
+def auth_passwordreset_request():
+    data = request.get_json()
+    email = data["email"]
+    return dumps(auth_passwordreset_request_v1(email))
+
 #### NO NEED TO MODIFY BELOW THIS POINT
 
 if __name__ == "__main__":

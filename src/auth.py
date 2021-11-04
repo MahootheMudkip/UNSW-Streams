@@ -1,7 +1,15 @@
 import re
+from src.email_helper import send_email
 from src.data_store import data_store
 from src.error import InputError
 from src.sessions import get_auth_user_id, get_hash, get_token, generate_new_session_id, get_session_id
+
+# returns True if `email` is valid, False otherwise
+def valid_email(email):
+    if re.fullmatch(R'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email) == None:
+        return False
+    else:
+        return True
 
 def auth_login_v1(email, password):
     '''
@@ -120,7 +128,7 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # Perform series of checks to make sure registration can be authorised
     # - Email entered is not a valid email (does not match regex)
-    if re.fullmatch(R'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email) == None:
+    if not valid_email(email):
         raise InputError(description="Invalid email format")
     # - Email address is already being used by another user
     for user in users.values():
@@ -187,6 +195,55 @@ def auth_logout_v1(token):
     # remove session_id from sessions list
     sessions = users[auth_user_id]["sessions"]
     sessions.remove(session_id)
+
+    data_store.set(store)
+
+    return {}
+
+def auth_passwordreset_request_v1(email):
+    '''
+    Given an email, if the email belongs to a user, sends them an 
+    email with a recovery code to reset their password. Also must log out
+    the user from ALL active sessions.
+
+    Arguments:
+        email (str):    email to send password request to
+
+    Exceptions:
+        n/a
+
+    Return Value:
+        n/a
+    '''
+    store = data_store.get()
+    users = store["users"]
+
+    # invalid email (does not match regex)
+    if not valid_email(email):
+        return
+
+    # to see if there is a user with the given email
+    user_found = False
+    recovery_code = ""
+
+    # check if there is a user with the given email
+    for user_info in users.values():
+        if user_info["email"] == email:
+            user_found = True
+            recovery_code = user_info["handle_str"]
+            # log user out of all sessions
+            user_info["sessions"].clear()
+            break
+    
+    # if user_found is false, then store has also not been modified
+    if user_found == False:
+        return 
+
+    # make secret recovery code
+    recovery_code = get_hash(recovery_code)
+    
+    # if this point is reached, email must belong to a user
+    send_email(email, recovery_code)
 
     data_store.set(store)
 
