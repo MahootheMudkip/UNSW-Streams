@@ -6,6 +6,7 @@ NO_ERROR = 200
 ACCESS_ERROR = 403
 # error status codes
 URL = url + "auth/passwordreset/request/v1"
+RECEIVER_EMAIL = "streamsapp.helper@gmail.com"
 
 @pytest.fixture
 def initial_setup():
@@ -27,7 +28,7 @@ def initial_setup():
 
     # create new user 1 and extract token
     user1_response = requests.post(auth_register_url, json={      
-        "email":        "mrmaxilikestoeat@gmail.com", 
+        "email":        RECEIVER_EMAIL, 
         "password":     "123789",
         "name_first":   "Jeremy", 
         "name_last":    "Clarkson"
@@ -63,7 +64,7 @@ def test_no_user_with_given_email(initial_setup):
 # email sent
 def test_user_with_given_email(initial_setup):
     response = requests.post(URL, json={
-        "email":    "mrmaxilikestoeat@gmail.com"
+        "email":    RECEIVER_EMAIL
     })
     assert response.status_code == NO_ERROR
 
@@ -77,7 +78,7 @@ def test_user_with_given_email_logged_out(initial_setup):
     assert response.status_code == NO_ERROR
 
     response = requests.post(URL, json={
-        "email":    "mrmaxilikestoeat@gmail.com"
+        "email":    RECEIVER_EMAIL
     })
     assert response.status_code == NO_ERROR
 
