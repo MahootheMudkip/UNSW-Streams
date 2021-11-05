@@ -429,13 +429,12 @@ def auth_passwordreset_request():
     email = data["email"]
     return dumps(auth_passwordreset_request_v1(email))
 
-# @APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
-# def auth_passwordreset_request():
-#     data = request.get_json()
-#     reset_code = data["reset_code"]
-#     new_password = data["new_password"]
-# 
-#     return dumps(auth_passwordreset_reset_v1(reset_code, new_password))
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def auth_passwordreset_request():
+    data = request.get_json()
+    reset_code = data["reset_code"]
+    new_password = data["new_password"]
+    return dumps(auth_passwordreset_reset_v1(reset_code, new_password))
 
 # @APP.route("user/profile/uploadphoto/v1", methods=['POST'])
 # def user_profile_uploadphoto():
