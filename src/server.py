@@ -430,7 +430,7 @@ def auth_passwordreset_request():
     return dumps(auth_passwordreset_request_v1(email))
 
 @APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
-def auth_passwordreset_request():
+def auth_passwordreset_reset():
     data = request.get_json()
     reset_code = data["reset_code"]
     new_password = data["new_password"]

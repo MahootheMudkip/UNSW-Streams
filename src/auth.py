@@ -281,7 +281,7 @@ def auth_passwordreset_reset_v1(reset_code, new_password):
     for user_info in users.values():
         if get_hash(user_info["handle_str"] + user_info["password"]) == reset_code:
             user_found = True
-            user_info["password"] = new_password
+            user_info["password"] = get_hash(new_password)
             break
     
     # if user_found is false, then reset_code is invalid

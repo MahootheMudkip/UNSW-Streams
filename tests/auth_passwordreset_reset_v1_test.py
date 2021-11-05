@@ -9,8 +9,8 @@ INPUT_ERROR = 400
 
 URL = url + "auth/passwordreset/reset/v1"
 
-# valid recovery code linked to user 1
-VALID_RECOVERY_CODE = "1c122bd6ee84d0499e9b36e12a6cdd93bf6498227882f2423c556fa209bbeda1"
+# valid reset code linked to user 1
+VALID_RESET_CODE = "89a037064bc263646de4aad57c5589e68dbf88ad01ddd785e78e78b56a130707"
 RECEIVER_EMAIL = "streamsapp.helper@gmail.com"
 
 @pytest.fixture
@@ -66,15 +66,15 @@ def test_invalid_reset_code(initial_setup):
     assert response.status_code == INPUT_ERROR
 
 # testing invalid new_password only
-def test_invalid_reset_code(initial_setup):
+def test_invalid_new_password(initial_setup):
     response = requests.post(URL, json={
-        "reset_code":   VALID_RECOVERY_CODE,
+        "reset_code":   VALID_RESET_CODE,
         "new_password": "sdf"
     })
     assert response.status_code == INPUT_ERROR
 
-# testing invalid new_password and recovery code
-def test_invalid_reset_code(initial_setup):
+# testing invalid new_password and reset code
+def test_invalid_all(initial_setup):
     response = requests.post(URL, json={
         "reset_code":   "a" * 64,
         "new_password": "sdf"
@@ -84,7 +84,7 @@ def test_invalid_reset_code(initial_setup):
 # testing password changed
 def test_user_with_given_email(initial_setup):
     response = requests.post(URL, json={
-        "reset_code":   VALID_RECOVERY_CODE,
+        "reset_code":   VALID_RESET_CODE,
         "new_password": "chicken"
     })
     assert response.status_code == NO_ERROR
@@ -98,7 +98,7 @@ def test_user_with_given_email(initial_setup):
 
     # test with new email; should pass
     response = requests.post(url + "auth/login/v2", json={
-        "email":    "streamsapp.helper@gmail.com",
+        "email":    RECEIVER_EMAIL,
         "password": "chicken"
     })
     assert response.status_code == NO_ERROR
