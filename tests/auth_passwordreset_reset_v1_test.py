@@ -7,7 +7,7 @@ ACCESS_ERROR = 403
 INPUT_ERROR = 400
 # error status codes
 
-URL = url + "auth/passwordreset/request/v1"
+URL = url + "auth/passwordreset/reset/v1"
 
 # valid recovery code linked to user 1
 VALID_RECOVERY_CODE = "1c122bd6ee84d0499e9b36e12a6cdd93bf6498227882f2423c556fa209bbeda1"
