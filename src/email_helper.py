@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 
 # sends an email
 # credit to https://realpython.com/python-send-email/#sending-fancy-emails
-def send_email(email, recovery_code):
+def send_email(email, reset_code):
     sender_email = "streamsapp.helper@gmail.com"
     receiver_email = email
     password = "whyistheresomuchwork1531"
@@ -17,7 +17,7 @@ def send_email(email, recovery_code):
     text = f"""\
 Hello,
 This is your recovery code:
-{recovery_code}
+{reset_code}
 """
     html_template = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -237,7 +237,7 @@ padding:15px 25px 15px 25px!important;
 </body>
 </html>
     """
-    html = html_template.replace('wholetthedogsout123456', recovery_code)
+    html = html_template.replace('wholetthedogsout123456', reset_code)
 
     part1 = MIMEText(text, "plain")
     part2 = MIMEText(html, "html")
