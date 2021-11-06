@@ -104,7 +104,7 @@ def test_msg_sendlater_invalid_channelid(data):
     assert response.status_code == INPUT_ERROR
 
 #testing when both channel id and token are invalid
-def test_msg_sendlater_invalid_token(data):
+def test_msg_sendlater_invalid_token_channel(data):
     #get a time stamp one hour from now
     timestamp = data["timestamp"] + 3600
     
