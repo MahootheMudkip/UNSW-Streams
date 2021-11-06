@@ -34,6 +34,8 @@ def users_all_v1(token):
             user_copy.pop("password")
             user_copy.pop("is_owner")
             user_copy.pop("sessions")
+            user_copy.pop("notifications")
+            user_copy.pop("user_stats")
             # remove password item from dict
             user_copy["u_id"] = u_id
             users_list.append(user_copy)
@@ -60,6 +62,8 @@ def user_profile_v1(token, u_id):
     user_copy.pop("password")
     user_copy.pop("is_owner")
     user_copy.pop("sessions")
+    user_copy.pop("notifications")
+    user_copy.pop("user_stats")
     # add u_id item
     user_copy["u_id"] = u_id
 

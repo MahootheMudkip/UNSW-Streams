@@ -136,6 +136,8 @@ def dm_details_v1(token, dm_id ):
         user_copy.pop("password")
         user_copy.pop("is_owner")
         user_copy.pop("sessions")
+        user_copy.pop("notifications")
+        user_copy.pop("user_stats")
         # add u_id item
         user_copy["u_id"] = member_id
     
