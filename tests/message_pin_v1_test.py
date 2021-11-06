@@ -264,13 +264,14 @@ def test_pin_public_channel_message(initial_setup):
     })
     assert channel_messages_response.status_code == NO_ERROR
 
-    pinned_message = channel_messages_response.json()["messages"][message_id1]
-    assert pinned_message["is_pinned"] == True
+    for message in channel_messages_response.json()["messages"]:
+        if message_id1 == message["message_id"]:
+            assert message["is_pinned"] == True
 
 # test pinning messages in a private channel
 def test_pin_private_channel_message(initial_setup):
     user1_token = initial_setup["user1_token"]
-    message_id1 = initial_setup["message_id_private"][2]
+    message_id1 = initial_setup["message_id_private"][0]
     private_channel_id = initial_setup["private_channel_id"]
 
     response1 = requests.post(URL, json={
@@ -286,5 +287,6 @@ def test_pin_private_channel_message(initial_setup):
     })
     assert channel_messages_response.status_code == NO_ERROR
 
-    pinned_message = channel_messages_response.json()["messages"][message_id1]
-    assert pinned_message["is_pinned"] == True  
+    for message in channel_messages_response.json()["messages"]:
+        if message_id1 == message["message_id"]:
+            assert message["is_pinned"] == True

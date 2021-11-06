@@ -57,7 +57,9 @@ def message_send_v1(token, channel_id, message):
         "message_id":   message_id_tracker,
         "u_id":         auth_user_id,
         "message":      message,
-        "time_created": timestamp
+        "time_created": timestamp,
+        "reacts":       [],
+        "is_pinned":    False
     }
 
     # append new message_id to the channel messages list
@@ -286,7 +288,7 @@ def message_pin_v1(token, message_id):
         if auth_user_id in channel["all_members"]:
             if message_id in channel["messages"]:
                 location_found_channel = True
-                channel_id = channel["channel_id"]
+                channel_id = channel
                 location_info = channel
                 location_type = "channel"
                 break
@@ -296,27 +298,22 @@ def message_pin_v1(token, message_id):
             if auth_user_id in dm["members"]:
                 if message_id in dm["messages"]:
                     location_found_dm = True
-                    dm_id = dm["dm_id"]
+                    dm_id = dm
                     location_info = dm
                     location_type = "dm"
                     break
     
-    if location_found_channel == False or location_found_dm == False:
+    if location_found_channel == False and location_found_dm == False:
         raise InputError(description="message_id not within a channel/dm that the user has joined")
     
     if messages[message_id]["is_pinned"] == True:
         raise InputError(description="The message is already pinned")
     
-    channel_info = channels[channel_id]
-    channel_all_members = channel_info["all_members"]
-    channel_owners = channel_info["owner_members"]
-
-    dm_info = dms[dm_id]
-    dm_members = dm_info["members"]
-    dm_owner = dm_info["owner"]
-    
     # check if auth_user does not have owner permissions.
     if location_found_channel:
+        channel_info = channel_id
+        channel_all_members = channel_info["all_members"]
+        channel_owners = channel_info["owner_members"]
         if users[auth_user_id]["is_owner"] == True:
             if auth_user_id not in channel_all_members:
                 raise AccessError(description="Authorised User does not have owner permissions in the channel.")
@@ -324,6 +321,9 @@ def message_pin_v1(token, message_id):
             raise AccessError(description="Authorised User does not have owner permissions in the channel.")
 
     elif location_found_dm:
+        dm_info = dm_id
+        dm_members = dm_info["members"]
+        dm_owner = dm_info["owner"]
         if users[auth_user_id]["is_owner"] == True:
             if auth_user_id not in dm_members:
                 raise AccessError(description="Authorised User does not have owner permissions in the dm.")
