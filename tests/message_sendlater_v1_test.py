@@ -118,6 +118,7 @@ def test_msg_sendlater_invalid_token(data):
     assert response.status_code == ACCESS_ERROR
 
 #testing when message is invalid (len > 1000)
+def test_msg_sendlater_invalid_message(data):
     #get a time stamp one hour from now
     timestamp = data["timestamp"] + 3600
 
@@ -131,6 +132,7 @@ def test_msg_sendlater_invalid_token(data):
     assert response.status_code == INPUT_ERROR
 
 #testing when message is sent in the past
+def test_msg_sendlater_past_message(data):
     #get a time stamp of one hour before curent time 
     timestamp = data["timestamp"] - 3600
 
@@ -145,6 +147,7 @@ def test_msg_sendlater_invalid_token(data):
 
 
 #testing when user not a in channel, tries to send a msg
+def test_msg_sendlater_user_notin_channel(data):
     #getting a time stamp two hours from now
     timestamp = data["timestamp"] + 7200
     
@@ -168,6 +171,7 @@ def test_msg_sendlater_invalid_token(data):
     assert response2.status_code == ACCESS_ERROR
 
 #testing if the message was actually delivered
+def test_msg_sendlater_verify(data):
     #getting a time stamp two minutes from now
     timestamp = data["timestamp"] + 120
 
@@ -191,6 +195,7 @@ def test_msg_sendlater_invalid_token(data):
     
     message = response2.json()["messages"]
     assert message[0][message] == "send this or you die"
+
 
 
 
