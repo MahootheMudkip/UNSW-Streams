@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.message import add_user_react_info
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -143,7 +144,6 @@ def channel_details_v1(token, channel_id):
         "all_members": channel_new_all_members,
     }
 
-
 def channel_messages_v1(token, channel_id, start):
     '''
     Returns up to 50 messages between index "start" and "start + 50". 
@@ -206,6 +206,9 @@ def channel_messages_v1(token, channel_id, start):
     # Then, slice list to get msgs between start and end index
     channel_messages = list(reversed(channel_messages))[start:end]
     messages = [all_messages[x] for x in channel_messages]
+
+    # Add info about if the caller user has reacted to each message in the list of messages
+    add_user_react_info(auth_user_id, messages)
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 

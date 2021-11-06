@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.message import add_user_react_info
 from datetime import *
 
 def dm_create_v1(token, u_ids):
@@ -359,6 +360,9 @@ def dm_messages_v1(token, dm_id, start):
     # Then, slice list to get msgs between start and end index
     dm_messages = list(reversed(dm_messages))[start:end]
     messages = [all_messages[x] for x in dm_messages]
+
+   # Add info about if the caller user has reacted to each message in the list of messages
+    add_user_react_info(auth_user_id, messages)
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 

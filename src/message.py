@@ -58,7 +58,7 @@ def message_send_v1(token, channel_id, message):
         "u_id":         auth_user_id,
         "message":      message,
         "time_created": timestamp,
-        "reacts":       {},
+        "reacts":       [],
         "is_pinned":    False
     }
 
@@ -189,6 +189,15 @@ def message_remove_v1(token, message_id):
     # this does the same thing
     return {}
 
+# add user's reacts info to a list of messages based on if the caller_id has reacted to messages
+def add_user_react_info(auth_user_id, messages):
+    for message in messages:
+        for i, react in enumerate(message["reacts"]):
+            react_copy = react.copy()
+            react_copy["is_this_user_reacted"] = auth_user_id in react_copy["u_ids"]
+            message["reacts"][i] = react_copy
+
+
 # returns a list of type `messages` which contain the `query_str`.
 def helper_search_v1(all_messages, message_list, auth_user_id, query_str):
     matches = []
@@ -243,6 +252,9 @@ def search_v1(token, query_str):
     for dm in dms.values():
         if auth_user_id in dm["members"]:
             matches += helper_search_v1(all_messages, dm["messages"], auth_user_id, query_str)
+
+    # Add info about if the caller user has reacted to each message in the list of messages
+    add_user_react_info(auth_user_id, messages)
 
     return {
         "messages": matches
