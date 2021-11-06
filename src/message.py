@@ -58,6 +58,8 @@ def message_send_v1(token, channel_id, message):
         "u_id":         auth_user_id,
         "message":      message,
         "time_created": timestamp
+        "reacts":       {},
+        "is_pinned":    False
     }
 
     # append new message_id to the channel messages list
