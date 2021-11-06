@@ -1,6 +1,7 @@
 from src.config import url
 import json 
 import requests
+import pytest
 
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
@@ -84,7 +85,7 @@ def test_invalid_message_id(data):
         "message_id": 121239,
         "react_id": 1
     })
-    assert response.status_code == InputError
+    assert response.status_code == INPUT_ERROR
 
 # testing with invalid react_id, valid message_id
 def test_invalid_react_id(data):
@@ -93,7 +94,7 @@ def test_invalid_react_id(data):
         "message_id": data["message_id"],
         "react_id": 51218
     })
-    assert response.status_code == InputError
+    assert response.status_code == INPUT_ERROR
 
 # testing with invalid react_id and invalid message_id
 def test_invalid_both(data):
@@ -102,7 +103,7 @@ def test_invalid_both(data):
         "message_id": 93198,
         "react_id": 51218
     })
-    assert response.status_code == InputError
+    assert response.status_code == INPUT_ERROR
 
 # checking to see if a single react can be viewed using dm_messages
 def test_valid_single_react(data):
@@ -119,7 +120,7 @@ def test_valid_single_react(data):
         "start": 0
     })
 
-    reacts = response.json()["messages"]["reacts"]
+    reacts = response.json()["messages"][0]["reacts"]
     assert reacts[0]["react_id"] == 1
     assert reacts[0]["u_ids"] == [0]
     assert reacts[0]["is_this_user_reacted"] == True
@@ -160,7 +161,7 @@ def test_valid_multiple_react(data):
         "start": 0
     })
 
-    reacts = response.json()["messages"]["reacts"]
+    reacts = response.json()["messages"][0]["reacts"]
     assert reacts[0]["react_id"] == 1
     assert reacts[0]["u_ids"] == [0, 1, 2, 3]
     assert reacts[0]["is_this_user_reacted"] == True
@@ -181,7 +182,24 @@ def test_user_is_not_reacted(data):
         "start": 0
     })
 
-    reacts = response.json()["messages"]["reacts"]
+    reacts = response.json()["messages"][0]["reacts"]
     assert reacts[0]["react_id"] == 1
     assert reacts[0]["u_ids"] == [0]
     assert reacts[0]["is_this_user_reacted"] == False
+
+# testing when caller of dm/messages has not reacted to a message
+def test_user_already_reacted(data):
+
+    response = requests.post(url + "message/react/v1", json={
+        "token": data["token1"], 
+        "message_id": data["message_id"],
+        "react_id": 1
+    })
+    assert response.status_code == NO_ERROR
+
+    response = requests.post(url + "message/react/v1", json={
+        "token": data["token1"], 
+        "message_id": data["message_id"],
+        "react_id": 1
+    })
+    assert response.status_code == INPUT_ERROR

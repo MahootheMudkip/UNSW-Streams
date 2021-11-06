@@ -53,12 +53,17 @@ def message_send_v1(token, channel_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    react = {
+        "react_id": 1,
+        "u_ids": []
+    }
+
     new_message = {
         "message_id":   message_id_tracker,
         "u_id":         auth_user_id,
         "message":      message,
         "time_created": timestamp,
-        "reacts":       [],
+        "reacts":       [react],
         "is_pinned":    False
     }
 
@@ -192,10 +197,8 @@ def message_remove_v1(token, message_id):
 # add user's reacts info to a list of messages based on if the caller_id has reacted to messages
 def add_user_react_info(auth_user_id, messages):
     for message in messages:
-        for i, react in enumerate(message["reacts"]):
-            react_copy = react.copy()
-            react_copy["is_this_user_reacted"] = auth_user_id in react_copy["u_ids"]
-            message["reacts"][i] = react_copy
+        react = message["reacts"][0]
+        react["is_this_user_reacted"] = auth_user_id in react["u_ids"]
 
 
 # returns a list of type `messages` which contain the `query_str`.
@@ -254,8 +257,54 @@ def search_v1(token, query_str):
             matches += helper_search_v1(all_messages, dm["messages"], auth_user_id, query_str)
 
     # Add info about if the caller user has reacted to each message in the list of messages
-    add_user_react_info(auth_user_id, messages)
+    add_user_react_info(auth_user_id, matches)
 
     return {
         "messages": matches
     }
+
+def message_react_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 
+    add a "react" to that particular message.
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+        react_id    (int): the type of react to add
+
+    Exceptions:
+        InputError:
+            - message_id refers to an invalid message
+            - react_id refers to an invalid react
+            - the user has already reacted with that react type
+
+    Return Value:
+        empty dict
+    '''
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    messages = store["messages"]
+
+    # message_id is invalid
+    if message_id not in messages:
+        raise InputError(description="Message_id is invalid (doesn't exist)")
+
+    # react_id is invalid
+    if react_id != 1:
+        raise InputError(description="React_id is invalid (doesn't exist)")
+    
+    # react_id must be 1
+    reacts = messages[message_id]["reacts"][0]
+
+    # add react from user if not already reacted
+    if auth_user_id not in reacts["u_ids"]:
+        reacts["u_ids"].append(auth_user_id)
+    # user already reacted
+    else:
+        raise InputError(description="User has already reacted with this reaction")
+    
+    data_store.set(store)
+    return {}

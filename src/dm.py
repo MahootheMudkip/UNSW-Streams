@@ -277,11 +277,18 @@ def message_senddm_v1(token, dm_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    react = {
+        "react_id": 1,
+        "u_ids": []
+    }
+
     new_message = {
         "message_id":   message_id_tracker,
         "u_id":         auth_user_id,
         "message":      message,
-        "time_created": timestamp
+        "time_created": timestamp,
+        "reacts":       [react],
+        "is_pinned":    False
     }
 
     # append new message_id to the channel messages list
