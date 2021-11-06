@@ -224,13 +224,14 @@ def auth_passwordreset_request_v1(email):
 
     # to see if there is a user with the given email
     user_found = False
-    recovery_code = ""
+    reset_code = ""
 
     # check if there is a user with the given email
     for user_info in users.values():
         if user_info["email"] == email:
             user_found = True
-            recovery_code = user_info["handle_str"]
+            # generate reset_code from handle_str and password
+            reset_code = get_hash(user_info["handle_str"] + user_info["password"])
             # log user out of all sessions
             user_info["sessions"].clear()
             break
@@ -238,12 +239,54 @@ def auth_passwordreset_request_v1(email):
     # if user_found is false, then store has also not been modified
     if user_found == False:
         return 
-
-    # make secret recovery code
-    recovery_code = get_hash(recovery_code)
     
     # if this point is reached, email must belong to a user
-    send_email(email, recovery_code)
+    send_email(email, reset_code)
+
+    data_store.set(store)
+
+    return {}
+
+def auth_passwordreset_reset_v1(reset_code, new_password):
+    '''
+    Given a reset code for a user, set that user's new password 
+    to the password provided.
+
+    Arguments:
+        reset_code      (str):  recovery/reset code for password change
+        new_password    (str):  new password
+
+    Exceptions:
+        InputError:
+            - invalid reset_code
+            - len(new_password) < 6
+
+    Return Value:
+        n/a
+    '''
+    # first check for valid parameters
+    if len(new_password) < 6:
+        raise InputError(description="invalid password")
+    elif len(reset_code) != 64:
+        # as we are using sha256 hash
+        raise InputError(description="invalid reset_code")
+
+    store = data_store.get()
+    users = store["users"]
+
+    # for checking reset_code is valid
+    user_found = False
+
+    # find user with corresponding reset code
+    for user_info in users.values():
+        if get_hash(user_info["handle_str"] + user_info["password"]) == reset_code:
+            user_found = True
+            user_info["password"] = get_hash(new_password)
+            break
+    
+    # if user_found is false, then reset_code is invalid
+    if user_found == False:
+        raise InputError(description="invalid reset_code")
 
     data_store.set(store)
 
