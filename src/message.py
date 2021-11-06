@@ -279,8 +279,6 @@ def message_pin_v1(token, message_id):
 
     location_found_channel = False
     location_found_dm = False
-    location_info = {}
-    location_type = ""
     # check message_id is within a channel/dm that the user has joined
 
     # find location of message_id
@@ -289,8 +287,6 @@ def message_pin_v1(token, message_id):
             if message_id in channel["messages"]:
                 location_found_channel = True
                 channel_id = channel
-                location_info = channel
-                location_type = "channel"
                 break
     
     if location_found_channel == False:
@@ -299,8 +295,6 @@ def message_pin_v1(token, message_id):
                 if message_id in dm["messages"]:
                     location_found_dm = True
                     dm_id = dm
-                    location_info = dm
-                    location_type = "dm"
                     break
     
     if location_found_channel == False and location_found_dm == False:
