@@ -276,6 +276,7 @@ def message_pin_v1(token, message_id):
     dms = store["dms"]
     messages = store["messages"]
 
+    location_found = False    
     location_info = {}
     location_type = ""
     
