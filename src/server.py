@@ -1,4 +1,3 @@
-import random
 import sys
 import json
 import pickle
@@ -473,6 +472,6 @@ if __name__ == "__main__":
             data_store.set(store)
     except FileNotFoundError:
         data_store.__init__
-    # APP.run(port=config.port) # Do not edit this port
-    APP.run(port=random.randint(1111, 8080)) # Do not edit this port
+    
+    APP.run(port=config.port) # Do not edit this port
     
