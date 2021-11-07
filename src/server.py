@@ -356,15 +356,15 @@ def message_unreact():
 
     return dumps(message_unreact_v1(token, message_id, react_id))
 
-# @APP.route("/message/pin/v1", methods=['POST'])
-# def message_pin():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     message_id = data["message_id"]
-# 
-#     return dumps(message_pin_v1(token, message_id))
-# 
+@APP.route("/message/pin/v1", methods=['POST'])
+def message_pin():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+
+    return dumps(message_pin_v1(token, message_id))
+
 # @APP.route("/message/unpin/v1", methods=['POST'])
 # def message_unpin():
 #     data = request.get_json()
