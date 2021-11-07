@@ -377,8 +377,8 @@ def message_react_v1(token, message_id, react_id):
     # add react from user if not already reacted
     if auth_user_id not in reacts["u_ids"]:
         reacts["u_ids"].append(auth_user_id)
-    # user already reacted
     else:
+        # user already reacted
         raise InputError(description="User has already reacted with this reaction")
     
     data_store.set(store)
