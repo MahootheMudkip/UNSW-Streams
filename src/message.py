@@ -53,11 +53,18 @@ def message_send_v1(token, channel_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    react = {
+        "react_id": 1,
+        "u_ids": []
+    }
+
     new_message = {
         "message_id":   message_id_tracker,
         "u_id":         auth_user_id,
         "message":      message,
-        "time_created": timestamp
+        "time_created": timestamp,
+        "reacts":       [react],
+        "is_pinned":    False
     }
 
     # append new message_id to the channel messages list
@@ -187,6 +194,13 @@ def message_remove_v1(token, message_id):
     # this does the same thing
     return {}
 
+# add user's reacts info to a list of messages based on if the caller_id has reacted to messages
+def add_user_react_info(auth_user_id, messages):
+    for message in messages:
+        react = message["reacts"][0]
+        react["is_this_user_reacted"] = auth_user_id in react["u_ids"]
+
+
 # returns a list of type `messages` which contain the `query_str`.
 def helper_search_v1(all_messages, message_list, auth_user_id, query_str):
     matches = []
@@ -242,6 +256,176 @@ def search_v1(token, query_str):
         if auth_user_id in dm["members"]:
             matches += helper_search_v1(all_messages, dm["messages"], auth_user_id, query_str)
 
+    # Add info about if the caller user has reacted to each message in the list of messages
+    add_user_react_info(auth_user_id, matches)
+
     return {
         "messages": matches
     }
+
+def message_pin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM, mark it as "pinned".    
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+
+    Exceptions:
+        InputError:
+            - message_id is not a valid message within a channel or DM 
+                that the authorised user has joined
+            - the message is already pinned
+        AccessError:
+            - message_id refers to a valid message in a joined channel/DM and 
+                the authorised user does not have owner permissions in the channel/DM
+
+    Return Value:
+        empty dictionary.
+    '''   
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    channels = store["channels"]
+    dms = store["dms"]
+    messages = store["messages"]
+
+    location_found = False    
+    location_info = {}
+    location_type = ""
+    
+    # check message_id is within a channel/dm that the user has joined
+    # find location of message_id
+    for channel in channels.values():
+        if auth_user_id in channel["all_members"]:
+            if message_id in channel["messages"]:
+                location_found = True
+                location_info = channel
+                location_type = "channel"
+                break
+    
+    if location_found == False:
+        for dm in dms.values():
+            if auth_user_id in dm["members"]:
+                if message_id in dm["messages"]:
+                    location_found = True
+                    location_info = dm
+                    location_type = "dm"
+                    break
+    
+    if location_found == False:
+        raise InputError(description="message_id not within a channel/dm that the user has joined")
+    
+    if messages[message_id]["is_pinned"] == True:
+        raise InputError(description="The message is already pinned")
+
+    user_info = store["users"][auth_user_id] 
+    user_is_owner = user_info["is_owner"] 
+ 
+    message_info = store["messages"][message_id] 
+    message_u_id = message_info["u_id"] 
+    if auth_user_id != message_u_id: 
+        if location_type == "channel": 
+            if auth_user_id not in location_info["owner_members"] and user_is_owner == False: 
+                # not a owner or global owner 
+                raise AccessError(description="Unauthorised user") 
+        else: 
+            if auth_user_id != location_info["owner"]: 
+                raise AccessError(description="Unauthorised user") 
+
+    messages[message_id]["is_pinned"] = True
+    data_store.set(store)
+    return {}
+
+def message_react_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 
+    add a "react" to that particular message.
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+        react_id    (int): the type of react to add
+
+    Exceptions:
+        InputError:
+            - message_id refers to an invalid message
+            - react_id refers to an invalid react
+            - the user has already reacted with that react type
+
+    Return Value:
+        empty dict
+    '''
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    messages = store["messages"]
+
+    # message_id is invalid
+    if message_id not in messages:
+        raise InputError(description="Message_id is invalid (doesn't exist)")
+
+    # react_id is invalid
+    if react_id != 1:
+        raise InputError(description="React_id is invalid (doesn't exist)")
+    
+    # react_id must be 1
+    reacts = messages[message_id]["reacts"][0]
+
+    # add react from user if not already reacted
+    if auth_user_id not in reacts["u_ids"]:
+        reacts["u_ids"].append(auth_user_id)
+    else:
+        # user already reacted
+        raise InputError(description="User has already reacted with this reaction")
+    
+    data_store.set(store)
+    return {}
+
+def message_unreact_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 
+    remove a "react" from that particular message.
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+        react_id    (int): the type of react to remove
+
+    Exceptions:
+        InputError:
+            - message_id refers to an invalid message
+            - react_id refers to an invalid react
+            - the user has not yet reacted with that react type
+
+    Return Value:
+        empty dict
+    '''
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    messages = store["messages"]
+
+    # message_id is invalid
+    if message_id not in messages:
+        raise InputError(description="Message_id is invalid (doesn't exist)")
+
+    # react_id is invalid
+    if react_id != 1:
+        raise InputError(description="React_id is invalid (doesn't exist)")
+    
+    # react_id must be 1
+    reacts = messages[message_id]["reacts"][0]
+
+    # user not yet reacted
+    if auth_user_id not in reacts["u_ids"]:
+        raise InputError(description="User has not yet reacted with this reaction")
+    # remove react from user if already reacted
+    else:
+        reacts["u_ids"].remove(auth_user_id)
+    
+    data_store.set(store)
+    return {}
