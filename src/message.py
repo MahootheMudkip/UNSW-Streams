@@ -263,6 +263,81 @@ def search_v1(token, query_str):
         "messages": matches
     }
 
+def message_pin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM, mark it as "pinned".    
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+
+    Exceptions:
+        InputError:
+            - message_id is not a valid message within a channel or DM 
+                that the authorised user has joined
+            - the message is already pinned
+        AccessError:
+            - message_id refers to a valid message in a joined channel/DM and 
+                the authorised user does not have owner permissions in the channel/DM
+
+    Return Value:
+        empty dictionary.
+    '''   
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    channels = store["channels"]
+    dms = store["dms"]
+    messages = store["messages"]
+
+    location_found = False    
+    location_info = {}
+    location_type = ""
+    
+    # check message_id is within a channel/dm that the user has joined
+    # find location of message_id
+    for channel in channels.values():
+        if auth_user_id in channel["all_members"]:
+            if message_id in channel["messages"]:
+                location_found = True
+                location_info = channel
+                location_type = "channel"
+                break
+    
+    if location_found == False:
+        for dm in dms.values():
+            if auth_user_id in dm["members"]:
+                if message_id in dm["messages"]:
+                    location_found = True
+                    location_info = dm
+                    location_type = "dm"
+                    break
+    
+    if location_found == False:
+        raise InputError(description="message_id not within a channel/dm that the user has joined")
+    
+    if messages[message_id]["is_pinned"] == True:
+        raise InputError(description="The message is already pinned")
+
+    user_info = store["users"][auth_user_id] 
+    user_is_owner = user_info["is_owner"] 
+ 
+    message_info = store["messages"][message_id] 
+    message_u_id = message_info["u_id"] 
+    if auth_user_id != message_u_id: 
+        if location_type == "channel": 
+            if auth_user_id not in location_info["owner_members"] and user_is_owner == False: 
+                # not a owner or global owner 
+                raise AccessError(description="Unauthorised user") 
+        else: 
+            if auth_user_id != location_info["owner"]: 
+                raise AccessError(description="Unauthorised user") 
+
+    messages[message_id]["is_pinned"] = True
+    data_store.set(store)
+    return {}
+
 def message_react_v1(token, message_id, react_id):
     '''
     Given a message within a channel or DM the authorised user is part of, 
