@@ -278,7 +278,8 @@ def message_senddm_v1(token, dm_id, message):
         "message_id":   message_id_tracker,
         "u_id":         auth_user_id,
         "message":      message,
-        "time_created": timestamp
+        "time_created": timestamp,
+        "is_pinned":    False,
     }
 
     # append new message_id to the channel messages list
