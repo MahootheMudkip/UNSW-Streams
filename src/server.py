@@ -366,14 +366,14 @@ def message_pin():
 
     return dumps(message_pin_v1(token, message_id))
 
-# @APP.route("/message/unpin/v1", methods=['POST'])
-# def message_unpin():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     message_id = data["message_id"]
-# 
-#     return dumps(message_unpin_v1(token, message_id))
+@APP.route("/message/unpin/v1", methods=['POST'])
+def message_unpin():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+
+    return dumps(message_unpin_v1(token, message_id))
 
 # @APP.route("/message/sendlater/v1", methods=['POST'])
 # def message_sendlater():
