@@ -176,7 +176,7 @@ def test_message_pin_v1_invalid_message(initial_setup):
     assert response2.status_code == INPUT_ERROR
 
 # testing valid message, user not in dm (duplicate test)
-def test_message_pin_v1_invalid_message(initial_setup):
+def test_message_pin_v1_invalid_dm_message(initial_setup):
     user0_token = initial_setup["user0_token"]
     user3_token = initial_setup["user3_token"]
     message_id = initial_setup["message_id_dm"][0]
