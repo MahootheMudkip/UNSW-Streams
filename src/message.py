@@ -383,3 +383,49 @@ def message_react_v1(token, message_id, react_id):
     
     data_store.set(store)
     return {}
+
+def message_unreact_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 
+    remove a "react" from that particular message.
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+        react_id    (int): the type of react to remove
+
+    Exceptions:
+        InputError:
+            - message_id refers to an invalid message
+            - react_id refers to an invalid react
+            - the user has not yet reacted with that react type
+
+    Return Value:
+        empty dict
+    '''
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    messages = store["messages"]
+
+    # message_id is invalid
+    if message_id not in messages:
+        raise InputError(description="Message_id is invalid (doesn't exist)")
+
+    # react_id is invalid
+    if react_id != 1:
+        raise InputError(description="React_id is invalid (doesn't exist)")
+    
+    # react_id must be 1
+    reacts = messages[message_id]["reacts"][0]
+
+    # user not yet reacted
+    if auth_user_id not in reacts["u_ids"]:
+        raise InputError(description="User has not yet reacted with this reaction")
+    # remove react from user if already reacted
+    else:
+        reacts["u_ids"].remove(auth_user_id)
+    
+    data_store.set(store)
+    return {}

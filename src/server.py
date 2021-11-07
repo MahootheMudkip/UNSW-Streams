@@ -346,15 +346,15 @@ def message_react():
 
     return dumps(message_react_v1(token, message_id, react_id))
 
-# @APP.route("/message/unreact/v1", methods=['POST'])
-# def message_unreact():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     message_id = data["message_id"]
-#     react_id = data["react_id"]
-# 
-#     return dumps(message_unreact_v1(token, message_id, react_id))
+@APP.route("/message/unreact/v1", methods=['POST'])
+def message_unreact():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+    react_id = data["react_id"]
+
+    return dumps(message_unreact_v1(token, message_id, react_id))
 
 @APP.route("/message/pin/v1", methods=['POST'])
 def message_pin():
