@@ -58,6 +58,16 @@ def initial_setup():
     user2_token = user2["token"]
     user2_id = user2["auth_user_id"]
 
+    # create new user 3 and extract token
+    user3_response = requests.post(auth_register_url, json={      
+        "email":        "wt@gmail.com", 
+        "password":     "234789",
+        "name_first":   "Jame",
+        "name_last":    "Ma"
+    })
+    user3 = user3_response.json()
+    user3_token = user3["token"]
+
     # create public channel and extract channel_id
     public_channel_response = requests.post(channel_create_url, json={
         "token":        user1_token,
@@ -120,6 +130,7 @@ def initial_setup():
         "user0_id":             user0_id,
         "user1_token":          user1_token,
         "user2_token":          user2_token,
+        "user3_token":          user3_token,
         "user2_id":             user2_id,
         "message_id_public":    message_id_public,
         "message_id_private":   message_id_private,
@@ -162,6 +173,24 @@ def test_message_pin_v1_invalid_message(initial_setup):
         "token":        user2_token,
         "message_id":   message_id,
     })
+    assert response2.status_code == INPUT_ERROR
+
+# testing valid message, user not in dm (duplicate test)
+def test_message_pin_v1_invalid_message(initial_setup):
+    user0_token = initial_setup["user0_token"]
+    user3_token = initial_setup["user3_token"]
+    message_id = initial_setup["message_id_dm"][0]
+
+    response = requests.post(URL, json={
+        "token":        user0_token,
+        "message_id":   message_id,
+    })
+    assert response.status_code == INPUT_ERROR  
+
+    response2 = requests.post(URL, json={
+        "token":        user3_token,
+        "message_id":   message_id,
+    })
     assert response2.status_code == INPUT_ERROR  
 
 # testing valid token (user is a member), invalid message_id
@@ -173,11 +202,29 @@ def test_message_pin_v1_invalid_message_id(initial_setup):
     })
     assert response.status_code == INPUT_ERROR
 
-# testing global user (not a member), valid message_id
+# testing global user (not a member of channel), valid message_id
 def test_message_pin_v1_global_user_not_member(initial_setup):
     user0_token = initial_setup["user0_token"]
     message_id1 = initial_setup["message_id_public"][1]
     message_id2 = initial_setup["message_id_private"][0]
+
+    response1 = requests.post(URL, json={
+        "token":        user0_token,
+        "message_id":   message_id1,
+    })
+    assert response1.status_code == INPUT_ERROR
+
+    response2 = requests.post(URL, json={
+        "token":        user0_token,
+        "message_id":   message_id2,
+    })
+    assert response2.status_code == INPUT_ERROR
+
+# testing global user (not a member of dm), valid message_id
+def test_message_pin_v1_dm_global_user_not_member(initial_setup):
+    user0_token = initial_setup["user0_token"]
+    message_id1 = initial_setup["message_id_dm"][0]
+    message_id2 = initial_setup["message_id_dm"][1]
 
     response1 = requests.post(URL, json={
         "token":        user0_token,
@@ -247,7 +294,7 @@ def test_message_pin_v1_user_not_owner(initial_setup):
     assert response4.status_code == ACCESS_ERROR
 
 # testing member of dm (not owner), all else valid
-def test_message_pin_v1_user_not_owner(initial_setup):
+def test_message_pin_v1_dm_user_not_owner(initial_setup):
     user2_token = initial_setup["user2_token"]
     message_id_dm1 = initial_setup["message_id_dm"][0]
     message_id_dm2 = initial_setup["message_id_dm"][1]
