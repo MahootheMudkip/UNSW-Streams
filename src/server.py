@@ -336,16 +336,16 @@ def search():
 # 
 #     return dumps(message_share_v1(token, og_message_id, message, channel_id, dm_id))
 
-# @APP.route("/message/react/v1", methods=['POST'])
-# def message_react():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     message_id = data["message_id"]
-#     react_id = data["react_id"]
-# 
-#     return dumps(message_react_v1(token, message_id, react_id))
-# 
+@APP.route("/message/react/v1", methods=['POST'])
+def message_react():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+    react_id = data["react_id"]
+
+    return dumps(message_react_v1(token, message_id, react_id))
+
 # @APP.route("/message/unreact/v1", methods=['POST'])
 # def message_unreact():
 #     data = request.get_json()
@@ -364,7 +364,7 @@ def message_pin():
     message_id = data["message_id"]
 
     return dumps(message_pin_v1(token, message_id))
-# 
+
 # @APP.route("/message/unpin/v1", methods=['POST'])
 # def message_unpin():
 #     data = request.get_json()

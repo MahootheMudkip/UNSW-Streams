@@ -80,21 +80,8 @@ def test_users_all_v1_correct_details(initial_setup):
     data = response.json()
 
     assert len(data["users"]) == 3
-    assert data["users"][0] == {
-        "u_id":         user0_id,
-        "email":        "theboss@gmail.com", 
-        "name_first":   "Big", 
-        "name_last":    "Boss",
-        "handle_str":   "bigboss"
-    }
-
-    assert data["users"][2] == {
-        "u_id":         user2_id,
-        "email":        "wtf@gmail.com",
-        "name_first":   "James", 
-        "name_last":    "May",
-        "handle_str":   "jamesmay"
-    }
+    assert data["users"][0]["u_id"] == user0_id
+    assert data["users"][2]["u_id"] == user2_id
 
     response2 = requests.get(URL, params={
         "token":    user2_token
@@ -103,13 +90,7 @@ def test_users_all_v1_correct_details(initial_setup):
     data2 = response2.json()
 
     assert len(data2["users"]) == 3
-    assert data2["users"][1] == {
-        "u_id":         user1_id,
-        "email":        "lmao@gmail.com", 
-        "name_first":   "Jeremy", 
-        "name_last":    "Clarkson",
-        "handle_str":   "jeremyclarkson"
-    }
+    assert data2["users"][1]["u_id"] == user1_id
 
 def test_users_all_v1_remove_user(initial_setup):
     token0 = initial_setup["user0_token"]

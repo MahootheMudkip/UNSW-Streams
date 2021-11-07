@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.message import add_user_react_info
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -110,6 +111,8 @@ def channel_details_v1(token, channel_id):
         user_copy.pop("password")
         user_copy.pop("is_owner")
         user_copy.pop("sessions")
+        user_copy.pop("notifications")
+        user_copy.pop("user_stats")
         # add u_id item
         user_copy["u_id"] = u_id
 
@@ -127,6 +130,8 @@ def channel_details_v1(token, channel_id):
         user_copy.pop("password")
         user_copy.pop("is_owner")
         user_copy.pop("sessions")
+        user_copy.pop("notifications")
+        user_copy.pop("user_stats")
         # add u_id item
         user_copy["u_id"] = u_id
 
@@ -138,7 +143,6 @@ def channel_details_v1(token, channel_id):
         "owner_members": channel_new_owner_members,
         "all_members": channel_new_all_members,
     }
-
 
 def channel_messages_v1(token, channel_id, start):
     '''
@@ -202,6 +206,9 @@ def channel_messages_v1(token, channel_id, start):
     # Then, slice list to get msgs between start and end index
     channel_messages = list(reversed(channel_messages))[start:end]
     messages = [all_messages[x] for x in channel_messages]
+
+    # Add info about if the caller user has reacted to each message in the list of messages
+    add_user_react_info(auth_user_id, messages)
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 

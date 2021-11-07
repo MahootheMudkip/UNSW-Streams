@@ -84,7 +84,7 @@ message_id = {
     "u_id":         int, 
     "time_created": int,
     "message":      string,
-    "reacts":       list of dicts, where each dictionary contains types { react_id, u_ids, is_this_user_reacted },
+    "reacts":       dict of lists where each key in the dict is a react_id
     "is_pinned":    bool
 }
 
