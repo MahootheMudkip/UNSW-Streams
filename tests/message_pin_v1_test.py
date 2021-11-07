@@ -78,6 +78,12 @@ def initial_setup():
 
     message_id_public = []
     message_id_private = []
+    message_id_dm = []
+
+    # create dm and extract dm_id
+    response = requests.post(url + "dm/create/v1", json={"token":user1_token,"u_ids":[user2_id]})
+    assert response.status_code == NO_ERROR
+    dm1_id = response.json()["dm_id"]
 
     for i in range(3):
         response = requests.post(f"{url}message/send/v1", json={
@@ -98,6 +104,16 @@ def initial_setup():
         assert response.status_code == NO_ERROR
         data = response.json()
         message_id_private.append(data["message_id"])
+    
+    for k in range(3):
+        response = requests.post(f"{url}message/senddm/v1", json={
+            "token":        user1_token,
+            "dm_id":   dm1_id,
+            "message":      f"Hello there! I am message {k}!"
+        })
+        assert response.status_code == NO_ERROR
+        data = response.json()
+        message_id_dm.append(data["message_id"])
 
     return {
         "user0_token":          user0_token,
@@ -107,12 +123,14 @@ def initial_setup():
         "user2_id":             user2_id,
         "message_id_public":    message_id_public,
         "message_id_private":   message_id_private,
+        "message_id_dm":        message_id_dm,
         "public_channel_id":    public_channel_id,
-        "private_channel_id":   private_channel_id
+        "private_channel_id":   private_channel_id,
+        "dm1_id":               dm1_id
     }
 
 # testing invalid token only
-def test_message_remove_v1_invalid_token(initial_setup):
+def test_message_pin_v1_invalid_token(initial_setup):
     message_id = initial_setup["message_id_public"][0]
     response = requests.post(URL, json={
         "token":        "lalala",
@@ -121,7 +139,7 @@ def test_message_remove_v1_invalid_token(initial_setup):
     assert response.status_code == ACCESS_ERROR
 
 # testing invalid token and message_id
-def test_message_remove_v1_invalid_token_and_message_id(initial_setup):
+def test_message_pin_v1_invalid_token_and_message_id(initial_setup):
     response = requests.post(URL, json={
         "token":        "lalala",
         "message_id":   -89,
@@ -129,7 +147,7 @@ def test_message_remove_v1_invalid_token_and_message_id(initial_setup):
     assert response.status_code == ACCESS_ERROR
 
 # testing valid message, user not in channel (duplicate test)
-def test_message_remove_v1_invalid_message(initial_setup):
+def test_message_pin_v1_invalid_message(initial_setup):
     user0_token = initial_setup["user0_token"]
     user2_token = initial_setup["user2_token"]
     message_id = initial_setup["message_id_public"][0]
@@ -147,7 +165,7 @@ def test_message_remove_v1_invalid_message(initial_setup):
     assert response2.status_code == INPUT_ERROR  
 
 # testing valid token (user is a member), invalid message_id
-def test_message_remove_v1_invalid_message_id(initial_setup):
+def test_message_pin_v1_invalid_message_id(initial_setup):
     user1_token = initial_setup["user1_token"]
     response = requests.post(URL, json={
         "token":        user1_token,
@@ -156,7 +174,7 @@ def test_message_remove_v1_invalid_message_id(initial_setup):
     assert response.status_code == INPUT_ERROR
 
 # testing global user (not a member), valid message_id
-def test_message_remove_v1_global_user_not_member(initial_setup):
+def test_message_pin_v1_global_user_not_member(initial_setup):
     user0_token = initial_setup["user0_token"]
     message_id1 = initial_setup["message_id_public"][1]
     message_id2 = initial_setup["message_id_private"][0]
@@ -174,7 +192,7 @@ def test_message_remove_v1_global_user_not_member(initial_setup):
     assert response2.status_code == INPUT_ERROR
 
 # testing normal user (not a member), valid message_id and message
-def test_message_remove_v1_unauthorised_user(initial_setup):
+def test_message_pin_v1_unauthorised_user(initial_setup):
     user2_token = initial_setup["user2_token"]
     message_id1 = initial_setup["message_id_public"][2]
     message_id2 = initial_setup["message_id_private"][1]
@@ -192,7 +210,7 @@ def test_message_remove_v1_unauthorised_user(initial_setup):
     assert response2.status_code == INPUT_ERROR
 
 # testing member of channel (not owner), all else valid
-def test_message_remove_v1_user_not_owner(initial_setup):
+def test_message_pin_v1_user_not_owner(initial_setup):
     user1_token = initial_setup["user1_token"]
     user2_id = initial_setup["user2_id"]
     public_channel_id = initial_setup["public_channel_id"]
@@ -228,8 +246,27 @@ def test_message_remove_v1_user_not_owner(initial_setup):
     })
     assert response4.status_code == ACCESS_ERROR
 
+# testing member of dm (not owner), all else valid
+def test_message_pin_v1_user_not_owner(initial_setup):
+    user2_token = initial_setup["user2_token"]
+    message_id_dm1 = initial_setup["message_id_dm"][0]
+    message_id_dm2 = initial_setup["message_id_dm"][1]
+    
+    response3 = requests.post(URL, json={
+        "token":        user2_token,
+        "message_id":   message_id_dm1,
+    })
+    assert response3.status_code == ACCESS_ERROR
+
+    response4 = requests.post(URL, json={
+        "token":        user2_token,
+        "message_id":   message_id_dm2,
+    })
+    assert response4.status_code == ACCESS_ERROR
+
+
 # testing if the message is already pinned
-def test_message_message_v1_is_already_pinned(initial_setup):
+def test_pin_message_v1_is_already_pinned(initial_setup):
     user1_token = initial_setup["user1_token"]
     message_id1 = initial_setup["message_id_public"][2]
 
