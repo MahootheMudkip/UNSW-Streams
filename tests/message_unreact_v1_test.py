@@ -69,19 +69,19 @@ def data():
 
     requests.post(url + "message/react/v1", json={
         "token": token1, 
-        "message_id": data["message_id"],
+        "message_id": 0,
         "react_id": 1
     })
 
     requests.post(url + "message/react/v1", json={
         "token": token2, 
-        "message_id": data["message_id"],
+        "message_id": 0,
         "react_id": 1
     })
 
     requests.post(url + "message/react/v1", json={
         "token": token3, 
-        "message_id": data["message_id"],
+        "message_id": 0,
         "react_id": 1
     })
 
