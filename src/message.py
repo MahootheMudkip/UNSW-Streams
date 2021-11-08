@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.user import notifications_send_reacted, notifications_send_tagged
 from datetime import *
 import re
 
@@ -53,10 +54,14 @@ def message_send_v1(token, channel_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    # intitialise message's reacts
     react = {
         "react_id": 1,
         "u_ids": []
     }
+
+    # send notifications to users tagged in message
+    notifications_send_tagged(auth_user_id, message, channel_id, "channel")
 
     new_message = {
         "message_id":   message_id_tracker,
@@ -118,20 +123,22 @@ def message_edit_v1(token, message_id, message):
     # check message_id is within a channel/dm that the user has joined
 
     # find location of message_id
-    for channel in channels.values():
+    for ch_id, channel in channels.items():
         if auth_user_id in channel["all_members"]:
             if message_id in channel["messages"]:
                 location_found = True
                 location_info = channel
+                location_id = ch_id
                 location_type = "channel"
                 break
     
     if location_found == False:
-        for dm in dms.values():
+        for dm_id, dm in dms.items():
             if auth_user_id in dm["members"]:
                 if message_id in dm["messages"]:
                     location_found = True
                     location_info = dm
+                    location_id = dm_id
                     location_type = "dm"
                     break
     
@@ -164,6 +171,7 @@ def message_edit_v1(token, message_id, message):
         # this will work whether location_type is a channel or dm
         store["messages"].pop(message_id)
     else:
+        notifications_send_tagged(auth_user_id, message, location_id, location_type)
         message_info["message"] = message
 
     data_store.set(store)
@@ -445,6 +453,7 @@ def message_react_v1(token, message_id, react_id):
 
     # add react from user if not already reacted
     if auth_user_id not in reacts["u_ids"]:
+        notifications_send_reacted(auth_user_id, message_id)
         reacts["u_ids"].append(auth_user_id)
     else:
         # user already reacted

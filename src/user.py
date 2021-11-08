@@ -1,7 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
-from src.auth import is_taken
+from src.auth import auth_login_v1, is_taken
 import re
 from src.auth import is_taken
 
@@ -187,3 +187,186 @@ def user_profile_sethandle_v1(token, handle_str):
     data_store.set(store)
 
     return {}
+
+# determine wether the given handle is in a specified channel
+def handle_in_channel(handle, channel_id):
+    store = data_store.get()
+    users = store["users"]
+    channel = store["channels"][channel_id]
+
+    for u_id in channel["all_members"]:
+        if users[u_id]["handle_str"] == handle:
+            return True
+
+# determine wether the given handle is in a specified dm
+def handle_in_dm(handle, dm_id):
+    store = data_store.get()
+    users = store["users"]
+    dm = store["dms"][dm_id]
+
+    for u_id in dm["members"]:
+        if users[u_id]["handle_str"] == handle:
+            return True
+
+def to_uid(handle):
+    store = data_store.get()
+    users = store["users"]
+
+    for u_id, user in users.items():
+        if user["handle_str"] == handle:
+            return u_id
+            
+# find location of message in channel
+def find_location(message_id):
+    store = data_store.get()
+    channels = store["channels"]
+    dms = store["dms"]
+    
+    # Search for location of message in channels
+    for ch_id, channel in channels.items():
+        if message_id in channel["messages"]:
+            return {
+                "location_type": "channel",
+                "location_id": ch_id
+            }
+
+    # If not found, then search for location in dms
+    for dm_id, dm in dms.items():
+        if message_id in dm["messages"]:
+            return {
+                "location_type": "dm",
+                "location_id": dm_id
+            }
+
+# send notifications to users tagged in a message
+def notifications_send_tagged(sender_id, message, platform_id, platform_type):
+    store = data_store.get()
+    users = store["users"]
+    sender = users[sender_id]["handle_str"]
+
+    # get list of tagged users using regex
+    tagged_users = []
+    for i, char in enumerate(message):
+        if char == "@":
+            rest_of_msg = message[i+1:]
+            tagged_user = re.split('[^a-zA-Z\\d]', rest_of_msg)[0]
+            tagged_users.append(tagged_user)
+
+    # make list of tagged users unique 
+    tagged_users = set(tagged_users)
+
+    # send notifications for tags that are valid
+    for handle in tagged_users:
+        # tagged message in channel
+        if platform_type == "channel":
+            # check if handle exists in specified channel
+            if handle_in_channel(handle, platform_id):
+                channel_name = store["channels"][platform_id]["channel_name"]
+                notification = {
+                    "channel_id": platform_id,
+                    "dm_id": -1,
+                    "notification_message": f"{sender} tagged you in {channel_name}: {message[:20]}"
+                }
+                users[to_uid(handle)]["notifications"].insert(0, notification)
+        # tagged message in dm
+        else:
+            # check if handle exists in specified dm
+            if handle_in_dm(handle, platform_id):
+                dm_name = store["dms"][platform_id]["name"]
+                notification = {
+                    "channel_id": -1,
+                    "dm_id": platform_id,
+                    "notification_message": f"{sender} tagged you in {dm_name}: {message[:20]}"
+                }
+                users[to_uid(handle)]["notifications"].insert(0, notification)
+
+    # set data_store (users now have new notifications)
+    data_store.set(store)
+
+# Send notifications when user's message has been reacted to
+def notifications_send_reacted(reactor_id, message_id):
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+    dms = store["dms"]
+
+    # get sender and reactor info
+    sender = store["messages"][message_id]["u_id"]
+    reactor = users[reactor_id]["handle_str"]
+    
+    # get location of message
+    location = find_location(message_id)
+    location_type = location["location_type"]
+    location_id = location["location_id"]
+
+    # Change fields in notification based on location of message
+    if location_type == "channel":
+        location_name = channels[location_id]["channel_name"]
+        channel_id = location_id
+        dm_id = -1
+    else:
+        location_name = dms[location_id]["name"]
+        channel_id = -1
+        dm_id = location_id
+
+    # Create notification and send  
+    notification = {
+        "channel_id": channel_id,
+        "dm_id": dm_id,
+        "notification_message": f"{reactor} reacted to your message in {location_name}"
+    }
+    users[sender]["notifications"].insert(0, notification)
+        
+    # set data_store (user now has new notifications)
+    data_store.set(store)
+
+# Send notifications when user is added to a new channel/dm 
+def notifications_send_invited(auth_user_id, u_id, location_id, location_type):
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+    dms = store["dms"]
+
+    # get handle of inviter
+    inviter = users[auth_user_id]["handle_str"]
+    
+    # Change fields in notification based on location of invite
+    if location_type == "channel":
+        location_name = channels[location_id]["channel_name"]
+        channel_id = location_id
+        dm_id = -1
+    else:
+        location_name = dms[location_id]["name"]
+        channel_id = -1
+        dm_id = location_id
+
+    # Create notification and send  
+    notification = {
+        "channel_id": channel_id,
+        "dm_id": dm_id,
+        "notification_message": f"{inviter} added you to {location_name}"
+    }
+    users[u_id]["notifications"].insert(0, notification)
+        
+    # set data_store (user now has new notifications)
+    data_store.set(store)
+
+def notifications_get_v1(token):
+    '''
+    Returns user's most recent 20 notifications
+
+    Arguments:
+        token  (str): the given token
+
+    Exceptions:
+        none 
+    Return Value:
+        notifications (list of notification dicts)
+    '''
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    users = store["users"]
+
+    return {
+        "notifications": users[auth_user_id]["notifications"][:20]
+    }

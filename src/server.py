@@ -314,10 +314,10 @@ def admin_userpermission_change():
 
     return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
 
-# @APP.route("/notifications/get/v1", methods = ['GET'])
-# def notifications_get():
-#     token = request.args.get("token")
-#     return dumps(notifications_get_v1(token))
+@APP.route("/notifications/get/v1", methods = ['GET'])
+def notifications_get():
+    token = request.args.get("token")
+    return dumps(notifications_get_v1(token))
 
 @APP.route("/search/v1", methods=["GET"])
 def search():

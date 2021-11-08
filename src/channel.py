@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.message import add_user_react_info
+from src.user import notifications_send_invited
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -53,6 +54,7 @@ def channel_invite_v1(token, channel_id, u_id):
         raise InputError(description="Invited user is already a member of the channel.")
 
     # If this point is reached, there must be a valid auth_user_id, channel_id and u_id.
+    notifications_send_invited(auth_user_id, u_id, channel_id, "channel")
     channel_all_members.append(u_id)
     data_store.set(store)
 
