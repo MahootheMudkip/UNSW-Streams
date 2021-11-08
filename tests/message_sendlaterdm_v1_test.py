@@ -49,14 +49,14 @@ def data():
     user3_id = response1.json()["auth_user_id"]
 
     #create a dm 1
-    dm_response1 = requests.post(url + "dm/create/v1", json={
+    dm1_response = requests.post(url + "dm/create/v1", json={
         "token": token1,
         "u_ids": [user2_id]
     })
     dm1_id = dm1_response.json()["dm_id"]
 
     #create a dm 2
-    dm_response2 = requests.post(url + "dm/create/v1", json={
+    dm2_response = requests.post(url + "dm/create/v1", json={
         "token": token2,
         "u_ids": [user1_id, user3_id]
     })
@@ -75,7 +75,7 @@ def data():
     }
 
 # testing valid token, invalid dm_id
-def test_message_senddm_invalid_dm_id(initial_setup):
+def test_message_sendlaterdm_invalid_dm_id(data):
     #get a time stamp one hour from now
     timestamp = data["timestamp"] + 3600
 
@@ -89,7 +89,7 @@ def test_message_senddm_invalid_dm_id(initial_setup):
     assert response.status_code == INPUT_ERROR
 
 # testing invalid token, valid dm_id
-def test_message_senddm_invalid_token(initial_setup):
+def test_message_sendlaterdm_invalid_token(data):
     #get a time stamp one hour from now
     timestamp = data["timestamp"] + 3600
 
@@ -103,7 +103,7 @@ def test_message_senddm_invalid_token(initial_setup):
     assert response.status_code == ACCESS_ERROR
 
 # testing token and dm_id both invalid
-def test_message_sendlaterdm_invalid_token_and_dm_id(initial_setup):
+def test_message_sendlaterdm_invalid_token_and_dm_id(data):
     #get a time stamp one hour from now
     timestamp = data["timestamp"] + 3600
 
@@ -118,7 +118,7 @@ def test_message_sendlaterdm_invalid_token_and_dm_id(initial_setup):
 
 
 #when a user not in dm tries to send a message
-def test_message_sendlaterdm_unauthorised_user(initial_setup):
+def test_message_sendlaterdm_unauthorised_user(data):
     #get a time stamp one hour from now
     timestamp = data["timestamp"] + 3600
 
@@ -146,7 +146,7 @@ def test_msg_sendlaterdm_invalid_message(data):
     assert response.status_code == INPUT_ERROR
 
 #testing when message is sent in the past
-def test_msg_senddmlater_past_message(data):
+def test_msg_sendlaterdm_past_message(data):
     #get a time stamp of one hour before curent time 
     timestamp = data["timestamp"] - 3600
 
@@ -161,7 +161,7 @@ def test_msg_senddmlater_past_message(data):
 
 
 #testing if the message was sent before it was supposed to
-def test_msg_senddmlater_check(data):
+def test_msg_sendlaterdm_check(data):
     #getting a time stamp 20 seconds from now
     timestamp = data["timestamp"] + 20
 
@@ -187,7 +187,7 @@ def test_msg_senddmlater_check(data):
     assert message == []
 
 #testing if the message was actually sent
-def test_msg_senddmlater_verify(data):
+def test_msg_sendlaterdm_verify(data):
     #getting a time stamp 20 seconds from now
     timestamp = data["timestamp"] + 20
 
