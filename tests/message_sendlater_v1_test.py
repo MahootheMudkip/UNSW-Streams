@@ -98,7 +98,7 @@ def test_msg_sendlater_invalid_channelid(data):
     json={
         "token":        data["token1"],
         "channel_id":   -2394,
-        "message":      "Don't send this or you die",
+        "message":      "charge my phone",
         "time_sent" :   timestamp
     })
     assert response.status_code == INPUT_ERROR
@@ -112,7 +112,7 @@ def test_msg_sendlater_invalid_token_channel(data):
     json={
         "token":        "Bwahaha",
         "channel_id":   -2394,
-        "message":      "send this and you die",
+        "message":      "yooyyoyo",
         "time_sent" :   timestamp
     })
     assert response.status_code == ACCESS_ERROR
@@ -126,7 +126,7 @@ def test_msg_sendlater_invalid_message(data):
     json={
         "token":        data["token1"],
         "channel_id":   data["channel1_id"],
-        "message":      "Don't send this" * 1100,
+        "message":      "Don't" * 1100,
         "time_sent" :   timestamp
     })
     assert response.status_code == INPUT_ERROR
@@ -140,7 +140,7 @@ def test_msg_sendlater_past_message(data):
     json={
         "token":        data["token1"],
         "channel_id":   data["channel1_id"],
-        "message":      "Don't send this" ,
+        "message":      "Just do it" ,
         "time_sent" :   timestamp
     })
     assert response.status_code == INPUT_ERROR
@@ -155,7 +155,7 @@ def test_msg_sendlater_user_notin_channel(data):
     json={
         "token":        data["token3"],
         "channel_id":   data["channel1_id"],
-        "message":      "send this and you die",
+        "message":      "I'm lovin it",
         "time_sent" :   timestamp
     })
     
@@ -170,10 +170,38 @@ def test_msg_sendlater_user_notin_channel(data):
     assert response1.status_code == ACCESS_ERROR
     assert response2.status_code == ACCESS_ERROR
 
+#testing if the message was sent before it was supposed to
+def test_msg_sendlate_check(data):
+    #getting a time stamp 20 seconds from now
+    timestamp = data["timestamp"] + 20
+
+    response1 = requests.post(url + "message/sendlater/v1", 
+    json={
+        "token":        data["token1"],
+        "channel_id":   data["channel1_id"],
+        "message":      "python",
+        "time_sent" :   timestamp
+    })
+    assert response1.status_code == NO_ERROR
+
+    #sleep for 20 seconds and check if the message was sent
+    time.sleep(10)
+    response2 = requests.get(url + "channel/messages/v2", 
+    params={
+        "token": data["token1"],
+        "channel_id": data["channel1_id"],
+        "start": 0
+    })
+    
+    message = response2.json()["messages"]
+    assert message == []
+
+
+
 #testing if the message was actually delivered
 def test_msg_sendlater_verify(data):
-    #getting a time stamp two minutes from now
-    timestamp = data["timestamp"] + 120
+    #getting a time stamp 20 seconds from now
+    timestamp = data["timestamp"] + 20
 
     response1 = requests.post(url + "message/sendlater/v1", 
     json={
@@ -184,8 +212,8 @@ def test_msg_sendlater_verify(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #sleep for 2 minutes and check if the message was sent
-    time.sleep(120)
+    #sleep for 20 seconds and check if the message was sent
+    time.sleep(20)
     response2 = requests.get(url + "channel/messages/v2", 
     params={
         "token": data["token1"],
@@ -194,7 +222,7 @@ def test_msg_sendlater_verify(data):
     })
     
     message = response2.json()["messages"]
-    assert message[0][message] == "send this or you die"
+    assert message[0]["message"] == "send this or you die"
 
 
 
