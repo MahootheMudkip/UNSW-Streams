@@ -167,7 +167,7 @@ def test_size_params_not_within_image(initial_setup):
     assert response.status_code == INPUT_ERROR
 
 # test that users have a default img_url set
-def test_https_url(initial_setup):
+def test_default_url(initial_setup):
     user1_token = initial_setup["user1_token"]
     user1_id = initial_setup["user1_id"]
 
