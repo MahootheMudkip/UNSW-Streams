@@ -263,8 +263,9 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # downloading file from url
     try:
         response = requests.get(img_url)
-    except:
-        raise InputError(description="connection error")
+    except requests.exceptions.ConnectionError as e:
+        # had to change this to keep pylint happy
+        raise InputError(description="connection error") from e
         
     if response.status_code != NO_ERROR:
         # error occured
