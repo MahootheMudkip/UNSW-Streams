@@ -57,16 +57,16 @@ def test_notifications_added_to_channel(data):
     requests.post(url + "channel/invite/v2", json={
         "token":        token1,
         "channel_id":   channel_id,
-        "u_id":         token2
+        "u_id":         1
     })
     
     response = requests.get(url + "notifications/get/v1", params={
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == channel_id
-    assert response.json()[0]["dm_id"] == -1
-    assert response.json()[0]["notification_message"] == "lukepierce added you to channel1"
+    assert response.json()["notifications"][0]["channel_id"] == channel_id
+    assert response.json()["notifications"][0]["dm_id"] == -1
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce added you to channel1"
 
 # notification sent when user is added to dm
 def test_notifications_added_to_dm(data):
@@ -83,9 +83,9 @@ def test_notifications_added_to_dm(data):
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == -1
-    assert response.json()[0]["dm_id"] == dm_id
-    assert response.json()[0]["notification_message"] == "lukepierce added you to artemwing, lukepierce"
+    assert response.json()["notifications"][0]["channel_id"] == -1
+    assert response.json()["notifications"][0]["dm_id"] == dm_id
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce added you to artemwing, lukepierce"
 
 # notification sent when user is tagged in a channel message
 def test_notifications_tagged_in_channel_msg(data):
@@ -96,7 +96,7 @@ def test_notifications_tagged_in_channel_msg(data):
     requests.post(url + "channel/invite/v2", json={
         "token":        token1,
         "channel_id":   channel_id,
-        "u_id":         token2
+        "u_id":         1
     })
 
     requests.post(url + "message/send/v1", json={
@@ -109,9 +109,9 @@ def test_notifications_tagged_in_channel_msg(data):
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == channel_id
-    assert response.json()[0]["dm_id"] == -1
-    assert response.json()[0]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
+    assert response.json()["notifications"][0]["channel_id"] == channel_id
+    assert response.json()["notifications"][0]["dm_id"] == -1
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
 
 # notification sent when user is tagged in a dm message 
 def test_notifications_tagged_in_dm_msg(data):
@@ -134,9 +134,9 @@ def test_notifications_tagged_in_dm_msg(data):
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == -1
-    assert response.json()[0]["dm_id"] == dm_id
-    assert response.json()[0]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
+    assert response.json()["notifications"][0]["channel_id"] == -1
+    assert response.json()["notifications"][0]["dm_id"] == dm_id
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
 
 # notification sent when user's channel message has been reacted
 def test_notifications_reacted_in_channel_msg(data):
@@ -147,7 +147,7 @@ def test_notifications_reacted_in_channel_msg(data):
     requests.post(url + "channel/invite/v2", json={
         "token":        token1,
         "channel_id":   channel_id,
-        "u_id":         token2
+        "u_id":         1
     })
 
     requests.post(url + "message/send/v1", json={
@@ -166,9 +166,9 @@ def test_notifications_reacted_in_channel_msg(data):
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == channel_id
-    assert response.json()[0]["dm_id"] == -1
-    assert response.json()[0]["notification_message"] == "lukepierce reacted to your message in channel1"
+    assert response.json()["notifications"][0]["channel_id"] == channel_id
+    assert response.json()["notifications"][0]["dm_id"] == -1
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce reacted to your message in channel1"
 
 # notification sent when user's dm message has been reacted
 def test_notifications_reacted_in_dm_msg(data):
@@ -197,9 +197,9 @@ def test_notifications_reacted_in_dm_msg(data):
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == -1
-    assert response.json()[0]["dm_id"] == dm_id
-    assert response.json()[0]["notification_message"] == "lukepierce reacted to your message in artemwing, lukepierce"
+    assert response.json()["notifications"][0]["channel_id"] == -1
+    assert response.json()["notifications"][0]["dm_id"] == dm_id
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce reacted to your message in artemwing, lukepierce"
 
 # list of notifications of a user are returned in the correct order
 def test_notifications_list_of_notications(data):
@@ -210,7 +210,7 @@ def test_notifications_list_of_notications(data):
     requests.post(url + "channel/invite/v2", json={
         "token":        token1,
         "channel_id":   channel_id,
-        "u_id":         token2
+        "u_id":         1
     })
 
     requests.post(url + "message/send/v1", json={
@@ -235,16 +235,16 @@ def test_notifications_list_of_notications(data):
         "token":        token2
     })
     assert response.status_code == NO_ERROR
-    assert response.json()[0]["channel_id"] == channel_id
-    assert response.json()[0]["dm_id"] == -1
-    assert response.json()[0]["notification_message"] == "lukepierce reacted to your message in channel1"
+    assert response.json()["notifications"][0]["channel_id"] == channel_id
+    assert response.json()["notifications"][0]["dm_id"] == -1
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce reacted to your message in channel1"
 
     assert response.status_code == NO_ERROR
-    assert response.json()[1]["channel_id"] == channel_id
-    assert response.json()[1]["dm_id"] == -1
-    assert response.json()[1]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
+    assert response.json()["notifications"][1]["channel_id"] == channel_id
+    assert response.json()["notifications"][1]["dm_id"] == -1
+    assert response.json()["notifications"][1]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
 
     assert response.status_code == NO_ERROR
-    assert response.json()[2]["channel_id"] == channel_id
-    assert response.json()[2]["dm_id"] == -1
-    assert response.json()[2]["notification_message"] == "lukepierce added you to channel1"
+    assert response.json()["notifications"][2]["channel_id"] == channel_id
+    assert response.json()["notifications"][2]["dm_id"] == -1
+    assert response.json()["notifications"][2]["notification_message"] == "lukepierce added you to channel1"

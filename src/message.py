@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.user import notifications_send_tagged
 from datetime import *
 import re
 
@@ -53,10 +54,14 @@ def message_send_v1(token, channel_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    # intitialise message's reacts
     react = {
         "react_id": 1,
         "u_ids": []
     }
+
+    # send notifications to users tagged in message
+    notifications_send_tagged(auth_user_id, message, channel_id, "channel")
 
     new_message = {
         "message_id":   message_id_tracker,
