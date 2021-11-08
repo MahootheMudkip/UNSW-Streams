@@ -3,6 +3,7 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from datetime import *
 import re
+import time, threading
 
 def message_send_v1(token, channel_id, message):
     '''
@@ -245,3 +246,88 @@ def search_v1(token, query_str):
     return {
         "messages": matches
     }
+
+
+def message_sendlater_v1(token, channel_id, message, time_sent):
+    '''
+    Send a message from the authorised user to the channel specified by channel_id,
+    at a future unix timestamp given by user.
+
+    Arguments:
+        token       (str): the given token
+        channel_id  (int): the given channel id
+        message     (str): message text
+        time_sent   (int): unix timestamp 
+
+    Exceptions:
+        InputError:
+            - channel_id invalid (doesn't exist)
+            - length of message is greater 1000 characters
+            - timestamp given is of the past
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - channel_id is valid and the auth_user_id refers to a user
+            who is not a member of the channel
+
+    Return Value:
+        message_id  (int): newly created message's id
+    '''
+    #get user id from token
+    user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    channels = store["channels"]
+    message_id_tracker = store["message_id_tracker"]
+    
+    #if channel doesn't exist
+    if channel_id not in channels.keys(): 
+        raise InputError (description = "Invalid channel id")
+    
+    #if user is not part of the channel
+    all_members = channels[channel_id]["all_members"]
+    if user_id not in all_members:
+        raise AccessError (description = "User is not part of the channel")
+
+    #get timestamp of the current time
+    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+
+    #if the given stamp is in the past
+    if time_sent - curr_timestamp < 0:
+        raise InputError (description = "Message is send in the past")
+    
+    #if the lenght of the message is greater than 1000 characters
+    if len(message) > 1000:
+       raise InputError (description = "Message is too long")
+
+
+    new_message = {
+        "message_id":   message_id_tracker,
+        "u_id":         user_id,
+        "message":      message,
+        "time_created": time_sent
+    } 
+    
+    #use the threading library to delay the message
+    delay = time_sent - curr_timestamp
+    t =threading.Timer(delay, delay_fun,[channel_id, time_sent, channels, new_message, store])
+    t.start()
+    
+    return {
+        "message_id": message_id_tracker
+    }
+    
+
+
+#Helper function passed into threading.Timer
+def delay_fun(channel_id, time_sent, channels, new_message, store):
+    message_id_tracker = store["message_id_tracker"]
+
+    #add the new message to the data store
+    all_messages = channels[channel_id]["messages"]
+    all_messages.append(message_id_tracker)
+    store["messages"][message_id_tracker] = new_message
+
+    store["message_id_tracker"] = message_id_tracker + 1
+    data_store.set(store)
+
+    

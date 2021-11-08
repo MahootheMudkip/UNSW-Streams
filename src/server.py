@@ -374,16 +374,16 @@ def search():
 # 
 #     return dumps(message_unpin_v1(token, message_id))
 
-# @APP.route("message/sendlater/v1", methods=['POST'])
-# def message_sendlater():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     message = data["message"]
-#     time_sent = data["time_sent"]
-# 
-#     return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    data = request.get_json()
+ 
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+    time_sent = data["time_sent"]
+ 
+    return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
 
 # @APP.route("message/sendlaterdm/v1", methods=['POST'])
 # def message_sendlaterdm():
