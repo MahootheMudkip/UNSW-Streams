@@ -261,11 +261,73 @@ def notifications_send_tagged(sender_id, message, platform_id, platform_type):
     # set data_store (users now have new notifications)
     data_store.set(store)
 
-# def send_notification_reacted():
+# Send notifications when user's message has been reacted to
+def notifications_send_reacted(reactor_id, message_id):
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+    dms = store["dms"]
 
-# def send_notification_added():
+    message = store["messages"][message_id]
+    sender = message["u_id"]
+    reactor = users[reactor_id]["handle_str"]
+ 
+    location_type = ""
+    location_found = False
+    
+    # Search for location of message in channels
+    for ch_id, channel in channels.items():
+        if message_id in channel["messages"]:
+            location_found = True
+            location_type = "channel"
+            location_id = ch_id
+            break
 
+    # If not found, then search for location in dms
+    if location_found == False:
+        for dm_id, dm in dms.items():
+            if message_id in dm["messages"]:
+                location_found = True
+                location_type = "dm"
+                location_id = dm_id
+                break
+
+    # Change fields in notification based on location of message
+    if location_type == "channel":
+        location_name = channels[location_id]["channel_name"]
+        channel_id = location_id
+        dm_id = -1
+    else:
+        location_name = dms[location_id]["name"]
+        channel_id = -1
+        dm_id = location_id
+
+    # Create notification and send  
+    notification = {
+        "channel_id": channel_id,
+        "dm_id": dm_id,
+        "notification_message": f"{reactor} reacted to your message in {location_name}"
+    }
+    users[sender]["notifications"].insert(0, notification)
+        
+    # set data_store (user now has new notifications)
+    data_store.set(store)
+
+# Send notifications when user is added to a new channel/dm 
+def notifications_send_added():
+    pass
 def notifications_get_v1(token):
+    '''
+    Returns user's most recent 20 notifications
+
+    Arguments:
+        token  (str): the given token
+
+    Exceptions:
+        none 
+    Return Value:
+        notifications (list of notification dicts)
+    '''
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
     users = store["users"]

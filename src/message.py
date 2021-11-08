@@ -1,7 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
-from src.user import notifications_send_tagged
+from src.user import notifications_send_reacted, notifications_send_tagged
 from datetime import *
 import re
 
@@ -384,6 +384,7 @@ def message_react_v1(token, message_id, react_id):
 
     # add react from user if not already reacted
     if auth_user_id not in reacts["u_ids"]:
+        notifications_send_reacted(auth_user_id, message_id)
         reacts["u_ids"].append(auth_user_id)
     else:
         # user already reacted
