@@ -76,22 +76,29 @@ def data():
 
 # testing valid token, invalid dm_id
 def test_message_senddm_invalid_dm_id(initial_setup):
-    
+    #get a time stamp one hour from now
+    timestamp = data["timestamp"] + 3600
+
     response = requests.post(url + "message/sendlaterdm/v1", 
     json={
         "token":        data["token1"],
         "dm_id":        -4543,
         "message":      "jello"
+        "time_sent" :   timestamp
     })
     assert response.status_code == INPUT_ERROR
 
 # testing invalid token, valid dm_id
 def test_message_senddm_invalid_token(initial_setup):
+    #get a time stamp one hour from now
+    timestamp = data["timestamp"] + 3600
+    
     response = requests.post(url + "message/sendlaterdm/v1", 
     json={
         "token":        "yyoyoyo",
         "dm_id":        data["dm1_id"],
         "message":      "Don't send this"
+        "time_sent" :   timestamp
     })
     assert response.status_code == ACCESS_ERROR
 
