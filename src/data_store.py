@@ -97,12 +97,9 @@ Dictionary of shape {
      messages_exist: [{num_messages_exist, time_stamp}], 
      utilization_rate 
     }
-
-port    (int):  has the port of localhost
 '''
 
 initial_object = {
-    "port":                 0,
     "users":                {},
     "channels":             {},
     "dms":                  {},

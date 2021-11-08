@@ -1,20 +1,20 @@
 from urllib.parse import urlparse, urlunparse
 from src.data_store import data_store
 
-# sets the data_store with the current port the server is on
-def set_port_number(port):
-    store = data_store.get()
-    old_port = store["port"]
-    store["port"] = port
-    data_store.set(store)
+# # sets the data_store with the current port the server is on
+# def set_port_number(port):
+#     store = data_store.get()
+#     old_port = store["port"]
+#     store["port"] = port
+#     data_store.set(store)
 
-    # if port has changed, update urls
-    if old_port != port:
-        update_port_numbers()
+#     # if port has changed, update urls
+#     if old_port != port:
+#         update_port_numbers()
         
-    return
+#     return
 
-def update_port_numbers():
+def update_port_numbers(port):
     '''
     this updates all the "profile_img_url" to the new port
     to prevent links from breaking when the port changes
@@ -24,7 +24,6 @@ def update_port_numbers():
     new_img_url = 'http://localhost:8080/images/default.jpg'
     '''
     store = data_store.get()
-    port = store["port"]
     users = store["users"]
 
     for user_info in users.values():

@@ -19,7 +19,7 @@ from src.message import *
 from src.user import *
 from src.dm import *
 from src.admin import *
-from src.image_helper import set_port_number
+from src.image_helper import *
 
 
 def quit_gracefully(*args):
@@ -481,9 +481,8 @@ if __name__ == "__main__":
     except FileNotFoundError:
         data_store.__init__
     
-    # modifies the `port` variable in data_store
-    # will also update user urls in data_store if needed
-    set_port_number(config.port)
+    # updates user urls in data_store to new port
+    update_port_numbers(port)
 
     APP.run(port=config.port) # Do not edit this port
     
