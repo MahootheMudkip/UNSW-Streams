@@ -9,6 +9,7 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.auth import is_taken
 from src.auth import is_taken
+from src.config import url
 
 NO_ERROR = 200
 
@@ -261,6 +262,11 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # crop file and save
     img.crop((x_start, y_start, x_end, y_end)).save(new_location)
     
+    # assigning img url to specified user
+    store = data_store.get()
+    user_info = store["users"][auth_user_id]
+    user_info["profile_img_url"] = url[:-1] + new_location
+
     return {}
 
     
