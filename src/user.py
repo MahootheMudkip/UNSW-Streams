@@ -249,7 +249,7 @@ def notifications_send_tagged(sender_id, message, platform_id, platform_type):
     for i, char in enumerate(message):
         if char == "@":
             rest_of_msg = message[i+1:]
-            tagged_user = re.split('[^a-zA-Z\d]', rest_of_msg)[0]
+            tagged_user = re.split('[^a-zA-Z\\d]', rest_of_msg)[0]
             tagged_users.append(tagged_user)
 
     # make list of tagged users unique 
