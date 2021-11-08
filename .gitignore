@@ -128,3 +128,5 @@ dmypy.json
 
 # Database (written by EAGLE)
 database.p
+temp.jpg
+images/
