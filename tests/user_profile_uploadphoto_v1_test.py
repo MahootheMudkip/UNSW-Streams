@@ -8,11 +8,11 @@ INPUT_ERROR = 400
 # error status codes
 
 URL = url + "user/profile/uploadphoto/v1" 
-# image below is 1920 x 1080
-IMG_URL = "http://allpcworld.com/wp-content/uploads/2016/09/Ubuntu-latest-version-free-download.jpg"
+# image below is 123 x 123
+IMG_URL = "https://pokelife.pl/images/pokesklep/pokeball.jpg"
 PNG_FILE = "http://vignette4.wikia.nocookie.net/pokemon/images/e/e7/129Magikarp_OS_anime.png"
 HTTPS_FILE = "https://media.nauticamilanonline.com/product/altavoz-pokeball-pokemon-800x800.jpg"
-# "https://www.thetimes.co.uk/imageserver/image/methode%2Ftimes%2Fprod%2Fweb%2Fbin%2F4475956a-765d-11e9-9a94-9c1516913bdb.jpg?crop=3441%2C1936%2C0%2C179"
+STRANGE_URL = "https://www.thetimes.co.uk/imageserver/image/methode%2Ftimes%2Fprod%2Fweb%2Fbin%2F4475956a-765d-11e9-9a94-9c1516913bdb.jpg?crop=3441%2C1936%2C0%2C179"
 
 @pytest.fixture
 def initial_setup():
@@ -105,7 +105,7 @@ def test_all_size_params_zero(initial_setup):
         "x_end":    0,
         "y_end":    0
     })
-    assert response.status_code == NO_ERROR
+    assert response.status_code == INPUT_ERROR
 
 # image uploaded is not a jpg file
 def test_not_jpg_file(initial_setup):
@@ -176,7 +176,20 @@ def test_https_url(initial_setup):
         "u_id":     user1_id
     })
     assert response.status_code == NO_ERROR
-    assert response.json()["user"]["profile_img_url"] != ""
+    assert response.json()["user"]["profile_img_url"] != None
+
+# strange, but valid url
+def test_strange_url(initial_setup):
+    user1_token = initial_setup["user1_token"]
+    response = requests.post(URL, json={
+        "token":    user1_token,
+        "img_url":  STRANGE_URL,
+        "x_start":  0,
+        "y_start":  0,
+        "x_end":    100,
+        "y_end":    100
+    })
+    assert response.status_code == NO_ERROR
 
 # test working (have to check img downloads)
 def test_working(initial_setup):
@@ -189,17 +202,17 @@ def test_working(initial_setup):
         "x_start":  0,
         "y_start":  0,
         "x_end":    100,
-        "y_end":    200
+        "y_end":    100
     })
     assert response.status_code == NO_ERROR
 
     response = requests.post(URL, json={
         "token":    user0_token,
         "img_url":  IMG_URL,
-        "x_start":  500,
-        "y_start":  500,
-        "x_end":    1000,
-        "y_end":    1000
+        "x_start":  50,
+        "y_start":  50,
+        "x_end":    100,
+        "y_end":    120
     })
     assert response.status_code == NO_ERROR
     

@@ -222,7 +222,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # testing size params valid
     if x_start < 0 or y_start < 0:
         raise InputError(description="cannot have negative x and y values")
-    if x_end < x_start or y_end < y_start:
+    if x_end <= x_start or y_end <= y_start:
         raise InputError(description="x and y param values")
     
     # getting url path from img_url
@@ -234,7 +234,10 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
         raise InputError(description="img_url does not link to a JPG image")
 
     # downloading file from url
-    response = requests.get(img_url)
+    try:
+        response = requests.get(img_url)
+    except:
+        raise InputError(description="connection error")
     if response.status_code != NO_ERROR:
         # error occured
         raise InputError(description="status code returned not 200")
@@ -266,6 +269,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     store = data_store.get()
     user_info = store["users"][auth_user_id]
     user_info["profile_img_url"] = url[:-1] + new_location
+    data_store.set(store)
 
     return {}
 
