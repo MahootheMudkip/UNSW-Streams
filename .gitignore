@@ -127,4 +127,4 @@ dmypy.json
 *.py~
 
 # Database (written by EAGLE)
-database.json
+database.p
