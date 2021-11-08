@@ -217,6 +217,33 @@ def user_profile_sethandle_v1(token, handle_str):
 # directory, "/tmp_amd/cage/export/cage/5/z5363771/1531/ass1/project-backend"
 # hence we need to save the file in the images directory
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    '''
+    Given a URL of an image on the internet, crops the image 
+    within bounds (x_start, y_start) and (x_end, y_end). 
+    Position (0,0) is the top left. 
+
+    Arguments:
+        token   (str): the given token
+        img_url (str): the url of the image to download
+        x_start (int): dimensions to crop image to 
+        y_start (int): dimensions to crop image to 
+        x_end   (int): dimensions to crop image to
+        y_en    (int): dimensions to crop image to
+
+    Exceptions:
+        AccessError:
+            - invalid token
+
+        InputError:
+            - http status other than 200 returned
+            = any of x_start, y_start, x_end, y_end are not 
+              within the dimensions of the image at the URL
+            - x_end is less than x_start or y_end is less than y_start
+            - image uploaded is not a JPG
+
+    Return Value:
+        n/a
+    '''
     auth_user_id = get_auth_user_id(token)
 
     # testing size params valid
