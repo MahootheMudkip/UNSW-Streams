@@ -238,6 +238,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
         response = requests.get(img_url)
     except:
         raise InputError(description="connection error")
+        
     if response.status_code != NO_ERROR:
         # error occured
         raise InputError(description="status code returned not 200")
