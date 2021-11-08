@@ -1,24 +1,24 @@
+import re
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.auth import is_taken
-import re
 from src.auth import is_taken
 
-'''
-Returns a list of all users and their associated details.
-
-Arguments:
-    token  (str): the given token
-
-Exceptions:
-    AccessError:
-        - invalid token
-
-Return Value:
-    users  (list of dicts): list of dict `users`
-'''
 def users_all_v1(token):
+    '''
+    Returns a list of all users and their associated details.
+
+    Arguments:
+        token  (str): the given token
+
+    Exceptions:
+        AccessError:
+            - invalid token
+
+    Return Value:
+        users  (list of dicts): list of dict `users`
+    '''
     # this functions will handle all exceptions for tokens
     get_auth_user_id(token)
     
@@ -45,6 +45,23 @@ def users_all_v1(token):
     }
 
 def user_profile_v1(token, u_id):
+    '''
+    For a valid user, returns information about their user_id, 
+    email, first name, last name, and handle
+
+    Arguments:
+        token  (str): the given token
+        u_id   (int): the user_id which we want to get the information of
+
+    Exceptions:
+        AccessError:
+            - invalid token
+        InputError:
+            - u_id does not refer to a valid user
+
+    Return Value:
+        user  (dict): of type `user`
+    '''
     # this functions will handle all exceptions for tokens
     get_auth_user_id(token)
     
