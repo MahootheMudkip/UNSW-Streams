@@ -1,12 +1,16 @@
 import re
+import requests
+import os
+from PIL import Image
 from os.path import splitext
 from urllib.parse import urlparse
-
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.auth import is_taken
 from src.auth import is_taken
+
+NO_ERROR = 200
 
 def users_all_v1(token):
     '''
@@ -208,6 +212,9 @@ def user_profile_sethandle_v1(token, handle_str):
 
     return {}
 
+# NOTE: through testing, the cwd when this function is called is from the root
+# directory, "/tmp_amd/cage/export/cage/5/z5363771/1531/ass1/project-backend"
+# hence we need to save the file in the images directory
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     auth_user_id = get_auth_user_id(token)
 
@@ -222,6 +229,28 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # testing file type
     if file_ext != ".jpg":
         raise InputError(description="img_url does not link to a JPG image")
+
+    # downloading file from url
+    response = requests.get(img_url)
+    if response.status_code != NO_ERROR:
+        # error occured
+        raise InputError(description="status code returned not 200")
+    with open("temp.jpg", "wb") as FILE:
+        FILE.write(response.content)
+
+    # now we should modify the file
+    
+    
+
+    # move temp file to images directory/folder
+    cwd = os.getcwd()
+    curr_location = os.path.join(cwd, "temp.jpg")
+    images_dir = os.path.join(cwd, "images")
+    new_location = os.path.join(images_dir, filename)
+
+    return {
+        "path": os.getcwd()
+    }
 
     
     
