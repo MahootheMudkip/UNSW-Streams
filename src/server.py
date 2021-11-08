@@ -482,7 +482,7 @@ if __name__ == "__main__":
         data_store.__init__
     
     # updates user urls in data_store to new port
-    update_port_numbers(port)
+    update_port_numbers(config.port)
 
     APP.run(port=config.port) # Do not edit this port
     
