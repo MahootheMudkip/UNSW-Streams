@@ -123,20 +123,22 @@ def message_edit_v1(token, message_id, message):
     # check message_id is within a channel/dm that the user has joined
 
     # find location of message_id
-    for channel in channels.values():
+    for ch_id, channel in channels.items():
         if auth_user_id in channel["all_members"]:
             if message_id in channel["messages"]:
                 location_found = True
                 location_info = channel
+                location_id = ch_id
                 location_type = "channel"
                 break
     
     if location_found == False:
-        for dm in dms.values():
+        for dm_id, dm in dms.items():
             if auth_user_id in dm["members"]:
                 if message_id in dm["messages"]:
                     location_found = True
                     location_info = dm
+                    location_id = dm_id
                     location_type = "dm"
                     break
     
@@ -169,6 +171,7 @@ def message_edit_v1(token, message_id, message):
         # this will work whether location_type is a channel or dm
         store["messages"].pop(message_id)
     else:
+        notifications_send_tagged(auth_user_id, message, location_id, location_type)
         message_info["message"] = message
 
     data_store.set(store)

@@ -136,7 +136,7 @@ def test_notifications_tagged_in_dm_msg(data):
     assert response.status_code == NO_ERROR
     assert response.json()["notifications"][0]["channel_id"] == -1
     assert response.json()["notifications"][0]["dm_id"] == dm_id
-    assert response.json()["notifications"][0]["notification_message"] == "lukepierce tagged you in channel1: Hello @artemwing, we"
+    assert response.json()["notifications"][0]["notification_message"] == "lukepierce tagged you in artemwing, lukepierce: Hello @artemwing, we"
 
 # notification sent when user's channel message has been reacted
 def test_notifications_reacted_in_channel_msg(data):
