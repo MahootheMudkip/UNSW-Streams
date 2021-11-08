@@ -219,6 +219,8 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     auth_user_id = get_auth_user_id(token)
 
     # testing size params valid
+    if x_start < 0 or y_start < 0:
+        raise InputError(description="cannot have negative x and y values")
     if x_end < x_start or y_end < y_start:
         raise InputError(description="x and y param values")
     
@@ -239,18 +241,27 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
         FILE.write(response.content)
 
     # now we should modify the file
-    
-    
+    img = Image.open("temp.jpg")
+    # get img dimensions
+    width, height = img.size
 
-    # move temp file to images directory/folder
+    # check x and y values are with img dimensions
+    if width < x_start or width < x_end:
+        raise InputError(description="x params greater than img")
+    elif height < y_start or height < y_end:
+        raise InputError(description="y params greater than img")
+
+    # get current working dir location
     cwd = os.getcwd()
-    curr_location = os.path.join(cwd, "temp.jpg")
+    # generate images dir location
     images_dir = os.path.join(cwd, "images")
-    new_location = os.path.join(images_dir, filename)
+    # generate new file location
+    new_location = os.path.join(images_dir, f"{auth_user_id}.jpg")
 
-    return {
-        "path": os.getcwd()
-    }
+    # crop file and save
+    img.crop((x_start, y_start, x_end, y_end)).save(new_location)
+    
+    return {}
 
     
     
