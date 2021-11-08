@@ -1,9 +1,10 @@
 import sys
 import json
+import os
 import pickle
 import signal
 from json import dumps, loads
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_cors import CORS
 import requests
 from src.error import InputError
@@ -52,6 +53,12 @@ def echo():
     return dumps({
         'data': data
     })
+
+# this is used for uploadphoto. It returns the profile pic for 
+# the specified user
+@APP.route("/images/<file>", methods=['GET'])
+def get_image(file):
+    return send_file(os.path.join(os.getcwd(), "images", file))
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clearv1():

@@ -269,7 +269,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # assigning img url to specified user
     store = data_store.get()
     user_info = store["users"][auth_user_id]
-    user_info["profile_img_url"] = url[:-1] + new_location
+    user_info["profile_img_url"] = url[:-1] + f"/images/{auth_user_id}.jpg"
     data_store.set(store)
 
     return {}
