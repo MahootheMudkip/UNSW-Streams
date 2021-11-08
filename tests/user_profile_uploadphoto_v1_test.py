@@ -12,6 +12,7 @@ URL = url + "user/profile/uploadphoto/v1"
 IMG_URL = "http://allpcworld.com/wp-content/uploads/2016/09/Ubuntu-latest-version-free-download.jpg"
 PNG_FILE = "http://vignette4.wikia.nocookie.net/pokemon/images/e/e7/129Magikarp_OS_anime.png"
 HTTPS_FILE = "https://media.nauticamilanonline.com/product/altavoz-pokeball-pokemon-800x800.jpg"
+# "https://www.thetimes.co.uk/imageserver/image/methode%2Ftimes%2Fprod%2Fweb%2Fbin%2F4475956a-765d-11e9-9a94-9c1516913bdb.jpg?crop=3441%2C1936%2C0%2C179"
 
 @pytest.fixture
 def initial_setup():

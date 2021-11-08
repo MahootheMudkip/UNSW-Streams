@@ -1,4 +1,7 @@
 import re
+from os.path import splitext
+from urllib.parse import urlparse
+
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
@@ -204,3 +207,21 @@ def user_profile_sethandle_v1(token, handle_str):
     data_store.set(store)
 
     return {}
+
+def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    auth_user_id = get_auth_user_id(token)
+
+    # testing size params valid
+    if x_end < x_start or y_end < y_start:
+        raise InputError(description="x and y param values")
+    
+    # getting url path from img_url
+    # we need to separate path from params, which will affect os.path.splitext
+    url_path = urlparse(img_url).path
+    file_ext = splitext(url_path)[1]
+    # testing file type
+    if file_ext != ".jpg":
+        raise InputError(description="img_url does not link to a JPG image")
+
+    
+    
