@@ -437,18 +437,18 @@ def auth_passwordreset_reset():
     new_password = data["new_password"]
     return dumps(auth_passwordreset_reset_v1(reset_code, new_password))
 
-# @APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
-# def user_profile_uploadphoto():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     img_url = data["img_url"]
-#     x_start = data["x_start"]
-#     y_start = data["y_start"]
-#     x_end = data["x_end"]
-#     y_end = data["y_end"]
-# 
-#     return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def user_profile_uploadphoto():
+    data = request.get_json()
+
+    token = data["token"]
+    img_url = data["img_url"]
+    x_start = data["x_start"]
+    y_start = data["y_start"]
+    x_end = data["x_end"]
+    y_end = data["y_end"]
+
+    return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
 
 # @APP.route("/user/stats/v1", methods=['GET'])
 # def user_stats():
