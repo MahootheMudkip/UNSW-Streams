@@ -215,6 +215,28 @@ def to_uid(handle):
     for u_id, user in users.items():
         if user["handle_str"] == handle:
             return u_id
+            
+# find location of message in channel
+def find_location(message_id):
+    store = data_store.get()
+    channels = store["channels"]
+    dms = store["dms"]
+    
+    # Search for location of message in channels
+    for ch_id, channel in channels.items():
+        if message_id in channel["messages"]:
+            return {
+                "location_type": "channel",
+                "location_id": ch_id
+            }
+
+    # If not found, then search for location in dms
+    for dm_id, dm in dms.items():
+        if message_id in dm["messages"]:
+            return {
+                "location_type": "dm",
+                "location_id": dm_id
+            }
 
 # send notifications to users tagged in a message
 def notifications_send_tagged(sender_id, message, platform_id, platform_type):
@@ -268,29 +290,14 @@ def notifications_send_reacted(reactor_id, message_id):
     channels = store["channels"]
     dms = store["dms"]
 
-    message = store["messages"][message_id]
-    sender = message["u_id"]
+    # get sender and reactor info
+    sender = store["messages"][message_id]["u_id"]
     reactor = users[reactor_id]["handle_str"]
- 
-    location_type = ""
-    location_found = False
     
-    # Search for location of message in channels
-    for ch_id, channel in channels.items():
-        if message_id in channel["messages"]:
-            location_found = True
-            location_type = "channel"
-            location_id = ch_id
-            break
-
-    # If not found, then search for location in dms
-    if location_found == False:
-        for dm_id, dm in dms.items():
-            if message_id in dm["messages"]:
-                location_found = True
-                location_type = "dm"
-                location_id = dm_id
-                break
+    # get location of message
+    location = find_location(message_id)
+    location_type = location["location_type"]
+    location_id = location["location_id"]
 
     # Change fields in notification based on location of message
     if location_type == "channel":
@@ -314,8 +321,36 @@ def notifications_send_reacted(reactor_id, message_id):
     data_store.set(store)
 
 # Send notifications when user is added to a new channel/dm 
-def notifications_send_added():
-    pass
+def notifications_send_invited(auth_user_id, u_id, location_id, location_type):
+    store = data_store.get()
+    users = store["users"]
+    channels = store["channels"]
+    dms = store["dms"]
+
+    # get handle of inviter
+    inviter = users[auth_user_id]["handle_str"]
+    
+    # Change fields in notification based on location of invite
+    if location_type == "channel":
+        location_name = channels[location_id]["channel_name"]
+        channel_id = location_id
+        dm_id = -1
+    else:
+        location_name = dms[location_id]["name"]
+        channel_id = -1
+        dm_id = location_id
+
+    # Create notification and send  
+    notification = {
+        "channel_id": channel_id,
+        "dm_id": dm_id,
+        "notification_message": f"{inviter} added you to {location_name}"
+    }
+    users[u_id]["notifications"].insert(0, notification)
+        
+    # set data_store (user now has new notifications)
+    data_store.set(store)
+
 def notifications_get_v1(token):
     '''
     Returns user's most recent 20 notifications
