@@ -322,10 +322,10 @@ def admin_userpermission_change():
 
     return dumps(admin_userpermission_change_v1(token, u_id, permission_id))
 
-# @APP.route("/notifications/get/v1", methods = ['GET'])
-# def notifications_get():
-#     token = request.args.get("token")
-#     return dumps(notifications_get_v1(token))
+@APP.route("/notifications/get/v1", methods = ['GET'])
+def notifications_get():
+    token = request.args.get("token")
+    return dumps(notifications_get_v1(token))
 
 @APP.route("/search/v1", methods=["GET"])
 def search():
@@ -374,14 +374,14 @@ def message_pin():
 
     return dumps(message_pin_v1(token, message_id))
 
-# @APP.route("/message/unpin/v1", methods=['POST'])
-# def message_unpin():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     message_id = data["message_id"]
-# 
-#     return dumps(message_unpin_v1(token, message_id))
+@APP.route("/message/unpin/v1", methods=['POST'])
+def message_unpin():
+    data = request.get_json()
+
+    token = data["token"]
+    message_id = data["message_id"]
+
+    return dumps(message_unpin_v1(token, message_id))
 
 # @APP.route("/message/sendlater/v1", methods=['POST'])
 # def message_sendlater():

@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.message import add_user_react_info
+from src.user import notifications_send_tagged, notifications_send_invited
 from datetime import *
 
 def dm_create_v1(token, u_ids):
@@ -45,7 +46,12 @@ def dm_create_v1(token, u_ids):
         "members" : u_ids,
         "messages" : []
     }
- 
+
+    # send notification to all invitees
+    for u_id in u_ids:
+        if u_id != auth_user_id:
+            notifications_send_invited(auth_user_id, u_id, dm_id, "dm")
+
     # Generate new Dm id and update data store dm id with the new dm_id
     store["dm_id_tracker"] += 1
  
@@ -277,10 +283,14 @@ def message_senddm_v1(token, dm_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    # intitialise message's reacts
     react = {
         "react_id": 1,
         "u_ids": []
     }
+
+    # send notifications to users tagged in message
+    notifications_send_tagged(auth_user_id, message, dm_id, "dm")
 
     new_message = {
         "message_id":   message_id_tracker,
