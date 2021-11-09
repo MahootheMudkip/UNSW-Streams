@@ -1,4 +1,5 @@
 import re
+from src.config import url
 from src.email_helper import send_email
 from src.data_store import data_store
 from src.error import InputError
@@ -157,7 +158,10 @@ def auth_register_v1(email, password, name_first, name_last):
         "password": get_hash(password),
         "handle_str": handle,
         "is_owner": False,
-        "sessions": [session_id]
+        "sessions": [session_id],
+        "profile_img_url": url[:-1] + '/images/default.jpg',
+        "notifications": [],
+        "user_stats": {},
     }
     # If user is first user to register, they are a global owner
     if u_id == 0:

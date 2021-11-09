@@ -1,6 +1,8 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.message import add_user_react_info
+from src.user import notifications_send_tagged, notifications_send_invited
 from datetime import *
 
 def dm_create_v1(token, u_ids):
@@ -44,7 +46,12 @@ def dm_create_v1(token, u_ids):
         "members" : u_ids,
         "messages" : []
     }
- 
+
+    # send notification to all invitees
+    for u_id in u_ids:
+        if u_id != auth_user_id:
+            notifications_send_invited(auth_user_id, u_id, dm_id, "dm")
+
     # Generate new Dm id and update data store dm id with the new dm_id
     store["dm_id_tracker"] += 1
  
@@ -136,6 +143,8 @@ def dm_details_v1(token, dm_id ):
         user_copy.pop("password")
         user_copy.pop("is_owner")
         user_copy.pop("sessions")
+        user_copy.pop("notifications")
+        user_copy.pop("user_stats")
         # add u_id item
         user_copy["u_id"] = member_id
     
@@ -274,11 +283,22 @@ def message_senddm_v1(token, dm_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    # intitialise message's reacts
+    react = {
+        "react_id": 1,
+        "u_ids": []
+    }
+
+    # send notifications to users tagged in message
+    notifications_send_tagged(auth_user_id, message, dm_id, "dm")
+
     new_message = {
         "message_id":   message_id_tracker,
         "u_id":         auth_user_id,
         "message":      message,
-        "time_created": timestamp
+        "time_created": timestamp,
+        "reacts":       [react],
+        "is_pinned":    False
     }
 
     # append new message_id to the channel messages list
@@ -357,6 +377,9 @@ def dm_messages_v1(token, dm_id, start):
     # Then, slice list to get msgs between start and end index
     dm_messages = list(reversed(dm_messages))[start:end]
     messages = [all_messages[x] for x in dm_messages]
+
+   # Add info about if the caller user has reacted to each message in the list of messages
+    add_user_react_info(auth_user_id, messages)
 
     # this is when you return the least recent message in the channel
     # since "start" starts from 0, we use >= rather than > 

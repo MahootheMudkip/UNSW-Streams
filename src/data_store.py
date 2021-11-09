@@ -1,4 +1,5 @@
 import json
+import pickle
 
 '''
 data_store.py
@@ -84,7 +85,7 @@ message_id = {
     "u_id":         int, 
     "time_created": int,
     "message":      string,
-    "reacts":       list of dicts, where each dictionary contains types { react_id, u_ids, is_this_user_reacted },
+    "reacts":       dict of lists where each key in the dict is a react_id
     "is_pinned":    bool
 }
 
@@ -96,7 +97,6 @@ Dictionary of shape {
      messages_exist: [{num_messages_exist, time_stamp}], 
      utilization_rate 
     }
-
 '''
 
 initial_object = {
@@ -123,8 +123,8 @@ class Datastore:
         if not isinstance(store, dict):
             raise TypeError('store must be of type dictionary')
         self.__store = store
-        with open('database.json', 'w') as FILE:
-            json.dump(self.__store, FILE)
+        with open('database.p', 'wb') as FILE:
+            pickle.dump(self.__store, FILE)
 
 print('Loading Datastore...')
 
