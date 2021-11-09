@@ -247,7 +247,6 @@ def search_v1(token, query_str):
         "messages": matches
     }
 
-
 def message_sendlater_v1(token, channel_id, message, time_sent):
     '''
     Send a message from the authorised user to the channel specified by channel_id,
@@ -293,34 +292,54 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
 
     #if the given stamp is in the past
     if time_sent - curr_timestamp < 0:
-        raise InputError (description = "Message is send in the past")
+        raise InputError (description = "Trying to send message in the past")
     
     #if the lenght of the message is greater than 1000 characters
     if len(message) > 1000:
        raise InputError (description = "Message is too long")
 
-
+    react = {
+        "react_id" : 1,
+        "u_ids" : []
+    }
     new_message = {
         "message_id":   message_id_tracker,
         "u_id":         user_id,
         "message":      message,
-        "time_created": time_sent
+        "time_created": time_sent,
+        "reacts":       [react],
+        "is_pinned":    False
+
     } 
     
     #use the threading library to delay the message
     delay = time_sent - curr_timestamp
-    t =threading.Timer(delay, delay_fun,[channel_id, time_sent, channels, new_message, store])
+    t =threading.Timer(delay, helper_msg_sendlater,[channel_id, time_sent, new_message])
     t.start()
     
     return {
         "message_id": message_id_tracker
     }
     
+def helper_msg_sendlater(channel_id, time_sent, new_message):
+    '''
+    Store the message in data store after a delay by threading function
 
+    Arguments:
+        channel_id       (int): the given channel id
+        time_sent   (int): time at which message is to be sent
+        new_message (dict): new message to be added and its other details
+        
+    Exceptions:
+       None
 
-#Helper function passed into threading.Timer
-def delay_fun(channel_id, time_sent, channels, new_message, store):
+    Return Value:
+        None
+    '''
+    #load data store
+    store = data_store.get()
     message_id_tracker = store["message_id_tracker"]
+    channels = store["channels"]
 
     #add the new message to the data store
     all_messages = channels[channel_id]["messages"]
@@ -330,4 +349,3 @@ def delay_fun(channel_id, time_sent, channels, new_message, store):
     store["message_id_tracker"] = message_id_tracker + 1
     data_store.set(store)
 
-    
