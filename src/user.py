@@ -4,6 +4,7 @@ import os
 from PIL import Image
 from os.path import splitext
 from urllib.parse import urlparse
+from datetime import *
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
@@ -293,10 +294,14 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # crop file and save
     img.crop((x_start, y_start, x_end, y_end)).save(new_location)
     
+    # timestamp
+    dt = datetime.now()
+    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
+
     # assigning img url to specified user
     store = data_store.get()
     user_info = store["users"][auth_user_id]
-    user_info["profile_img_url"] = url[:-1] + f"/images/{auth_user_id}.jpg"
+    user_info["profile_img_url"] = url[:-1] + f"/images/{auth_user_id}&{timestamp}.jpg"
     data_store.set(store)
 
     return {}

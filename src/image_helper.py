@@ -1,19 +1,6 @@
 from urllib.parse import urlparse, urlunparse
 from src.data_store import data_store
 
-# # sets the data_store with the current port the server is on
-# def set_port_number(port):
-#     store = data_store.get()
-#     old_port = store["port"]
-#     store["port"] = port
-#     data_store.set(store)
-
-#     # if port has changed, update urls
-#     if old_port != port:
-#         update_port_numbers()
-        
-#     return
-
 def update_port_numbers(port):
     '''
     this updates all the "profile_img_url" to the new port
