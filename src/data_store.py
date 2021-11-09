@@ -97,7 +97,6 @@ Dictionary of shape {
      messages_exist: [{num_messages_exist, time_stamp}], 
      utilization_rate 
     }
-
 '''
 
 initial_object = {

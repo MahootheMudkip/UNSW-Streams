@@ -1,14 +1,15 @@
 import sys
 import json
+import os
 import pickle
 import signal
-from json import dumps, loads
-from flask import Flask, request
-from flask_cors import CORS
 import requests
+from json import dumps, loads
+from flask import Flask, request, send_file
+from flask_cors import CORS
+
 from src.error import InputError
 from src import config
-
 from src.data_store import data_store
 from src.other import clear_v1
 from src.auth import *
@@ -18,6 +19,7 @@ from src.message import *
 from src.user import *
 from src.dm import *
 from src.admin import *
+from src.image_helper import *
 
 
 def quit_gracefully(*args):
@@ -52,6 +54,12 @@ def echo():
     return dumps({
         'data': data
     })
+
+# this is used for uploadphoto. It returns the profile pic for 
+# the specified user
+@APP.route("/images/<file>", methods=['GET'])
+def get_image(file):
+    return send_file(os.path.join(os.getcwd(), "images", file))
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clearv1():
@@ -437,18 +445,18 @@ def auth_passwordreset_reset():
     new_password = data["new_password"]
     return dumps(auth_passwordreset_reset_v1(reset_code, new_password))
 
-# @APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
-# def user_profile_uploadphoto():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     img_url = data["img_url"]
-#     x_start = data["x_start"]
-#     y_start = data["y_start"]
-#     x_end = data["x_end"]
-#     y_end = data["y_end"]
-# 
-#     return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def user_profile_uploadphoto():
+    data = request.get_json()
+
+    token = data["token"]
+    img_url = data["img_url"]
+    x_start = data["x_start"]
+    y_start = data["y_start"]
+    x_end = data["x_end"]
+    y_end = data["y_end"]
+
+    return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
 
 # @APP.route("/user/stats/v1", methods=['GET'])
 # def user_stats():
@@ -473,5 +481,8 @@ if __name__ == "__main__":
     except FileNotFoundError:
         data_store.__init__
     
+    # updates user urls in data_store to new port
+    update_port_numbers(config.port)
+
     APP.run(port=config.port) # Do not edit this port
     
