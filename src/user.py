@@ -289,19 +289,24 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # generate images dir location
     images_dir = os.path.join(cwd, "images")
     # generate new file location
-    new_location = os.path.join(images_dir, f"{auth_user_id}.jpg")
+
+    # timestamp for unique url generation
+    dt = datetime.now()
+    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
+    converted = str(timestamp)
+    converted = converted.replace(".", "")
+
+    # file name to save as
+    file_name = f"{auth_user_id}X{converted}.jpg"
+    new_location = os.path.join(images_dir, file_name)
 
     # crop file and save
     img.crop((x_start, y_start, x_end, y_end)).save(new_location)
     
-    # timestamp
-    dt = datetime.now()
-    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
-
     # assigning img url to specified user
     store = data_store.get()
     user_info = store["users"][auth_user_id]
-    user_info["profile_img_url"] = url[:-1] + f"/images/{auth_user_id}&{timestamp}.jpg"
+    user_info["profile_img_url"] = url[:-1] + f"/images/{file_name}"
     data_store.set(store)
 
     return {}
