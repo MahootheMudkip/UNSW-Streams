@@ -154,28 +154,27 @@ def test_already_active_standup_in_channel(initial_setup):
     public_channel_id = initial_setup["public_channel_id"]
     private_channel_id = initial_setup["private_channel_id"]
     
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 160})
+    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 1})
     assert(resp.status_code == NO_ERROR)
 
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 160})
+    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 1})
     assert(resp.status_code == INPUT_ERROR)
 
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": private_channel_id, "length": 160})
+    resp = requests.post(URL, json={"token": user1_token, "channel_id": private_channel_id, "length": 1})
     assert(resp.status_code == NO_ERROR)
 
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": private_channel_id, "length": 160})
+    resp = requests.post(URL, json={"token": user1_token, "channel_id": private_channel_id, "length": 1})
     assert(resp.status_code == INPUT_ERROR)
 
 # test standup/start returns correct unix timestamp
-@given(strategies.integers(min_value=0, max_value=99999))
-def standup_start_v1_returns_time_finish(num, initial_setup):
+def test_standup_start_v1_returns_time_finish(initial_setup):
     user1_token = initial_setup["user1_token"]
     public_channel_id = initial_setup["public_channel_id"]
     
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": num})
+    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 1})
     assert(resp.status_code == NO_ERROR)
 
-    time_finish = json.loads(resp.text)
-    curr_timestamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    assert time_finish == curr_timestamp + num
+    time_finish = json.loads(resp.text)["time_finish"]
+    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    assert time_finish == curr_timestamp + 1
 
