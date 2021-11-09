@@ -20,6 +20,7 @@ from src.user import *
 from src.dm import *
 from src.admin import *
 from src.image_helper import *
+from src.standup import *
 
 
 def quit_gracefully(*args):
@@ -405,15 +406,15 @@ def message_unpin():
 # 
 #     return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
 
-# @APP.route("/standup/start/v1", methods=['POST'])
-# def standup_start():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     length = data["length"]
-# 
-#     return dumps(standup_start_v1(token, channel_id, length))
+@APP.route("/standup/start/v1", methods=['POST'])
+def standup_start():
+    data = request.get_json()
+
+    token = data["token"]
+    channel_id = data["channel_id"]
+    length = data["length"]
+
+    return dumps(standup_start_v1(token, channel_id, length))
 
 # @APP.route("/standup/active/v1", methods = ['GET'])
 # def standup_active():
