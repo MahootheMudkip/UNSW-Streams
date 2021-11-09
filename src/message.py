@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.user import notifications_send_reacted, notifications_send_tagged
 from datetime import *
 import re
 
@@ -53,10 +54,14 @@ def message_send_v1(token, channel_id, message):
     dt = datetime.now()
     timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
+    # intitialise message's reacts
     react = {
         "react_id": 1,
         "u_ids": []
     }
+
+    # send notifications to users tagged in message
+    notifications_send_tagged(auth_user_id, message, channel_id, "channel")
 
     new_message = {
         "message_id":   message_id_tracker,
@@ -118,20 +123,22 @@ def message_edit_v1(token, message_id, message):
     # check message_id is within a channel/dm that the user has joined
 
     # find location of message_id
-    for channel in channels.values():
+    for ch_id, channel in channels.items():
         if auth_user_id in channel["all_members"]:
             if message_id in channel["messages"]:
                 location_found = True
                 location_info = channel
+                location_id = ch_id
                 location_type = "channel"
                 break
     
     if location_found == False:
-        for dm in dms.values():
+        for dm_id, dm in dms.items():
             if auth_user_id in dm["members"]:
                 if message_id in dm["messages"]:
                     location_found = True
                     location_info = dm
+                    location_id = dm_id
                     location_type = "dm"
                     break
     
@@ -164,6 +171,7 @@ def message_edit_v1(token, message_id, message):
         # this will work whether location_type is a channel or dm
         store["messages"].pop(message_id)
     else:
+        notifications_send_tagged(auth_user_id, message, location_id, location_type)
         message_info["message"] = message
 
     data_store.set(store)
@@ -321,20 +329,89 @@ def message_pin_v1(token, message_id):
         raise InputError(description="The message is already pinned")
 
     user_info = store["users"][auth_user_id] 
-    user_is_owner = user_info["is_owner"] 
- 
-    message_info = store["messages"][message_id] 
-    message_u_id = message_info["u_id"] 
-    if auth_user_id != message_u_id: 
-        if location_type == "channel": 
-            if auth_user_id not in location_info["owner_members"] and user_is_owner == False: 
-                # not a owner or global owner 
-                raise AccessError(description="Unauthorised user") 
-        else: 
-            if auth_user_id != location_info["owner"]: 
-                raise AccessError(description="Unauthorised user") 
+    user_is_owner = user_info["is_owner"]
+    
+    if location_type == "channel": 
+        if auth_user_id not in location_info["owner_members"] and user_is_owner == False: 
+            # not a owner or global owner 
+            raise AccessError(description="Unauthorised user") 
+    else: 
+        if auth_user_id != location_info["owner"]: 
+            raise AccessError(description="Unauthorised user") 
 
     messages[message_id]["is_pinned"] = True
+    data_store.set(store)
+    return {}
+
+def message_unpin_v1(token, message_id):
+    '''
+    Given a message within a channel or DM, remove pin mark.    
+
+    Arguments:
+        token       (str): the given token
+        message_id  (int): the given message_id
+
+    Exceptions:
+        InputError:
+            - message_id is not a valid message within a channel or DM 
+                that the authorised user has joined
+            - the message is already not pinned
+        AccessError:
+            - message_id refers to a valid message in a joined channel/DM and 
+                the authorised user does not have owner permissions in the channel/DM
+
+    Return Value:
+        empty dictionary.
+    '''   
+    # get auth_user_id from token (this function handles all exceptions)
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    channels = store["channels"]
+    dms = store["dms"]
+    messages = store["messages"]
+
+    location_found = False    
+    location_info = {}
+    location_type = ""
+    
+    # check message_id is within a channel/dm that the user has joined
+    # find location of message_id
+    for channel in channels.values():
+        if auth_user_id in channel["all_members"]:
+            if message_id in channel["messages"]:
+                location_found = True
+                location_info = channel
+                location_type = "channel"
+                break
+    
+    if location_found == False:
+        for dm in dms.values():
+            if auth_user_id in dm["members"]:
+                if message_id in dm["messages"]:
+                    location_found = True
+                    location_info = dm
+                    location_type = "dm"
+                    break
+    
+    if location_found == False:
+        raise InputError(description="message_id not within a channel/dm that the user has joined")
+    
+    if messages[message_id]["is_pinned"] == False:
+        raise InputError(description="The message is already not pinned")
+
+    user_info = store["users"][auth_user_id] 
+    user_is_owner = user_info["is_owner"]
+    
+    if location_type == "channel": 
+        if auth_user_id not in location_info["owner_members"] and user_is_owner == False: 
+            # not a owner or global owner 
+            raise AccessError(description="Unauthorised user") 
+    else: 
+        if auth_user_id != location_info["owner"]: 
+            raise AccessError(description="Unauthorised user") 
+
+    messages[message_id]["is_pinned"] = False
     data_store.set(store)
     return {}
 
@@ -376,6 +453,7 @@ def message_react_v1(token, message_id, react_id):
 
     # add react from user if not already reacted
     if auth_user_id not in reacts["u_ids"]:
+        notifications_send_reacted(auth_user_id, message_id)
         reacts["u_ids"].append(auth_user_id)
     else:
         # user already reacted
