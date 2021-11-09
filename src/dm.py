@@ -3,6 +3,8 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.message import add_user_react_info
 from datetime import *
+import threading
+import time
 
 def dm_create_v1(token, u_ids):
     '''
@@ -381,3 +383,106 @@ def dm_messages_v1(token, dm_id, start):
         'start': start,
         'end': end,
     }
+
+
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    '''
+    Send a message from the authorised user to the dm specified by dm_id
+    at a timestamp given by the user.
+
+    Arguments:
+        token       (str): the given token
+        dm_id       (int): the given dm id
+        message     (str): message text
+        time_sent   (int): time at which message is to be sent
+
+    Exceptions:
+        InputError:
+            - dm_id invalid (doesn't exist)
+            - length of message is greater than 1000 characters
+            - if user is trying to send a message in the past
+        AccessError:
+            - auth_user_id is invalid (doesn't exist)
+            - dm_id is valid and the auth_user_id refers to a user
+            who is not a member of the dm
+
+    Return Value:
+        message_id  (int): newly created message's id
+    '''
+    # get auth_user_id from token 
+    auth_user_id = get_auth_user_id(token)
+
+    store = data_store.get()
+    dms = store["dms"]
+    message_id_tracker = store["message_id_tracker"]
+
+    # specified dm doesn't exist
+    if dm_id not in dms.keys(): 
+        raise InputError("Invalid dm_id")
+
+    #if given user is not in dm
+    dm_members = dms[dm_id]["members"]
+    if auth_user_id not in dm_members:
+        raise AccessError("User not a member of the dm")
+
+    if len(message) > 1000:
+        raise InputError("Invalid message length")
+
+    #get timestamp of the current time
+    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+
+    #if the given stamp is in the past
+    if time_sent - curr_timestamp < 0:
+        raise InputError (description = "Message is sent in the past")
+
+    react = {
+        "react_id" : 1,
+        "u_ids" : []
+    }
+
+    new_message = {
+        "message_id":   message_id_tracker,
+        "u_id":         auth_user_id,
+        "message":      message,
+        "time_created": time_sent,
+        "reacts":       [react],
+        "is_pinned":    False
+    }
+
+    #use the threading library to delay the message
+    delay = time_sent - curr_timestamp
+    t =threading.Timer(delay, dm_later_helper,[dm_id, time_sent, new_message])
+    t.start()
+    
+    return {
+        "message_id": message_id_tracker
+    }
+
+def dm_later_helper(dm_id, time_sent, new_message):
+    '''
+    Store the message in data store after a delay by threading function
+
+    Arguments:
+        dm_id       (int): the given dm id
+        time_sent   (int): time at which message is to be sent
+        new_message (dict): new message to be added and its other details
+        
+    Exceptions:
+       None
+
+    Return Value:
+        None
+    '''
+    #load data store
+    store = data_store.get()
+    message_id_tracker = store["message_id_tracker"]
+    dms = store["dms"]
+    
+    #add the new message to the data store
+    all_messages = dms[dm_id]["messages"]
+    all_messages.append(message_id_tracker)
+    store["messages"][message_id_tracker] = new_message
+
+    store["message_id_tracker"] = message_id_tracker + 1
+    data_store.set(store)
+

@@ -35,7 +35,7 @@ def data():
         "name_last": "DC"
     })
     token2 = response2.json()["token"]
-    user2_id = response1.json()["auth_user_id"]
+    user2_id = response2.json()["auth_user_id"]
     
     # create a user 
     response3 = requests.post(url + "auth/register/v2", 
@@ -46,17 +46,19 @@ def data():
         "name_last": "May"
     })
     token3 = response3.json()["token"]
-    user3_id = response1.json()["auth_user_id"]
+    user3_id = response3.json()["auth_user_id"]
 
     #create a dm 1
-    dm1_response = requests.post(url + "dm/create/v1", json={
+    dm1_response = requests.post(url + "dm/create/v1", 
+    json={
         "token": token1,
         "u_ids": [user2_id]
     })
     dm1_id = dm1_response.json()["dm_id"]
 
     #create a dm 2
-    dm2_response = requests.post(url + "dm/create/v1", json={
+    dm2_response = requests.post(url + "dm/create/v1", 
+    json={
         "token": token2,
         "u_ids": [user1_id, user3_id]
     })
@@ -70,7 +72,7 @@ def data():
         "token2" : token2,
         "token3" : token3,
         "dm1_id" : dm1_id,
-        "dm2_id" : dm2_id ,
+        "dm2_id" : dm2_id,
         "timestamp" : timestamp
     }
 
@@ -162,9 +164,8 @@ def test_msg_sendlaterdm_past_message(data):
 
 #testing if the message was sent before it was supposed to
 def test_msg_sendlaterdm_check(data):
-    #getting a time stamp 20 seconds from now
-    timestamp = data["timestamp"] + 20
-
+    #send a message 15 seconds from now
+    timestamp = data["timestamp"] + 15
     response1 = requests.post(url + "message/sendlaterdm/v1", 
     json={
         "token":        data["token2"],
@@ -174,12 +175,12 @@ def test_msg_sendlaterdm_check(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #sleep for 20 seconds and check if the message was sent
+    #sleep for 10 seconds and check if the msg was sent before 15 seconds
     time.sleep(10)
     response2 = requests.get(url + "dm/messages/v1", 
     params={
-        "token": data["token2"],
-        "dm_id":data["dm2"],
+        "token": data["token3"],
+        "dm_id":data["dm2_id"],
         "start": 0
     })
     
@@ -188,9 +189,8 @@ def test_msg_sendlaterdm_check(data):
 
 #testing if the message was actually sent
 def test_msg_sendlaterdm_verify(data):
-    #getting a time stamp 20 seconds from now
-    timestamp = data["timestamp"] + 20
-
+    #send a message 10 seconds from now
+    timestamp = data["timestamp"] + 10
     response1 = requests.post(url + "message/sendlaterdm/v1", 
     json={
         "token":        data["token2"],
@@ -200,12 +200,12 @@ def test_msg_sendlaterdm_verify(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #sleep for 20 seconds and check if the message was sent
+    #sleep for 10 seconds and check if the message was sent
     time.sleep(10)
     response2 = requests.get(url + "dm/messages/v1", 
     params={
-        "token": data["token2"],
-        "dm_id":data["dm2"],
+        "token": data["token1"],
+        "dm_id": data["dm2_id"],
         "start": 0
     })
     
