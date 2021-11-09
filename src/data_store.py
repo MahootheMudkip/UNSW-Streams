@@ -97,6 +97,18 @@ Dictionary of shape {
      messages_exist: [{num_messages_exist, time_stamp}], 
      utilization_rate 
     }
+
+- "standups" is a dictionary containing dictionaries of "standup"s
+- "channel_id"s are used as keys for the "standups" dictionary
+- each "standup" dictionary contains values such as "is_active", "time_finish", "messages"
+eg.
+
+
+channel_id = {
+    "is_active":    bool,
+    "time_finish":  int,
+    "messages":     dictionary containing dictionaries of messages
+} 
 '''
 
 initial_object = {
@@ -107,7 +119,8 @@ initial_object = {
     "session_id_tracker":   0,
     "dm_id_tracker":        0,
     "message_id_tracker":   0,
-    "users_stats":          {} 
+    "users_stats":          {},
+    "standups":             {} 
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
