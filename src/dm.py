@@ -58,7 +58,8 @@ def dm_create_v1(token, u_ids):
     # Generate new Dm id and update data store dm id with the new dm_id
     store["dm_id_tracker"] += 1
     
-    # Update user_stats for all users in new dm
+    # Update workspace stats and user_stats for all users in new dm 
+    update_workspace_stats_dms("add")
     for u_id in u_ids:
         update_user_stats_dms(u_id, "add")
 
@@ -194,7 +195,8 @@ def dm_remove_v1(token, dm_id):
     if auth_user_id != dms[dm_id]["owner"]:
         raise AccessError("user not the owner of the dm")
 
-    # Update user_stats for all users in removed dm
+    # Update user_stats for all users in removed dm and workspace stats
+    update_workspace_stats_dms("remove")
     u_ids = dms[dm_id]["members"]
     for u_id in u_ids:
         update_user_stats_dms(u_id, "remove")
