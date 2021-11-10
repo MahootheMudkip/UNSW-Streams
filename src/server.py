@@ -416,12 +416,12 @@ def standup_start():
 
     return dumps(standup_start_v1(token, channel_id, length))
 
-# @APP.route("/standup/active/v1", methods = ['GET'])
-# def standup_active():
-#     token = request.args.get("token")
-#     channel_id = request.args.get("channel_id")
-# 
-#     return dumps(standup_active_v1(token, channel_id))
+@APP.route("/standup/active/v1", methods=['GET'])
+def standup_active():
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+
+    return dumps(standup_active_v1(token, channel_id))
 
 # @APP.route("/standup/send/v1", methods=['POST'])
 # def standup_send():
