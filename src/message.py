@@ -53,7 +53,7 @@ def message_send_v1(token, channel_id, message):
 
     # timestamp
     dt = datetime.now()
-    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
+    timestamp = int(dt.timestamp())
 
     # intitialise message's reacts
     react = {
@@ -313,9 +313,9 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
         raise AccessError (description = "User is not part of the channel")
 
     #get timestamp of the current time
-    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    curr_timestamp = int(datetime.now().timestamp())
 
-    #if the given stamp is in the past
+    # if the given stamp is in the past
     if time_sent - curr_timestamp < 0:
         raise InputError (description = "Trying to send message in the past")
     
@@ -339,7 +339,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     
     #use the threading library to delay the message
     delay = time_sent - curr_timestamp
-    t =threading.Timer(delay, helper_msg_sendlater,[channel_id, time_sent, new_message])
+    t = threading.Timer(delay, helper_msg_sendlater,[channel_id, time_sent, new_message])
     t.start()
     
     return {

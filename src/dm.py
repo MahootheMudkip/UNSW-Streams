@@ -283,7 +283,7 @@ def message_senddm_v1(token, dm_id, message):
 
     # timestamp
     dt = datetime.now()
-    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
+    timestamp = int(dt.timestamp())
 
     # intitialise message's reacts
     react = {
@@ -439,7 +439,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
         raise InputError("Invalid message length")
 
     #get timestamp of the current time
-    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    curr_timestamp = int(datetime.now().timestamp())
 
     #if the given stamp is in the past
     if time_sent - curr_timestamp < 0:

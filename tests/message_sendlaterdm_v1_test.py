@@ -65,7 +65,7 @@ def data():
     dm2_id = dm2_response.json()["dm_id"]
 
     #get a unix timestamp of the current time
-    timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    timestamp = int(datetime.now().timestamp())
 
     return {
         "token1" : token1,
@@ -164,8 +164,8 @@ def test_msg_sendlaterdm_past_message(data):
 
 #testing if the message was sent before it was supposed to
 def test_msg_sendlaterdm_check(data):
-    #send a message 15 seconds from now
-    timestamp = data["timestamp"] + 15
+    #send a message 3 seconds from now
+    timestamp = data["timestamp"] + 3
     response1 = requests.post(url + "message/sendlaterdm/v1", 
     json={
         "token":        data["token2"],
@@ -175,8 +175,8 @@ def test_msg_sendlaterdm_check(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #sleep for 10 seconds and check if the msg was sent before 15 seconds
-    time.sleep(10)
+    #sleep for 1 second and check if the msg was sent before 3 seconds
+    time.sleep(1)
     response2 = requests.get(url + "dm/messages/v1", 
     params={
         "token": data["token3"],
@@ -189,8 +189,8 @@ def test_msg_sendlaterdm_check(data):
 
 #testing if the message was actually sent
 def test_msg_sendlaterdm_verify(data):
-    #send a message 10 seconds from now
-    timestamp = data["timestamp"] + 10
+    #send a message 2 seconds from now
+    timestamp = data["timestamp"] + 2
     response1 = requests.post(url + "message/sendlaterdm/v1", 
     json={
         "token":        data["token2"],
@@ -201,7 +201,7 @@ def test_msg_sendlaterdm_verify(data):
     assert response1.status_code == NO_ERROR
 
     #sleep for 10 seconds and check if the message was sent
-    time.sleep(10)
+    time.sleep(2)
     response2 = requests.get(url + "dm/messages/v1", 
     params={
         "token": data["token1"],
