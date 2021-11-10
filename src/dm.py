@@ -461,14 +461,14 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
 
     #use the threading library to delay the message
     delay = time_sent - curr_timestamp
-    t =threading.Timer(delay, dm_later_helper,[dm_id, time_sent, new_message])
+    t =threading.Timer(delay, dm_later_helper,[dm_id, auth_user_id, new_message])
     t.start()
     
     return {
         "message_id": message_id_tracker
     }
 
-def dm_later_helper(dm_id, time_sent, new_message):
+def dm_later_helper(dm_id, auth_user_id, new_message):
     '''
     Store the message in data store after a delay by threading function
 
@@ -492,6 +492,9 @@ def dm_later_helper(dm_id, time_sent, new_message):
     all_messages = dms[dm_id]["messages"]
     all_messages.append(message_id_tracker)
     store["messages"][message_id_tracker] = new_message
+
+    # send notifications to tagged users
+    notifications_send_tagged(auth_user_id, new_message["message"], dm_id, "dm")
 
     store["message_id_tracker"] = message_id_tracker + 1
     data_store.set(store)

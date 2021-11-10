@@ -339,14 +339,14 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     
     #use the threading library to delay the message
     delay = time_sent - curr_timestamp
-    t = threading.Timer(delay, helper_msg_sendlater,[channel_id, time_sent, new_message])
+    t = threading.Timer(delay, helper_msg_sendlater,[channel_id, user_id, new_message])
     t.start()
     
     return {
         "message_id": message_id_tracker
     }
     
-def helper_msg_sendlater(channel_id, time_sent, new_message):
+def helper_msg_sendlater(channel_id, user_id, new_message):
     '''
     Store the message in data store after a delay by threading function
 
@@ -370,6 +370,9 @@ def helper_msg_sendlater(channel_id, time_sent, new_message):
     all_messages = channels[channel_id]["messages"]
     all_messages.append(message_id_tracker)
     store["messages"][message_id_tracker] = new_message
+
+    # send notifications to tagged users
+    notifications_send_tagged(user_id, new_message["message"], channel_id, "channel")
 
     store["message_id_tracker"] = message_id_tracker + 1
     data_store.set(store)
