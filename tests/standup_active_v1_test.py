@@ -8,7 +8,7 @@ INPUT_ERROR = 400
 ACCESS_ERROR = 403
 NO_ERROR = 200
 # error status codes
-URL = url + "standup/start/v1"
+URL = url + "standup/active/v1"
 
         # "user0_token":          user0_token,
         # "user1_token":          user1_token,
@@ -100,7 +100,7 @@ def initial_setup():
 # test invalid channel
 def test_invalid_channel(initial_setup):
     user1_token = initial_setup["user1_token"]
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": 3332, "length": 120})
+    resp = requests.get(URL, params={"token": user1_token, "channel_id": 3332})
     assert(resp.status_code == INPUT_ERROR)
 
 # the authorised user is not a member of the public channel
@@ -108,72 +108,53 @@ def test_auth_user_not_in_public_channel(initial_setup):
     user2_token = initial_setup["user2_token"]
     user3_token = initial_setup["user3_token"]
     public_channel_id = initial_setup["public_channel_id"]
-    resp = requests.post(URL, json={"token": user2_token, "channel_id": public_channel_id, "length": 60})
+    resp = requests.get(URL, params={"token": user2_token, "channel_id": public_channel_id})
     assert(resp.status_code == ACCESS_ERROR)
-    resp2 = requests.post(URL, json={"token": user3_token, "channel_id": public_channel_id, "length": 120})
+    resp2 = requests.get(URL, params={"token": user3_token, "channel_id": public_channel_id})
     assert(resp2.status_code == ACCESS_ERROR)
 
 # test user is invalid and public channel is valid
 def test_user_invalid_and_public_channel_valid(initial_setup):
     public_channel_id = initial_setup["public_channel_id"]
-    resp = requests.post(URL, json={"token": 4345, "channel_id": public_channel_id, "length": 180})
+    resp = requests.get(URL, params={"token": 4345, "channel_id": public_channel_id})
     assert(resp.status_code == ACCESS_ERROR)
-    resp2 = requests.post(URL, json={"token": 1521, "channel_id": public_channel_id, "length": 60})
+    resp2 = requests.get(URL, params={"token": 1521, "channel_id": public_channel_id})
     assert(resp2.status_code == ACCESS_ERROR)
 
 # the authorised user is not a member of the channel and channel_id is invalid
 def test_user_not_in_channel_and_invalid_channel_id(initial_setup):
     user2_token = initial_setup["user2_token"]
-    resp = requests.post(URL, json={"token": user2_token, "channel_id": 5647, "length": 240})
+    resp = requests.get(URL, params={"token": user2_token, "channel_id": 5647})
     assert(resp.status_code == INPUT_ERROR)
-    resp2 = requests.post(URL, json={"token": user2_token, "channel_id": 3231, "length": 240})
+    resp2 = requests.get(URL, params={"token": user2_token, "channel_id": 3231})
     assert(resp2.status_code == INPUT_ERROR)
 
 # the authorised user is invalid and channel_id is invalid
 def test_invalid_user_and_channel_id(initial_setup):
-    resp = requests.post(URL, json={"token": 4332, "channel_id": 1521, "length": 60})
+    resp = requests.get(URL, params={"token": 4332, "channel_id": 1521})
     assert(resp.status_code == ACCESS_ERROR)
-    resp2 = requests.post(URL, json={"token": 1542, "channel_id": 5551, "length": 120})
+    resp2 = requests.get(URL, params={"token": 1542, "channel_id": 5551})
     assert(resp2.status_code == ACCESS_ERROR)
 
-# test invalid length, all else valid
-def test_invalid_length(initial_setup):
+# there isn't an active standup
+def test_standup_active_v1_no_active_standup(initial_setup):
     user1_token = initial_setup["user1_token"]
     public_channel_id = initial_setup["public_channel_id"]
-    
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": -100})
-    assert(resp.status_code == INPUT_ERROR)
 
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": -1})
-    assert(resp.status_code == INPUT_ERROR)
+    resp = requests.get(URL, params={"token": user1_token, "channel_id": public_channel_id})
+    assert(resp.status_code == NO_ERROR)
 
-# test standup already active
-def test_already_active_standup_in_channel(initial_setup):
+    assert resp.json()["is_active"] == None
+
+# test active standup
+def test_standup_active_v1_active_standup(initial_setup):
     user1_token = initial_setup["user1_token"]
     public_channel_id = initial_setup["public_channel_id"]
-    private_channel_id = initial_setup["private_channel_id"]
+
+    resp = requests.post(url + "standup/start/v1", json={"token": user1_token, "channel_id": public_channel_id, "length": 15})
+    assert(resp.status_code == NO_ERROR)
     
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 1})
+    resp = requests.get(URL, params={"token": user1_token, "channel_id": public_channel_id})
     assert(resp.status_code == NO_ERROR)
 
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 1})
-    assert(resp.status_code == INPUT_ERROR)
-
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": private_channel_id, "length": 1})
-    assert(resp.status_code == NO_ERROR)
-
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": private_channel_id, "length": 1})
-    assert(resp.status_code == INPUT_ERROR)
-
-# test standup/start returns correct unix timestamp
-def test_standup_start_v1_returns_time_finish(initial_setup):
-    user1_token = initial_setup["user1_token"]
-    public_channel_id = initial_setup["public_channel_id"]
-    
-    resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "length": 1})
-    assert(resp.status_code == NO_ERROR)
-
-    time_finish = json.loads(resp.text)["time_finish"]
-    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
-    assert time_finish == curr_timestamp + 1
-
+    assert resp.json()["is_active"] == True
