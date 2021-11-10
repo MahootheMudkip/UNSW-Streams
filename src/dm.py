@@ -1,4 +1,4 @@
-from src.stats import update_user_stats_dms
+from src.stats import *
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
@@ -324,6 +324,10 @@ def message_senddm_v1(token, dm_id, message):
     messages[message_id_tracker] = new_message
 
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats for messages_sent
+    update_user_stats_messages(auth_user_id)
+
     data_store.set(store)
 
     return {
@@ -511,5 +515,9 @@ def dm_later_helper(dm_id, auth_user_id, new_message):
     notifications_send_tagged(auth_user_id, new_message["message"], dm_id, "dm")
 
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats for messages_sent
+    update_user_stats_messages(auth_user_id)
+
     data_store.set(store)
 

@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.user import notifications_send_reacted, notifications_send_tagged
+from src.stats import *
 from datetime import *
 import re
 import time, threading
@@ -80,6 +81,10 @@ def message_send_v1(token, channel_id, message):
     messages[message_id_tracker] = new_message
 
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats for messages_sent
+    update_user_stats_messages(auth_user_id)
+
     data_store.set(store)
 
     return {
@@ -375,6 +380,10 @@ def helper_msg_sendlater(channel_id, user_id, new_message):
     notifications_send_tagged(user_id, new_message["message"], channel_id, "channel")
 
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats for messages_sent
+    update_user_stats_messages(user_id)
+
     data_store.set(store)
 
 def message_pin_v1(token, message_id):

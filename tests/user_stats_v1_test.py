@@ -4,6 +4,7 @@ import requests
 import pytest
 import time
 from datetime import *
+import time
 
 INPUT_ERROR = 400
 ACCESS_ERROR = 403

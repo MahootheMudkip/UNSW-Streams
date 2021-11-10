@@ -81,6 +81,39 @@ def update_user_stats_dms(auth_user_id, change):
 
     data_store.set(store)
 
+def update_user_stats_messages(auth_user_id):
+    '''
+    Update current amount of messages that a user has sent (can only increase
+    even if messages are removed)
+
+    Arguments:
+        auth_user_id  (int): user's stats to be updated
+
+    Exceptions:
+        none 
+
+    Return Value:
+        none
+    '''
+    # get current data for user's stats
+    store = data_store.get()
+    user_stats = store["users"][auth_user_id]["user_stats"]
+
+    # get current timestamp and current dms joined
+    curr_time = int(datetime.now().timestamp())
+    curr_msgs_sent = user_stats["messages_sent"][-1]["num_messages_sent"]
+    
+    # form new data entry
+    messages_sent = {
+        "num_messages_sent": curr_msgs_sent + 1,
+        "time_stamp": curr_time
+    }
+    # append new data entry for dms joined and calculate new involvement_rate
+    user_stats["messages_sent"].append(messages_sent)
+    user_stats["involvement_rate"] = get_involvement_rate(auth_user_id)
+
+    data_store.set(store)
+
 def user_stats_v1(token):
     auth_user_id = get_auth_user_id(token)
 
