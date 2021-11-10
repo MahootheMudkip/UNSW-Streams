@@ -98,7 +98,6 @@ def test_dm_create_workspace_stats(data):
 # Check stats of dm members when dm is removed
 def test_dm_remove_workspace_stats(data):
     token1 = data["token1"]
-    token2 = data["token2"]
 
     # user1 create dm1 with user2
     requests.post(url + "dm/create/v1", json={
