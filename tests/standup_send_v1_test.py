@@ -293,7 +293,8 @@ def test_standup_send_v1_no_active_standup(initial_setup):
 
     resp = requests.get(url + "standup/active/v1", params={"token": user1_token, "channel_id": public_channel_id})
     assert(resp.status_code == NO_ERROR)
-    assert resp.json()["is_active"] == None
+    assert resp.json()["time_finish"] == None
+    assert resp.json()["is_active"] == False
 
     resp = requests.post(URL, json={"token": user1_token, "channel_id": public_channel_id, "message": "foo"})
     assert(resp.status_code == INPUT_ERROR)

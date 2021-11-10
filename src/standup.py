@@ -56,9 +56,9 @@ def end_standup(token, channel_id, length):
     standup = channels[channel_id]["standup"]
     standup["is_active"] = False
     message_queue = channels[channel_id]["standup"]["message_queue"]
-    for message in message_queue:
-        message_send_v1(token, channel_id, message)
+    standup_message = '\n'.join(message_queue)
 
+    message_send_v1(token, channel_id, standup_message)
     data_store.set(store)
 
 def standup_active_v1(token, channel_id):
@@ -80,11 +80,11 @@ def standup_active_v1(token, channel_id):
     
     standup = channels[channel_id]["standup"]
 
-    is_active_return = None
+    time_finish_return = None
     if standup["is_active"] == True:
-        is_active_return = True
+        time_finish_return = standup["time_finish"]
     
-    time_finish_return = standup["time_finish"]
+    is_active_return = standup["is_active"]
     
     return {
         "is_active":    is_active_return,
@@ -95,6 +95,7 @@ def standup_send_v1(token, channel_id, message):
     auth_user_id = get_auth_user_id(token)
     store = data_store.get()
     channels = store["channels"]
+    users = store["users"]
 
     if channel_id not in channels.keys():
         # check whether channel_id exists
@@ -117,7 +118,12 @@ def standup_send_v1(token, channel_id, message):
 
     messaque_queue = channels[channel_id]["standup"]["message_queue"]
 
-    messaque_queue.append(message)
+    user_name = users[auth_user_id]["name_first"] + users[auth_user_id]["name_last"]
+
+    formatted_message = user_name + ": " + message
+
+    messaque_queue.append(formatted_message)
+    
     data_store.set(store)
 
     return {}

@@ -144,7 +144,8 @@ def test_standup_active_v1_no_active_standup(initial_setup):
     resp = requests.get(URL, params={"token": user1_token, "channel_id": public_channel_id})
     assert(resp.status_code == NO_ERROR)
 
-    assert resp.json()["is_active"] == None
+    assert resp.json()["is_active"] == False
+    assert resp.json()["time_finish"] == None
 
 # test active standup
 def test_standup_active_v1_active_standup(initial_setup):
