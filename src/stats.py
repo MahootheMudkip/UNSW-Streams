@@ -3,8 +3,47 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 
 def get_involvement_rate(auth_user_id):
-    return 0
+    '''
+    Calculate involvement rate for a user:
+    num_channels_joined + num_dms_joined + num_msgs_sent / num_channels + num_dms + num_msgs)
 
+    Arguments:
+        auth_user_id  (int): user's involvement rate to be calculated
+
+    Exceptions:
+        none 
+
+    Return Value:
+        involvement_rate (float)
+    '''
+    # get user_stats and workspace_stats
+    store = data_store.get()
+    user_stats = store["users"][auth_user_id]["user_stats"]
+    workspace_stats = store["users"][auth_user_id]["workspace_stats"]
+
+    # find numerator
+    num_channels_joined = user_stats["channels_joined"][-1]["num_channels_joined"]
+    num_dms_joined = user_stats["dms_joined"][-1]["num_dms_joined"]
+    num_msgs_sent = user_stats["messages_sent"][-1]["num_messages_sent"]
+    numerator = num_channels_joined + num_dms_joined + num_msgs_sent
+    
+    # find denominator
+    num_channels = workspace_stats["channels_exist"][-1]["num_channels_exists"]
+    num_dms = workspace_stats["dms_exist"][-1]["num_dms_exists"]
+    num_messages = workspace_stats["messages_exist"][-1]["num_messages_exists"]
+    denominator = num_channels + num_dms + num_messages
+
+    if denominator == 0:
+        involvement_rate = 0
+    else:
+        involvement_rate = numerator/denominator
+    
+    # involvement rate is capped at 1
+    if involvement_rate > 1:
+        involvement_rate = 1
+
+    return involvement_rate
+    
 def update_user_stats_channels(auth_user_id, change):
     '''
     Update current amount of channels that user is part of
