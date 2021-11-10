@@ -122,7 +122,8 @@ def channels_create_v1(token, name, is_public):
     # Store changes back into database
     channels[channel_id] = new_channel
 
-    # Update user_stats
+    # Update user_stats and workplace_stats
+    update_workplace_stats_channels()
     update_user_stats_channels(auth_user_id, "add")
 
     data_store.set(store)

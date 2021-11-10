@@ -476,11 +476,11 @@ def user_stats():
 
     return dumps(user_stats_v1(token))
 
-# @APP.route("/users/stats/v1", methods=['GET'])
-# def users_stats():
-#     token = request.args.get("token")
-# 
-#     return dumps(users_stats_v1(token))
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats():
+    token = request.args.get("token")
+
+    return dumps(users_stats_v1(token))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
