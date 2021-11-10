@@ -20,6 +20,7 @@ from src.user import *
 from src.dm import *
 from src.admin import *
 from src.image_helper import *
+from src.stats import *
 
 
 def quit_gracefully(*args):
@@ -469,12 +470,12 @@ def user_profile_uploadphoto():
 
     return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
 
-# @APP.route("/user/stats/v1", methods=['GET'])
-# def user_stats():
-#     token = request.args.get("token")
-# 
-#     return dumps(user_stats_v1(token))
-# 
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats():
+    token = request.args.get("token")
+
+    return dumps(user_stats_v1(token))
+
 # @APP.route("/users/stats/v1", methods=['GET'])
 # def users_stats():
 #     token = request.args.get("token")
