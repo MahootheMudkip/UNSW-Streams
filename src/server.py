@@ -423,15 +423,15 @@ def standup_active():
 
     return dumps(standup_active_v1(token, channel_id))
 
-# @APP.route("/standup/send/v1", methods=['POST'])
-# def standup_send():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     message = data["message"]
-# 
-#     return dumps(standup_send_v1(token, channel_id, message))
+@APP.route("/standup/send/v1", methods=['POST'])
+def standup_send():
+    data = request.get_json()
+
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+
+    return dumps(standup_send_v1(token, channel_id, message))
 
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def auth_passwordreset_request():

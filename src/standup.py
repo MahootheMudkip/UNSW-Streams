@@ -1,6 +1,7 @@
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.message import message_send_v1
 from datetime import *
 import time, threading
 
@@ -38,7 +39,7 @@ def standup_start_v1(token, channel_id, length):
     standup["time_finish"] = time_finish
     
     # thread to end standup once time_finish is reached
-    thread = threading.Thread(target=end_standup,args=(channel_id, length,))
+    thread = threading.Thread(target=end_standup,args=(token, channel_id, length,))
     thread.start()
 
     data_store.set(store)
@@ -47,12 +48,17 @@ def standup_start_v1(token, channel_id, length):
         "time_finish": time_finish 
         }
 
-def end_standup(channel_id, length):
+def end_standup(token, channel_id, length):
     
     time.sleep(length)
     store = data_store.get()
-    standup = store["channels"][channel_id]["standup"]
+    channels = store["channels"]
+    standup = channels[channel_id]["standup"]
     standup["is_active"] = False
+    message_queue = channels[channel_id]["standup"]["message_queue"]
+    for message in message_queue:
+        message_send_v1(token, channel_id, message)
+
     data_store.set(store)
 
 def standup_active_v1(token, channel_id):
@@ -84,3 +90,35 @@ def standup_active_v1(token, channel_id):
         "is_active":    is_active_return,
         "time_finish":  time_finish_return
         }
+    
+def standup_send_v1(token, channel_id, message):
+    auth_user_id = get_auth_user_id(token)
+    store = data_store.get()
+    channels = store["channels"]
+
+    if channel_id not in channels.keys():
+        # check whether channel_id exists
+        raise InputError(description="Invalid channel_id")
+    
+    # Obtain required channel information.
+    channel_info = channels[channel_id]
+    channel_all_members = channel_info["all_members"]
+
+    # checks if auth_user is not a member of the channel.
+    if auth_user_id not in channel_all_members:
+        raise AccessError(description="Authorised User is not a member of the channel.")
+
+    if not 1 <= len(message) <= 1000:
+        raise InputError(description="length of message must be under 1000 characters")
+
+    standup = channels[channel_id]["standup"]
+    if standup["is_active"] == False:
+        raise InputError(description="No active standup in this channel")
+
+    messaque_queue = channels[channel_id]["standup"]["message_queue"]
+
+    messaque_queue.append(message)
+    data_store.set(store)
+
+    return {}
+    
