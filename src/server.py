@@ -394,16 +394,16 @@ def message_unpin():
 # 
 #     return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
 
-# @APP.route("/message/sendlaterdm/v1", methods=['POST'])
-# def message_sendlaterdm():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-#     message = data["message"]
-#     time_sent = data["time_sent"]
-# 
-#     return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm():
+    data = request.get_json()
+ 
+    token = data["token"]
+    dm_id = data["dm_id"]
+    message = data["message"]
+    time_sent = data["time_sent"]
+
+    return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
 
 # @APP.route("/standup/start/v1", methods=['POST'])
 # def standup_start():
