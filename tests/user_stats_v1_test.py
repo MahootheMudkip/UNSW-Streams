@@ -74,9 +74,6 @@ def test_channels_create_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][1]["num_channels_joined"] == 1
-    assert user_stats["dms_joined"][1]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][1]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after they join a channel
 def test_channel_join_stats(data):
@@ -104,9 +101,6 @@ def test_channel_join_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][1]["num_channels_joined"] == 1
-    assert user_stats["dms_joined"][1]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][1]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after they are invited to a channel
 def test_channel_invite_stats(data):
@@ -135,9 +129,6 @@ def test_channel_invite_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][1]["num_channels_joined"] == 1
-    assert user_stats["dms_joined"][1]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][1]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after they leave a channel
 def test_channel_leave_stats(data):
@@ -172,9 +163,6 @@ def test_channel_leave_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][2]["num_channels_joined"] == 0
-    assert user_stats["dms_joined"][2]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][2]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 0
 
 # Check user's stats after they create a dm
 def test_dm_create_user1_stats(data):
@@ -193,10 +181,7 @@ def test_dm_create_user1_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][1]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][1]["num_dms_joined"] == 1
-    assert user_stats["messages_sent"][1]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 1
 
 # Check other user's stats after they were invited to dm
 def test_dm_create_user2_stats(data):
@@ -216,10 +201,7 @@ def test_dm_create_user2_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][1]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][1]["num_dms_joined"] == 1
-    assert user_stats["messages_sent"][1]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 1
 
 # Check stats of dm members when dm is removed
 def test_dm_remove_stats(data):
@@ -245,10 +227,7 @@ def test_dm_remove_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][2]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][2]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][2]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 0
 
     # check user2's stats after removing dm1
     response = requests.get(url + "user/stats/v1", params={
@@ -257,10 +236,7 @@ def test_dm_remove_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][2]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][2]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][2]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 0
 
 # Check stats of user after dm leave
 def test_dm_leave_stats(data):
@@ -286,10 +262,7 @@ def test_dm_leave_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][2]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][2]["num_dms_joined"] == 0
-    assert user_stats["messages_sent"][2]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 0
 
     # check user2's stats is the same
     response = requests.get(url + "user/stats/v1", params={
@@ -298,10 +271,7 @@ def test_dm_leave_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][1]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][1]["num_dms_joined"] == 1
-    assert user_stats["messages_sent"][1]["num_messages_sent"] == 0
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after sending a message in a channel
 def test_message_send_stats(data):
@@ -329,9 +299,7 @@ def test_message_send_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][1]["num_channels_joined"] == 1
-    assert user_stats["dms_joined"][1]["num_dms_joined"] == 0
     assert user_stats["messages_sent"][1]["num_messages_sent"] == 1
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after sending a message in a dm
 def test_message_senddm_stats(data):
@@ -357,10 +325,8 @@ def test_message_senddm_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][1]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][1]["num_dms_joined"] == 1
     assert user_stats["messages_sent"][1]["num_messages_sent"] == 1
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after send later a message in a channel
 def test_message_sendlater_stats(data):
@@ -391,9 +357,7 @@ def test_message_sendlater_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][1]["num_channels_joined"] == 1
-    assert user_stats["dms_joined"][1]["num_dms_joined"] == 0
     assert user_stats["messages_sent"][1]["num_messages_sent"] == 1
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after sending later a message in a dm
 def test_message_sendlaterdm_stats(data):
@@ -422,10 +386,8 @@ def test_message_sendlaterdm_stats(data):
     assert response.status_code == NO_ERROR
 
     user_stats = response.json()["user_stats"]
-    assert user_stats["channels_joined"][1]["num_channels_joined"] == 0
     assert user_stats["dms_joined"][1]["num_dms_joined"] == 1
     assert user_stats["messages_sent"][1]["num_messages_sent"] == 1
-    assert user_stats["involvement_rate"] == 1
 
 # Check user's stats after they are removed from streams
 def test_user_remove_stats(data):
@@ -460,9 +422,7 @@ def test_user_remove_stats(data):
 
     user_stats = response.json()["user_stats"]
     assert user_stats["channels_joined"][1]["num_channels_joined"] == 1
-    assert user_stats["dms_joined"][1]["num_dms_joined"] == 0
     assert user_stats["messages_sent"][1]["num_messages_sent"] == 1
-    assert user_stats["involvement_rate"] == 1
 
     # have user1 remove user2 from streams
     requests.delete(url + "admin/user/remove/v1", json={
