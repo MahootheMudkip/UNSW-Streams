@@ -291,7 +291,7 @@ def update_workspace_stats_messages(change):
 
     # form new data entry
     messages_exist = {
-        "num_messages_exist": curr_msgs_exist + 1,
+        "num_messages_exist": curr_msgs_exist,
         "time_stamp": curr_time
     }
     # append new data entry for messages exist

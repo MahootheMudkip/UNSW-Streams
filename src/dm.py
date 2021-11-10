@@ -327,7 +327,8 @@ def message_senddm_v1(token, dm_id, message):
 
     store["message_id_tracker"] = message_id_tracker + 1
 
-    # Update user_stats for messages_sent
+    # Update user_stats and workspace_stats for messages_sent
+    update_workspace_stats_messages("add")
     update_user_stats_messages(auth_user_id)
 
     data_store.set(store)
@@ -518,7 +519,8 @@ def dm_later_helper(dm_id, auth_user_id, new_message):
 
     store["message_id_tracker"] = message_id_tracker + 1
 
-    # Update user_stats for messages_sent
+    # Update user_stats and workspace_stats for messages_sent
+    update_workspace_stats_messages("add")
     update_user_stats_messages(auth_user_id)
 
     data_store.set(store)

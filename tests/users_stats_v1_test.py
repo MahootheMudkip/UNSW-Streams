@@ -122,7 +122,7 @@ def test_dm_remove_workspace_stats(data):
     assert workspace_stats["dms_exist"][2]["num_dms_exist"] == 0
 
 # Check user's stats after sending a message in a channel
-def test_message_send_stats(data):
+def test_message_send_workspace_stats(data):
     token1 = data["token1"]
 
     # create 1 channel
@@ -263,7 +263,7 @@ def test_user_remove_stats(data):
 
     # check user's stats after they are removed
     response = requests.get(url + "users/stats/v1", params={
-        "token": token2
+        "token": token1
     })
     assert response.status_code == NO_ERROR
 

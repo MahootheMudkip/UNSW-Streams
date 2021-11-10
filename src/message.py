@@ -82,7 +82,8 @@ def message_send_v1(token, channel_id, message):
 
     store["message_id_tracker"] = message_id_tracker + 1
 
-    # Update user_stats for messages_sent
+    # Update user_stats and workspace_stats for messages_sent
+    update_workspace_stats_messages("add")
     update_user_stats_messages(auth_user_id)
 
     data_store.set(store)
@@ -176,6 +177,7 @@ def message_edit_v1(token, message_id, message):
         location_info["messages"].remove(message_id)
         # this will work whether location_type is a channel or dm
         store["messages"].pop(message_id)
+        update_workspace_stats_messages("remove")
     else:
         notifications_send_tagged(auth_user_id, message, location_id, location_type)
         message_info["message"] = message
@@ -381,7 +383,8 @@ def helper_msg_sendlater(channel_id, user_id, new_message):
 
     store["message_id_tracker"] = message_id_tracker + 1
 
-    # Update user_stats for messages_sent
+    # Update user_stats and workspace stats for messages_sent
+    update_workspace_stats_messages("add")
     update_user_stats_messages(user_id)
 
     data_store.set(store)
