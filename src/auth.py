@@ -136,7 +136,41 @@ def get_init_stats():
         "involvement_rate": 0
     }
 
+def get_init_workplace_stats():
+    '''
+    Get initial values for workplace_stats dict
 
+    Arguments:
+        none
+
+    Exceptions:
+        none
+        
+    Return Value:
+        workplace_stats (dict) dict of shape workplace_stats
+    '''
+
+    # get current time
+    curr_time = int(datetime.now().timestamp())
+    channels_exist = {
+        "num_channels_exist": 0,
+        "time_stamp": curr_time
+    }
+    dms_exist = {
+        "num_dms_exist": 0,
+        "time_stamp": curr_time
+    }
+    messages_exist = {
+        "num_messages_exist": 0,
+        "time_stamp": curr_time
+    }
+
+    return {
+        "channels_exist": [channels_exist],
+        "dms_exist": [dms_exist],
+        "messages_exist": [messages_exist],
+        "utilization_rate": 0
+    }
 
 def auth_register_v1(email, password, name_first, name_last):
     '''
@@ -207,6 +241,7 @@ def auth_register_v1(email, password, name_first, name_last):
     # If user is first user to register, they are a global owner
     if u_id == 0:
         users[u_id]["is_owner"] = True
+        store["users_stats"] = get_init_workplace_stats()
 
     # Set data containing user information
     data_store.set(store)
