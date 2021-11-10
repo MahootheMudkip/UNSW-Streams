@@ -130,9 +130,9 @@ def get_init_stats():
     }
 
     return {
-        "channels_joined": channels_joined,
-        "dms_joined": dms_joined,
-        "messages_sent": messages_sent,
+        "channels_joined": [channels_joined],
+        "dms_joined": [dms_joined],
+        "messages_sent": [messages_sent],
         "involvement_rate": 0
     }
 
