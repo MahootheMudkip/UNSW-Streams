@@ -4,7 +4,7 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.message import add_user_react_info
 from src.user import notifications_send_tagged, notifications_send_invited
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 import threading
 import time
 
@@ -298,8 +298,7 @@ def message_senddm_v1(token, dm_id, message):
     dm_messages = dm_info["messages"]
 
     # timestamp
-    dt = datetime.now()
-    timestamp = int(dt.timestamp())
+    timestamp = get_curr_timestamp()
 
     # intitialise message's reacts
     react = {
@@ -460,7 +459,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
         raise InputError("Invalid message length")
 
     #get timestamp of the current time
-    curr_timestamp = int(datetime.now().timestamp())
+    curr_timestamp = get_curr_timestamp()
 
     #if the given stamp is in the past
     if time_sent - curr_timestamp < 0:

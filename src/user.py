@@ -4,12 +4,13 @@ import os
 from PIL import Image
 from os.path import splitext
 from urllib.parse import urlparse
-from datetime import *
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.auth import auth_login_v1, is_taken
 from src.config import url
+from src.gen_timestamp import get_curr_timestamp
+
 
 NO_ERROR = 200
 
@@ -291,13 +292,10 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     # generate new file location
 
     # timestamp for unique url generation
-    dt = datetime.now()
-    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
-    converted = str(timestamp)
-    converted = converted.replace(".", "")
+    timestamp = str(get_curr_timestamp())
 
     # file name to save as
-    file_name = f"{auth_user_id}X{converted}.jpg"
+    file_name = f"{auth_user_id}X{timestamp}.jpg"
     new_location = os.path.join(images_dir, file_name)
 
     # crop file and save
