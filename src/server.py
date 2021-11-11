@@ -20,6 +20,7 @@ from src.user import *
 from src.dm import *
 from src.admin import *
 from src.image_helper import *
+from src.standup import *
 from src.stats import *
 
 
@@ -417,32 +418,32 @@ def message_sendlaterdm():
 
     return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
 
-# @APP.route("/standup/start/v1", methods=['POST'])
-# def standup_start():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     length = data["length"]
-# 
-#     return dumps(standup_start_v1(token, channel_id, length))
+@APP.route("/standup/start/v1", methods=['POST'])
+def standup_start():
+    data = request.get_json()
 
-# @APP.route("/standup/active/v1", methods = ['GET'])
-# def standup_active():
-#     token = request.args.get("token")
-#     channel_id = request.args.get("channel_id")
-# 
-#     return dumps(standup_active_v1(token, channel_id))
+    token = data["token"]
+    channel_id = data["channel_id"]
+    length = data["length"]
 
-# @APP.route("/standup/send/v1", methods=['POST'])
-# def standup_send():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     message = data["message"]
-# 
-#     return dumps(standup_send_v1(token, channel_id, message))
+    return dumps(standup_start_v1(token, channel_id, length))
+
+@APP.route("/standup/active/v1", methods=['GET'])
+def standup_active():
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+
+    return dumps(standup_active_v1(token, channel_id))
+
+@APP.route("/standup/send/v1", methods=['POST'])
+def standup_send():
+    data = request.get_json()
+
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+
+    return dumps(standup_send_v1(token, channel_id, message))
 
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def auth_passwordreset_request():

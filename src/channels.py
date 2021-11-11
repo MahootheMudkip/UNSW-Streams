@@ -1,3 +1,4 @@
+from src import standup
 from src.sessions import get_auth_user_id
 from src.data_store import data_store
 from src.error import InputError, AccessError
@@ -107,13 +108,20 @@ def channels_create_v1(token, name, is_public):
     if not 1 <= len(name) <= 20:
         raise InputError(description="Invalid channel name")
 
+    standup = {
+        "is_active": False,
+        "message_queue": [],
+        "time_finish": 0
+    }
+    
     # Create new channel and initialise fields
     new_channel = {
         "channel_name": name,
         "is_public": is_public,
         "owner_members": [auth_user_id],
         "all_members": [auth_user_id],
-        "messages": []
+        "messages": [],
+        "standup": standup
     }
 
     # Generate new channel_id

@@ -97,6 +97,12 @@ Dictionary of shape {
      messages_exist: [{num_messages_exist, time_stamp}], 
      utilization_rate 
     }
+
+channel_id = {
+    "is_active":    bool,
+    "time_finish":  int,
+    "messages":     dictionary containing dictionaries of messages
+} 
 '''
 
 initial_object = {
@@ -107,7 +113,7 @@ initial_object = {
     "session_id_tracker":   0,
     "dm_id_tracker":        0,
     "message_id_tracker":   0,
-    "users_stats":          {} 
+    "users_stats":          {}
 }
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
