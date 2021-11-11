@@ -118,7 +118,7 @@ def standup_send_v1(token, channel_id, message):
 
     messaque_queue = channels[channel_id]["standup"]["message_queue"]
 
-    user_name = users[auth_user_id]["name_first"] + users[auth_user_id]["name_last"]
+    user_name = users[auth_user_id]["handle_str"]
 
     formatted_message = user_name + ": " + message
 
