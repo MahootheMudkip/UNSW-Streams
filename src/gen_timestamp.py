@@ -5,7 +5,7 @@ TIME_ZONE = 'UTC'
 # time zone
 
 # generates a timestamp
-def generate_timestamp():
+def get_curr_timestamp():
     # current time in utc timestamp
     timestamp = int(datetime.now(timezone(TIME_ZONE)).timestamp())
     return timestamp
