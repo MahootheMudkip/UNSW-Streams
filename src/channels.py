@@ -2,6 +2,7 @@ from src import standup
 from src.sessions import get_auth_user_id
 from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.stats import *
 
 def channels_list_v1(token):
     '''
@@ -128,7 +129,11 @@ def channels_create_v1(token, name, is_public):
 
     # Store changes back into database
     channels[channel_id] = new_channel
-    store["channels"] = channels
+
+    # Update user_stats and workplace_stats
+    update_workplace_stats_channels()
+    update_user_stats_channels(auth_user_id, "add")
+
     data_store.set(store)
 
     return {
