@@ -4,7 +4,7 @@ from src.email_helper import send_email
 from src.data_store import data_store
 from src.error import InputError
 from src.sessions import get_auth_user_id, get_hash, get_token, generate_new_session_id, get_session_id
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 
 # returns True if `email` is valid, False otherwise
 def valid_email(email):
@@ -115,7 +115,7 @@ def get_init_stats():
     '''
 
     # get current time
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     channels_joined = {
         "num_channels_joined": 0,
         "time_stamp": curr_time
@@ -151,7 +151,7 @@ def get_init_workplace_stats():
     '''
 
     # get current time
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     channels_exist = {
         "num_channels_exist": 0,
         "time_stamp": curr_time

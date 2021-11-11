@@ -2,7 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.message import message_send_v1
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 import time, threading
 
 def standup_start_v1(token, channel_id, length):
@@ -32,7 +32,7 @@ def standup_start_v1(token, channel_id, length):
 
     
     standup["is_active"] = True
-    curr_timestamp = datetime.now().replace(tzinfo=timezone.utc).timestamp()
+    curr_timestamp = get_curr_timestamp()
 
     time_finish = int(curr_timestamp + length)
     standup = store["channels"][channel_id]["standup"]

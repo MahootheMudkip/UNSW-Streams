@@ -1,6 +1,5 @@
 import json
-from src.error import AccessError
-from typing import NoReturn
+from src.error import AccessError 
 import pytest
 import requests
 from src.config import url

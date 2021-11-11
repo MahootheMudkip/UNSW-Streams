@@ -2,7 +2,7 @@ import pytest
 import requests
 from src.config import url
 import json
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 
 INPUT_ERROR = 400
 ACCESS_ERROR = 403
@@ -174,6 +174,6 @@ def test_standup_start_v1_returns_time_finish(initial_setup):
     assert(resp.status_code == NO_ERROR)
 
     time_finish = json.loads(resp.text)["time_finish"]
-    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    curr_timestamp = get_curr_timestamp()
     assert time_finish == curr_timestamp + 1
 

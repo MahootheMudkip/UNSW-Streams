@@ -1,9 +1,8 @@
 from src.config import url
+from src.gen_timestamp import get_curr_timestamp
 import json 
 import requests
 import pytest
-import time
-from datetime import *
 import time
 
 INPUT_ERROR = 400
@@ -341,7 +340,7 @@ def test_message_sendlater_stats(data):
     })
 
     # send later a message to channel1
-    timestamp = int(datetime.now().timestamp())
+    timestamp = get_curr_timestamp()
     requests.post(url + "message/sendlater/v1", json={
         "token": token1,
         "channel_id": 0,
@@ -350,7 +349,7 @@ def test_message_sendlater_stats(data):
     })
 
     # check user's stats after message is sent
-    time.sleep(1)
+    time.sleep(5)
     response = requests.get(url + "user/stats/v1", params={
         "token": token1
     })
@@ -371,7 +370,7 @@ def test_message_sendlaterdm_stats(data):
     })
 
     # send later a message to channel1
-    timestamp = int(datetime.now().timestamp())
+    timestamp = get_curr_timestamp()
     requests.post(url + "message/sendlaterdm/v1", json={
         "token": token1,
         "dm_id": 0,

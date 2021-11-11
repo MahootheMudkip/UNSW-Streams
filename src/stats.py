@@ -1,6 +1,7 @@
-from datetime import *
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
+from src.gen_timestamp import get_curr_timestamp
+
 
 def get_involvement_rate(auth_user_id):
     '''
@@ -106,7 +107,7 @@ def update_user_stats_channels(auth_user_id, change):
     user_stats = store["users"][auth_user_id]["user_stats"]
 
     # get current timestamp and current channels joined
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     curr_channels_joined = user_stats["channels_joined"][-1]["num_channels_joined"]
 
     # get new # of channels joined based on type of change
@@ -143,7 +144,7 @@ def update_workplace_stats_channels():
     workspace_stats = store["users_stats"]
 
     # get current timestamp and current channels exist
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     curr_channels_exist = workspace_stats["channels_exist"][-1]["num_channels_exist"]
 
     # form new data entry
@@ -174,7 +175,7 @@ def update_user_stats_dms(auth_user_id, change):
     user_stats = store["users"][auth_user_id]["user_stats"]
 
     # get current timestamp and current dms joined
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     curr_dms_joined = user_stats["dms_joined"][-1]["num_dms_joined"]
 
     # get new # of dms joined based on type of change
@@ -211,7 +212,7 @@ def update_workspace_stats_dms(change):
     workspace_stats = store["users_stats"]
 
     # get current timestamp and current dms existing
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     curr_dms_exist = workspace_stats["dms_exist"][-1]["num_dms_exist"]
 
     # get new # of dms existing based on type of change
@@ -249,7 +250,7 @@ def update_user_stats_messages(auth_user_id):
     user_stats = store["users"][auth_user_id]["user_stats"]
 
     # get current timestamp and current messages sent
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     curr_msgs_sent = user_stats["messages_sent"][-1]["num_messages_sent"]
     
     # form new data entry
@@ -280,7 +281,7 @@ def update_workspace_stats_messages(change):
     workspace_stats = store["users_stats"]
 
     # get current timestamp and current dms existing
-    curr_time = int(datetime.now().timestamp())
+    curr_time = get_curr_timestamp()
     curr_msgs_exist = workspace_stats["messages_exist"][-1]["num_messages_exist"]
     
     # get new # of messages existing based on type of change

@@ -3,7 +3,7 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.user import notifications_send_reacted, notifications_send_tagged
 from src.stats import *
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 import re
 import time, threading
 
@@ -53,8 +53,7 @@ def message_send_v1(token, channel_id, message):
     channel_messages = channel_info["messages"]
 
     # timestamp
-    dt = datetime.now()
-    timestamp = int(dt.timestamp())
+    timestamp = get_curr_timestamp()
 
     # intitialise message's reacts
     react = {
@@ -320,7 +319,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
         raise AccessError (description = "User is not part of the channel")
 
     #get timestamp of the current time
-    curr_timestamp = int(datetime.now().timestamp())
+    curr_timestamp = get_curr_timestamp()
 
     # if the given stamp is in the past
     if time_sent - curr_timestamp < 0:

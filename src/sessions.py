@@ -1,8 +1,7 @@
 import hashlib
-
-from src.error import AccessError
 import jwt
 from src.data_store import data_store
+from src.error import AccessError
 
 SECRET = "8PHk9NI6EuasvQWjvyadYJMB5m4F9W"
 
