@@ -20,6 +20,8 @@ from src.user import *
 from src.dm import *
 from src.admin import *
 from src.image_helper import *
+from src.standup import *
+from src.stats import *
 
 
 def quit_gracefully(*args):
@@ -355,6 +357,17 @@ def message_react():
 
     return dumps(message_react_v1(token, message_id, react_id))
 
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater():
+    data = request.get_json()
+ 
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+    time_sent = data["time_sent"]
+ 
+    return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
+    
 @APP.route("/message/unreact/v1", methods=['POST'])
 def message_unreact():
     data = request.get_json()
@@ -394,43 +407,43 @@ def message_unpin():
 # 
 #     return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
 
-# @APP.route("/message/sendlaterdm/v1", methods=['POST'])
-# def message_sendlaterdm():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     dm_id = data["dm_id"]
-#     message = data["message"]
-#     time_sent = data["time_sent"]
-# 
-#     return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm():
+    data = request.get_json()
+ 
+    token = data["token"]
+    dm_id = data["dm_id"]
+    message = data["message"]
+    time_sent = data["time_sent"]
 
-# @APP.route("/standup/start/v1", methods=['POST'])
-# def standup_start():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     length = data["length"]
-# 
-#     return dumps(standup_start_v1(token, channel_id, length))
+    return dumps(message_sendlaterdm_v1(token, dm_id, message, time_sent))
 
-# @APP.route("/standup/active/v1", methods = ['GET'])
-# def standup_active():
-#     token = request.args.get("token")
-#     channel_id = request.args.get("channel_id")
-# 
-#     return dumps(standup_active_v1(token, channel_id))
+@APP.route("/standup/start/v1", methods=['POST'])
+def standup_start():
+    data = request.get_json()
 
-# @APP.route("/standup/send/v1", methods=['POST'])
-# def standup_send():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     message = data["message"]
-# 
-#     return dumps(standup_send_v1(token, channel_id, message))
+    token = data["token"]
+    channel_id = data["channel_id"]
+    length = data["length"]
+
+    return dumps(standup_start_v1(token, channel_id, length))
+
+@APP.route("/standup/active/v1", methods=['GET'])
+def standup_active():
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+
+    return dumps(standup_active_v1(token, channel_id))
+
+@APP.route("/standup/send/v1", methods=['POST'])
+def standup_send():
+    data = request.get_json()
+
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+
+    return dumps(standup_send_v1(token, channel_id, message))
 
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def auth_passwordreset_request():
@@ -458,17 +471,17 @@ def user_profile_uploadphoto():
 
     return dumps(user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
 
-# @APP.route("/user/stats/v1", methods=['GET'])
-# def user_stats():
-#     token = request.args.get("token")
-# 
-#     return dumps(user_stats_v1(token))
-# 
-# @APP.route("/users/stats/v1", methods=['GET'])
-# def users_stats():
-#     token = request.args.get("token")
-# 
-#     return dumps(users_stats_v1(token))
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats():
+    token = request.args.get("token")
+
+    return dumps(user_stats_v1(token))
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats():
+    token = request.args.get("token")
+
+    return dumps(users_stats_v1(token))
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 

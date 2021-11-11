@@ -3,6 +3,7 @@ from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.message import add_user_react_info
 from src.user import notifications_send_invited
+from src.stats import *
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -56,6 +57,10 @@ def channel_invite_v1(token, channel_id, u_id):
     # If this point is reached, there must be a valid auth_user_id, channel_id and u_id.
     notifications_send_invited(auth_user_id, u_id, channel_id, "channel")
     channel_all_members.append(u_id)
+
+    # Update user_stats
+    update_user_stats_channels(u_id, "add")
+
     data_store.set(store)
 
     return {}
@@ -272,6 +277,10 @@ def channel_join_v1(token, channel_id):
 
     # if it reaches this point, auth_user_id and channel_id are both valid
     channel_members.append(auth_user_id)
+
+    # Update user_stats
+    update_user_stats_channels(auth_user_id, "add")
+
     data_store.set(store)
 
     return {}
@@ -316,6 +325,10 @@ def channel_leave_v1(token, channel_id):
         channel_owners.remove(auth_user_id)
 
     channel_all_members.remove(auth_user_id)
+
+    # Update user_stats
+    update_user_stats_channels(auth_user_id, "remove")
+
     data_store.set(store)
 
     return {}
