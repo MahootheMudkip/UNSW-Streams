@@ -349,7 +349,7 @@ def test_message_sendlater_stats(data):
     })
 
     # check user's stats after message is sent
-    time.sleep(1)
+    time.sleep(5)
     response = requests.get(url + "user/stats/v1", params={
         "token": token1
     })
