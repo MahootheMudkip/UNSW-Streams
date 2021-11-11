@@ -1,3 +1,4 @@
+from src.stats import *
 from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
@@ -56,7 +57,12 @@ def dm_create_v1(token, u_ids):
 
     # Generate new Dm id and update data store dm id with the new dm_id
     store["dm_id_tracker"] += 1
- 
+    
+    # Update workspace stats and user_stats for all users in new dm 
+    update_workspace_stats_dms("add")
+    for u_id in u_ids:
+        update_user_stats_dms(u_id, "add")
+
     # Store the new dm back to data store
     data_store.set(store)
  
@@ -189,6 +195,12 @@ def dm_remove_v1(token, dm_id):
     if auth_user_id != dms[dm_id]["owner"]:
         raise AccessError("user not the owner of the dm")
 
+    # Update user_stats for all users in removed dm and workspace stats
+    update_workspace_stats_dms("remove")
+    u_ids = dms[dm_id]["members"]
+    for u_id in u_ids:
+        update_user_stats_dms(u_id, "remove")
+
     #remove the dm
     del dms[dm_id]
     
@@ -230,6 +242,10 @@ def dm_leave_v1(token, dm_id):
 
     #remove the user
     dms[dm_id]["members"].remove(auth_user_id)
+
+    # Update user_stats for all users in removed dm
+    update_user_stats_dms(auth_user_id, "remove")
+
     data_store.set(store)
 
     return {}
@@ -283,7 +299,7 @@ def message_senddm_v1(token, dm_id, message):
 
     # timestamp
     dt = datetime.now()
-    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
+    timestamp = int(dt.timestamp())
 
     # intitialise message's reacts
     react = {
@@ -310,6 +326,11 @@ def message_senddm_v1(token, dm_id, message):
     messages[message_id_tracker] = new_message
 
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats and workspace_stats for messages_sent
+    update_workspace_stats_messages("add")
+    update_user_stats_messages(auth_user_id)
+
     data_store.set(store)
 
     return {
@@ -439,7 +460,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
         raise InputError("Invalid message length")
 
     #get timestamp of the current time
-    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    curr_timestamp = int(datetime.now().timestamp())
 
     #if the given stamp is in the past
     if time_sent - curr_timestamp < 0:
@@ -461,14 +482,14 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
 
     #use the threading library to delay the message
     delay = time_sent - curr_timestamp
-    t =threading.Timer(delay, dm_later_helper,[dm_id, time_sent, new_message])
+    t =threading.Timer(delay, dm_later_helper,[dm_id, auth_user_id, new_message])
     t.start()
     
     return {
         "message_id": message_id_tracker
     }
 
-def dm_later_helper(dm_id, time_sent, new_message):
+def dm_later_helper(dm_id, auth_user_id, new_message):
     '''
     Store the message in data store after a delay by threading function
 
@@ -493,6 +514,14 @@ def dm_later_helper(dm_id, time_sent, new_message):
     all_messages.append(message_id_tracker)
     store["messages"][message_id_tracker] = new_message
 
+    # send notifications to tagged users
+    notifications_send_tagged(auth_user_id, new_message["message"], dm_id, "dm")
+
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats and workspace_stats for messages_sent
+    update_workspace_stats_messages("add")
+    update_user_stats_messages(auth_user_id)
+
     data_store.set(store)
 

@@ -4,6 +4,7 @@ from src.email_helper import send_email
 from src.data_store import data_store
 from src.error import InputError
 from src.sessions import get_auth_user_id, get_hash, get_token, generate_new_session_id, get_session_id
+from datetime import *
 
 # returns True if `email` is valid, False otherwise
 def valid_email(email):
@@ -99,6 +100,78 @@ def generate_handle(name_first, name_last, users):
 
     return handle
 
+def get_init_stats():
+    '''
+    Get initial values for user_stats dict
+
+    Arguments:
+        none
+
+    Exceptions:
+        none
+        
+    Return Value:
+        user_stats (dict) dict of shape user_stats
+    '''
+
+    # get current time
+    curr_time = int(datetime.now().timestamp())
+    channels_joined = {
+        "num_channels_joined": 0,
+        "time_stamp": curr_time
+    }
+    dms_joined = {
+        "num_dms_joined": 0,
+        "time_stamp": curr_time
+    }
+    messages_sent = {
+        "num_messages_sent": 0,
+        "time_stamp": curr_time
+    }
+
+    return {
+        "channels_joined": [channels_joined],
+        "dms_joined": [dms_joined],
+        "messages_sent": [messages_sent],
+        "involvement_rate": 0
+    }
+
+def get_init_workplace_stats():
+    '''
+    Get initial values for workplace_stats dict
+
+    Arguments:
+        none
+
+    Exceptions:
+        none
+        
+    Return Value:
+        workplace_stats (dict) dict of shape workplace_stats
+    '''
+
+    # get current time
+    curr_time = int(datetime.now().timestamp())
+    channels_exist = {
+        "num_channels_exist": 0,
+        "time_stamp": curr_time
+    }
+    dms_exist = {
+        "num_dms_exist": 0,
+        "time_stamp": curr_time
+    }
+    messages_exist = {
+        "num_messages_exist": 0,
+        "time_stamp": curr_time
+    }
+
+    return {
+        "channels_exist": [channels_exist],
+        "dms_exist": [dms_exist],
+        "messages_exist": [messages_exist],
+        "utilization_rate": 0
+    }
+
 def auth_register_v1(email, password, name_first, name_last):
     '''
     Create a new account for a user given their details
@@ -149,6 +222,8 @@ def auth_register_v1(email, password, name_first, name_last):
     # start new session and generate token for user
     session_id = generate_new_session_id()
     token = get_token(u_id, session_id)
+    # get initial stats for user
+    init_stats = get_init_stats()
 
     # Append dict for new user containing user info
     users[u_id] = {
@@ -161,11 +236,12 @@ def auth_register_v1(email, password, name_first, name_last):
         "sessions": [session_id],
         "profile_img_url": url[:-1] + '/images/default.jpg',
         "notifications": [],
-        "user_stats": {},
+        "user_stats": init_stats,
     }
     # If user is first user to register, they are a global owner
     if u_id == 0:
         users[u_id]["is_owner"] = True
+        store["users_stats"] = get_init_workplace_stats()
 
     # Set data containing user information
     data_store.set(store)

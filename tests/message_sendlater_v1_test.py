@@ -64,7 +64,7 @@ def data():
     channel2_id = channel2_response.json()["channel_id"]
 
     #get a unix timestamp of the current time
-    timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    timestamp = int(datetime.now().timestamp())
 
     return {
         "token1" : token1,
@@ -172,8 +172,8 @@ def test_msg_sendlater_user_notin_channel(data):
 
 #testing if the message was sent before it was supposed to
 def test_msg_sendlate_check(data):
-    #getting a time stamp 15 seconds from now
-    timestamp = data["timestamp"] + 15
+    #getting a time stamp 3 seconds from now
+    timestamp = data["timestamp"] + 3
 
     response1 = requests.post(url + "message/sendlater/v1", 
     json={
@@ -184,8 +184,8 @@ def test_msg_sendlate_check(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #sleep for 10 seconds and check if the message was sent before 15 seconds
-    time.sleep(10)
+    #sleep for 1 second and check if the message was sent before 3 seconds
+    time.sleep(1)
     response2 = requests.get(url + "channel/messages/v2", 
     params={
         "token": data["token1"],
@@ -200,8 +200,8 @@ def test_msg_sendlate_check(data):
 
 #testing if the message was actually delivered
 def test_msg_sendlater_verify(data):
-    #getting a time stamp 10 seconds from now
-    timestamp = data["timestamp"] + 10
+    #getting a time stamp 2 seconds from now
+    timestamp = data["timestamp"] + 2
 
     response1 = requests.post(url + "message/sendlater/v1", 
     json={
@@ -212,8 +212,8 @@ def test_msg_sendlater_verify(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #sleep for 10 seconds and check if the message was sent
-    time.sleep(10)
+    #sleep for 2 seconds and check if the message was sent
+    time.sleep(2)
     response2 = requests.get(url + "channel/messages/v2", 
     params={
         "token": data["token1"],

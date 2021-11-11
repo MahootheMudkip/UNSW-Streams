@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 from src.data_store import data_store
 from src.sessions import get_auth_user_id
 from src.user import notifications_send_reacted, notifications_send_tagged
+from src.stats import *
 from datetime import *
 import re
 import time, threading
@@ -53,7 +54,7 @@ def message_send_v1(token, channel_id, message):
 
     # timestamp
     dt = datetime.now()
-    timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
+    timestamp = int(dt.timestamp())
 
     # intitialise message's reacts
     react = {
@@ -80,6 +81,11 @@ def message_send_v1(token, channel_id, message):
     messages[message_id_tracker] = new_message
 
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats and workspace_stats for messages_sent
+    update_workspace_stats_messages("add")
+    update_user_stats_messages(auth_user_id)
+
     data_store.set(store)
 
     return {
@@ -171,6 +177,7 @@ def message_edit_v1(token, message_id, message):
         location_info["messages"].remove(message_id)
         # this will work whether location_type is a channel or dm
         store["messages"].pop(message_id)
+        update_workspace_stats_messages("remove")
     else:
         notifications_send_tagged(auth_user_id, message, location_id, location_type)
         message_info["message"] = message
@@ -313,9 +320,9 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
         raise AccessError (description = "User is not part of the channel")
 
     #get timestamp of the current time
-    curr_timestamp = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    curr_timestamp = int(datetime.now().timestamp())
 
-    #if the given stamp is in the past
+    # if the given stamp is in the past
     if time_sent - curr_timestamp < 0:
         raise InputError (description = "Trying to send message in the past")
     
@@ -339,14 +346,14 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     
     #use the threading library to delay the message
     delay = time_sent - curr_timestamp
-    t =threading.Timer(delay, helper_msg_sendlater,[channel_id, time_sent, new_message])
+    t = threading.Timer(delay, helper_msg_sendlater,[channel_id, user_id, new_message])
     t.start()
     
     return {
         "message_id": message_id_tracker
     }
     
-def helper_msg_sendlater(channel_id, time_sent, new_message):
+def helper_msg_sendlater(channel_id, user_id, new_message):
     '''
     Store the message in data store after a delay by threading function
 
@@ -371,7 +378,15 @@ def helper_msg_sendlater(channel_id, time_sent, new_message):
     all_messages.append(message_id_tracker)
     store["messages"][message_id_tracker] = new_message
 
+    # send notifications to tagged users
+    notifications_send_tagged(user_id, new_message["message"], channel_id, "channel")
+
     store["message_id_tracker"] = message_id_tracker + 1
+
+    # Update user_stats and workspace stats for messages_sent
+    update_workspace_stats_messages("add")
+    update_user_stats_messages(user_id)
+
     data_store.set(store)
 
 def message_pin_v1(token, message_id):
