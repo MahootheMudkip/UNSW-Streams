@@ -2,7 +2,7 @@ import pytest
 import requests
 import json
 from src.config import url
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 import time
 
 INPUT_ERROR = 400
@@ -64,7 +64,7 @@ def data():
     channel2_id = channel2_response.json()["channel_id"]
 
     #get a unix timestamp of the current time
-    timestamp = int(datetime.now().timestamp())
+    timestamp = get_curr_timestamp()
 
     return {
         "token1" : token1,

@@ -3,7 +3,7 @@ import json
 import requests
 import pytest
 import time
-from datetime import *
+from src.gen_timestamp import get_curr_timestamp
 import time
 
 INPUT_ERROR = 400
@@ -187,7 +187,7 @@ def test_message_sendlater_workspace_stats(data):
     })
 
     # send later a message to channel1
-    timestamp = int(datetime.now().timestamp())
+    timestamp = get_curr_timestamp()
     requests.post(url + "message/sendlater/v1", json={
         "token": token1,
         "channel_id": 0,
@@ -217,7 +217,7 @@ def test_message_sendlaterdm_workspace_stats(data):
     })
 
     # send later a message to channel1
-    timestamp = int(datetime.now().timestamp())
+    timestamp = get_curr_timestamp()
     requests.post(url + "message/sendlaterdm/v1", json={
         "token": token1,
         "dm_id": 0,
