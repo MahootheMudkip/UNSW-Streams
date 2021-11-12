@@ -225,7 +225,53 @@ def test_message_share_verify_msg(data):
         "start": 0
     })
     messages = response2.json()["messages"]
-    print(messages)
-    assert messages[shared_msg_id]["message"] == "hello from the other side"
-    assert messages[shared_msg_id]["u_id"] == data["user2_id"]
+    assert messages[0]["message"] == "hello from the other side new msg"
+    assert messages[0]["u_id"] == data["user2_id"]
  
+# testing invalid channel
+def test_message_share_invalid_channel(data):
+    response = requests.post(url + "message/share/v1", 
+    json={
+        "token":            data["token2"],
+        "og_message_id":    data["dm_message_id"],
+        "message" :         "fuuuuuuu",
+        "channel_id":       1381830,
+        "dm_id" :           -1
+    })
+    assert response.status_code == INPUT_ERROR
+
+# testing invalid dm
+def test_message_share_invalid_dm(data):
+    response = requests.post(url + "message/share/v1", 
+    json={
+        "token":            data["token2"],
+        "og_message_id":    data["dm_message_id"],
+        "message" :         "fuuuuuuu",
+        "channel_id":       -1,
+        "dm_id" :           9281739
+    })
+    assert response.status_code == INPUT_ERROR
+
+# testing user in dm
+def test_message_share_user_in_dm(data):
+    response = requests.post(url + "message/share/v1", 
+    json={
+        "token":            data["token1"],
+        "og_message_id":    data["dm_message_id"],
+        "message" :         "fuuuuuuu",
+        "channel_id":       -1,
+        "dm_id" :           data["dm_id"]
+    })
+    assert response.status_code == NO_ERROR
+
+# testing message in channel
+def test_message_share_from_channel(data):
+    response = requests.post(url + "message/share/v1", 
+    json={
+        "token":            data["token2"],
+        "og_message_id":    data["channel_message_id"],
+        "message" :         "fuuuuuuu",
+        "channel_id":       -1,
+        "dm_id" :           data["dm_id"]
+    })
+    assert response.status_code == NO_ERROR

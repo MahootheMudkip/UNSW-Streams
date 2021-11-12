@@ -46,15 +46,14 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
 
     #check if the og message id belongs to a message
     location_found = False
-    # find location of message_id
-    for ch_id, channel in channels.items():
+    for channel in channels.values():
         if auth_user_id in channel["all_members"]:
             if og_message_id in channel["messages"]:
                 location_found = True
                 break
     
     if location_found == False:
-        for dm1_id, dm in dms.items():
+        for dm in dms.values():
             if auth_user_id in dm["members"]:
                 if og_message_id in dm["messages"]:
                     location_found = True
@@ -75,5 +74,5 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
     # if channel_id given, call message send
     if dm_id == -1:
         return message_send_v1(token, channel_id, new_message)
-    elif channel_id == -1:
+    else:
         return message_senddm_v1(token, dm_id, new_message)

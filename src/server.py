@@ -22,6 +22,7 @@ from src.admin import *
 from src.image_helper import *
 from src.standup import *
 from src.stats import *
+from src.message_share_v1 import *
 
 
 def quit_gracefully(*args):
@@ -335,17 +336,17 @@ def search():
     query_str = request.args.get("query_str")
     return dumps(search_v1(token, query_str))
 
-# @APP.route("/message/share/v1", methods = ['POST'])
-# def message_share():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     og_message_id = data["og_message_id"]
-#     message = data["message"]
-#     channel_id = data["channel_id"]
-#     dm_id = data["dm_id"]
-# 
-#     return dumps(message_share_v1(token, og_message_id, message, channel_id, dm_id))
+@APP.route("/message/share/v1", methods = ['POST'])
+def message_share():
+    data = request.get_json()
+
+    token = data["token"]
+    og_message_id = data["og_message_id"]
+    message = data["message"]
+    channel_id = data["channel_id"]
+    dm_id = data["dm_id"]
+
+    return dumps(message_share_v1(token, og_message_id, message, channel_id, dm_id))
 
 @APP.route("/message/react/v1", methods=['POST'])
 def message_react():
@@ -395,17 +396,6 @@ def message_unpin():
     message_id = data["message_id"]
 
     return dumps(message_unpin_v1(token, message_id))
-
-# @APP.route("/message/sendlater/v1", methods=['POST'])
-# def message_sendlater():
-#     data = request.get_json()
-# 
-#     token = data["token"]
-#     channel_id = data["channel_id"]
-#     message = data["message"]
-#     time_sent = data["time_sent"]
-# 
-#     return dumps(message_sendlater_v1(token, channel_id, message, time_sent))
 
 @APP.route("/message/sendlaterdm/v1", methods=['POST'])
 def message_sendlaterdm():

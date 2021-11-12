@@ -217,11 +217,30 @@ def test_working(initial_setup):
     })
     assert response.status_code == NO_ERROR
     
+# test negative x, y values
+def test_negative_xy_values(initial_setup):
+    user1_token = initial_setup["user1_token"]
 
+    response = requests.post(URL, json={
+        "token":    user1_token,
+        "img_url":  IMG_URL,
+        "x_start":  -1,
+        "y_start":  0,
+        "x_end":    100,
+        "y_end":    100
+    })
+    assert response.status_code == INPUT_ERROR
 
+# test x_end too large
+def test_x_end_too_large(initial_setup):
+    user1_token = initial_setup["user1_token"]
 
-
-
-
-
-
+    response = requests.post(URL, json={
+        "token":    user1_token,
+        "img_url":  IMG_URL,
+        "x_start":  113213,
+        "y_start":  0,
+        "x_end":    17391838193,
+        "y_end":    100
+    })
+    assert response.status_code == INPUT_ERROR
