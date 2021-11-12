@@ -244,3 +244,18 @@ def test_x_end_too_large(initial_setup):
         "y_end":    100
     })
     assert response.status_code == INPUT_ERROR
+
+
+# test y_end too large
+def test_y_end_too_large(initial_setup):
+    user1_token = initial_setup["user1_token"]
+
+    response = requests.post(URL, json={
+        "token":    user1_token,
+        "img_url":  IMG_URL,
+        "x_start":  0,
+        "y_start":  113213,
+        "x_end":    100,
+        "y_end":    17391838193
+    })
+    assert response.status_code == INPUT_ERROR
