@@ -214,9 +214,6 @@ def test_message_share_verify_msg(data):
     })
     assert response1.status_code == NO_ERROR
 
-    #get message id of the new message
-    shared_msg_id = response1.json()["message_id"]
-
     #get messages from dm
     response2 = requests.get(url + "channel/messages/v2", 
     params={
