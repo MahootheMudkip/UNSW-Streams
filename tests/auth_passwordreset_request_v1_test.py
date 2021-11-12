@@ -87,3 +87,9 @@ def test_user_with_given_email_logged_out(initial_setup):
     })
     assert response.status_code == ACCESS_ERROR
     # since the user should have been logged out
+
+def test_invalid_email(initial_setup):
+    response = requests.post(URL, json={
+        "email":    "invalid email"
+    })
+    assert response.status_code == NO_ERROR

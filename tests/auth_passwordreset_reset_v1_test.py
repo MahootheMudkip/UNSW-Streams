@@ -65,6 +65,12 @@ def test_invalid_reset_code(initial_setup):
     })
     assert response.status_code == INPUT_ERROR
 
+    response = requests.post(URL, json={
+        "reset_code":   "a" * 64,
+        "new_password": "hellothere"
+    })
+    assert response.status_code == INPUT_ERROR
+
 # testing invalid new_password only
 def test_invalid_new_password(initial_setup):
     response = requests.post(URL, json={
